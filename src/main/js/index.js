@@ -34,7 +34,7 @@ class Piece extends React.Component {
             x: 0,
             y: 0,
             dragging: false
-        })
+        });
     }
 
     onMouseMove = (event) => {
@@ -63,6 +63,11 @@ class Piece extends React.Component {
 }
 
 class Square extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { highlight: false }
+    }
+
     render() {
         const coordinate = String.fromCharCode('a'.charCodeAt(0) + this.props.x) + (8 - this.props.y);
         const imageName = coordinate === 'd4' ? 'd6' : coordinate; // missing d4 image
@@ -76,10 +81,11 @@ class Square extends React.Component {
 
         return (
             <div
-                onMouseEnter={() => console.log(coordinate)}
+                onMouseEnter={() => this.setState({highlight: true})}
+                onMouseLeave={() => this.setState({highlight: false})}
                 key={coordinate}
                 style={style}
-                className="unselectable div-image square"
+                className={"unselectable div-image square" + (this.state.highlight ? " highlight" : "")}
             >
                 {chessPiece !== null && <Piece piece={chessPiece} />}
             </div>
@@ -94,9 +100,13 @@ class Board extends React.Component {
         const squares = Array.from({length: 64})
             .map((_, i) => <Square key={i} x={i % 8} y={Math.floor(i / 8)} position={chessPosition}/>)
 
+
+
         return (
             <div className="board">
-                {squares}
+                <div className="square-container">
+                    {squares}
+                </div>
             </div>
         )
     }
