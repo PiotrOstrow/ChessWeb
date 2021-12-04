@@ -11,6 +11,7 @@ body {
 }
 
 .board {
+    position: relative;
     --board-dimension: min(80vh, 80vw);
     width: var(--board-dimension);
     height: var(--board-dimension);
@@ -34,8 +35,11 @@ body {
 }
 
 .piece {
-    position: relative;
-    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 12.5%;
+    width: 12.5%;
 }
 
 .draggable {
@@ -53,7 +57,7 @@ body {
 .div-image {
     background-repeat: no-repeat;
     background-size: cover;
-    width: 100%;
+    /*width: 100%;*/
 }
 
 
@@ -69,3 +73,75 @@ body {
 .black-bishop   { background-image: url("Chess_Artwork/Chess_Pieces/Stone/BishopB.png") }
 .white-pawn     { background-image: url("Chess_Artwork/Chess_Pieces/Stone/PawnW.png")   }
 .black-pawn     { background-image: url("Chess_Artwork/Chess_Pieces/Stone/PawnB.png")   }
+
+.a8 {}
+.b8 { transform: translate(100%) }
+.c8 { transform: translate(200%) }
+.d8 { transform: translate(300%) }
+.e8 { transform: translate(400%) }
+.f8 { transform: translate(500%) }
+.g8 { transform: translate(600%) }
+.h8 { transform: translate(700%) }
+
+.a7 { transform: translate(0   , 100%) }
+.b7 { transform: translate(100%, 100%) }
+.c7 { transform: translate(200%, 100%) }
+.d7 { transform: translate(300%, 100%) }
+.e7 { transform: translate(400%, 100%) }
+.f7 { transform: translate(500%, 100%) }
+.g7 { transform: translate(600%, 100%) }
+.h7 { transform: translate(700%, 100%) }
+
+.a6 { transform: translate(0   , 200%) }
+.b6 { transform: translate(100%, 200%) }
+.c6 { transform: translate(200%, 200%) }
+.d6 { transform: translate(300%, 200%) }
+.e6 { transform: translate(400%, 200%) }
+.f6 { transform: translate(500%, 200%) }
+.g6 { transform: translate(600%, 200%) }
+.h6 { transform: translate(700%, 200%) }
+
+.a5 { transform: translate(0   , 300%) }
+.b5 { transform: translate(100%, 300%) }
+.c5 { transform: translate(200%, 300%) }
+.d5 { transform: translate(300%, 300%) }
+.e5 { transform: translate(400%, 300%) }
+.f5 { transform: translate(500%, 300%) }
+.g5 { transform: translate(600%, 300%) }
+.h5 { transform: translate(700%, 300%) }
+
+.a4 { transform: translate(0   , 400%) }
+.b4 { transform: translate(100%, 400%) }
+.c4 { transform: translate(200%, 400%) }
+.d4 { transform: translate(300%, 400%) }
+.e4 { transform: translate(400%, 400%) }
+.f4 { transform: translate(500%, 400%) }
+.g4 { transform: translate(600%, 400%) }
+.h4 { transform: translate(700%, 400%) }
+
+.a3 { transform: translate(0   , 500%) }
+.b3 { transform: translate(100%, 500%) }
+.c3 { transform: translate(200%, 500%) }
+.d3 { transform: translate(300%, 500%) }
+.e3 { transform: translate(400%, 500%) }
+.f3 { transform: translate(500%, 500%) }
+.g3 { transform: translate(600%, 500%) }
+.h3 { transform: translate(700%, 500%) }
+
+.a2 { transform: translate(0   , 600%) }
+.b2 { transform: translate(100%, 600%) }
+.c2 { transform: translate(200%, 600%) }
+.d2 { transform: translate(300%, 600%) }
+.e2 { transform: translate(400%, 600%) }
+.f2 { transform: translate(500%, 600%) }
+.g2 { transform: translate(600%, 600%) }
+.h2 { transform: translate(700%, 600%) }
+
+.a1 { transform: translate(0   , 700%) }
+.b1 { transform: translate(100%, 700%) }
+.c1 { transform: translate(200%, 700%) }
+.d1 { transform: translate(300%, 700%) }
+.e1 { transform: translate(400%, 700%) }
+.f1 { transform: translate(500%, 700%) }
+.g1 { transform: translate(600%, 700%) }
+.h1 { transform: translate(700%, 700%) }
