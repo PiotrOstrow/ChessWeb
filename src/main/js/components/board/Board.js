@@ -1,5 +1,5 @@
 import React from "react";
-import ChessPosition from "../ChessPosition";
+import ChessPosition from "../../ChessPosition";
 import Square from "./Square";
 import Piece from "./Piece";
 

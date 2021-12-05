@@ -1,0 +1,207 @@
+
+.board {
+    position: relative;
+    --board-dimension: min(80vh, 80vw);
+    width: var(--board-dimension);
+    height: var(--board-dimension);
+    margin: 0 auto;
+    border: solid 4px white;
+}
+
+.square-container {
+    display: grid;
+    grid-template-columns: auto auto auto auto auto auto auto auto;
+    width: 100%;
+    height: 100%;
+}
+
+.square {
+
+}
+
+.highlight {
+    box-shadow: inset 0 0 min(2vh, 2vw) #F7EA25;
+}
+
+.piece {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 12.5%;
+    width: 12.5%;
+}
+
+.draggable {
+    cursor: -webkit-grab;
+}
+
+.unselectable {
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.div-image {
+    background-repeat: no-repeat;
+    background-size: cover;
+    /*width: 100%;*/
+}
+
+.white-king     { background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/KingW.png")   }
+.black-king     { background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/KingB.png")   }
+.white-queen    { background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/QueenW.png")  }
+.black-queen    { background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/QueenB.png")  }
+.white-rook     { background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/RookW.png")   }
+.black-rook     { background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/RookB.png")   }
+.white-knight   { background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/KnightW.png") }
+.black-knight   { background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/KnightB.png") }
+.white-bishop   { background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/BishopW.png") }
+.black-bishop   { background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/BishopB.png") }
+.white-pawn     { background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/PawnW.png")   }
+.black-pawn     { background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/PawnB.png")   }
+
+.piece.a8 {}
+.piece.b8 { transform: translate(100%) }
+.piece.c8 { transform: translate(200%) }
+.piece.d8 { transform: translate(300%) }
+.piece.e8 { transform: translate(400%) }
+.piece.f8 { transform: translate(500%) }
+.piece.g8 { transform: translate(600%) }
+.piece.h8 { transform: translate(700%) }
+
+.piece.a7 { transform: translate(0   , 100%) }
+.piece.b7 { transform: translate(100%, 100%) }
+.piece.c7 { transform: translate(200%, 100%) }
+.piece.d7 { transform: translate(300%, 100%) }
+.piece.e7 { transform: translate(400%, 100%) }
+.piece.f7 { transform: translate(500%, 100%) }
+.piece.g7 { transform: translate(600%, 100%) }
+.piece.h7 { transform: translate(700%, 100%) }
+
+.piece.a6 { transform: translate(0   , 200%) }
+.piece.b6 { transform: translate(100%, 200%) }
+.piece.c6 { transform: translate(200%, 200%) }
+.piece.d6 { transform: translate(300%, 200%) }
+.piece.e6 { transform: translate(400%, 200%) }
+.piece.f6 { transform: translate(500%, 200%) }
+.piece.g6 { transform: translate(600%, 200%) }
+.piece.h6 { transform: translate(700%, 200%) }
+
+.piece.a5 { transform: translate(0   , 300%) }
+.piece.b5 { transform: translate(100%, 300%) }
+.piece.c5 { transform: translate(200%, 300%) }
+.piece.d5 { transform: translate(300%, 300%) }
+.piece.e5 { transform: translate(400%, 300%) }
+.piece.f5 { transform: translate(500%, 300%) }
+.piece.g5 { transform: translate(600%, 300%) }
+.piece.h5 { transform: translate(700%, 300%) }
+
+.piece.a4 { transform: translate(0   , 400%) }
+.piece.b4 { transform: translate(100%, 400%) }
+.piece.c4 { transform: translate(200%, 400%) }
+.piece.d4 { transform: translate(300%, 400%) }
+.piece.e4 { transform: translate(400%, 400%) }
+.piece.f4 { transform: translate(500%, 400%) }
+.piece.g4 { transform: translate(600%, 400%) }
+.piece.h4 { transform: translate(700%, 400%) }
+
+.piece.a3 { transform: translate(0   , 500%) }
+.piece.b3 { transform: translate(100%, 500%) }
+.piece.c3 { transform: translate(200%, 500%) }
+.piece.d3 { transform: translate(300%, 500%) }
+.piece.e3 { transform: translate(400%, 500%) }
+.piece.f3 { transform: translate(500%, 500%) }
+.piece.g3 { transform: translate(600%, 500%) }
+.piece.h3 { transform: translate(700%, 500%) }
+
+.piece.a2 { transform: translate(0   , 600%) }
+.piece.b2 { transform: translate(100%, 600%) }
+.piece.c2 { transform: translate(200%, 600%) }
+.piece.d2 { transform: translate(300%, 600%) }
+.piece.e2 { transform: translate(400%, 600%) }
+.piece.f2 { transform: translate(500%, 600%) }
+.piece.g2 { transform: translate(600%, 600%) }
+.piece.h2 { transform: translate(700%, 600%) }
+
+.piece.a1 { transform: translate(0   , 700%) }
+.piece.b1 { transform: translate(100%, 700%) }
+.piece.c1 { transform: translate(200%, 700%) }
+.piece.d1 { transform: translate(300%, 700%) }
+.piece.e1 { transform: translate(400%, 700%) }
+.piece.f1 { transform: translate(500%, 700%) }
+.piece.g1 { transform: translate(600%, 700%) }
+.piece.h1 { transform: translate(700%, 700%) }
+
+.square.a8 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/a8.png") }
+.square.b8 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/b8.png") }
+.square.c8 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/c8.png") }
+.square.d8 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/d8.png") }
+.square.e8 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/e8.png") }
+.square.f8 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/f8.png") }
+.square.g8 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/g8.png") }
+.square.h8 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/h8.png") }
+
+.square.a7 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/a7.png") }
+.square.b7 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/b7.png") }
+.square.c7 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/c7.png") }
+.square.d7 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/d7.png") }
+.square.e7 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/e7.png") }
+.square.f7 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/f7.png") }
+.square.g7 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/g7.png") }
+.square.h7 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/h7.png") }
+
+.square.a6 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/a6.png") }
+.square.b6 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/b6.png") }
+.square.c6 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/c6.png") }
+.square.d6 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/d6.png") }
+.square.e6 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/e6.png") }
+.square.f6 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/f6.png") }
+.square.g6 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/g6.png") }
+.square.h6 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/h6.png") }
+
+.square.a5 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/a5.png") }
+.square.b5 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/b5.png") }
+.square.c5 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/c5.png") }
+.square.d5 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/d5.png") }
+.square.e5 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/e5.png") }
+.square.f5 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/f5.png") }
+.square.g5 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/g5.png") }
+.square.h5 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/h5.png") }
+
+.square.a4 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/a4.png") }
+.square.b4 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/b4.png") }
+.square.c4 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/c4.png") }
+.square.d4 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/d6.png") } /* Missing d4 image*/
+.square.e4 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/e4.png") }
+.square.f4 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/f4.png") }
+.square.g4 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/g4.png") }
+.square.h4 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/h4.png") }
+
+.square.a3 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/a3.png") }
+.square.b3 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/b3.png") }
+.square.c3 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/c3.png") }
+.square.d3 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/d3.png") }
+.square.e3 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/e3.png") }
+.square.f3 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/f3.png") }
+.square.g3 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/g3.png") }
+.square.h3 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/h3.png") }
+
+.square.a2 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/a2.png") }
+.square.b2 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/b2.png") }
+.square.c2 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/c2.png") }
+.square.d2 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/d2.png") }
+.square.e2 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/e2.png") }
+.square.f2 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/f2.png") }
+.square.g2 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/g2.png") }
+.square.h2 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/h2.png") }
+
+.square.a1 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/a1.png") }
+.square.b1 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/b1.png") }
+.square.c1 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/c1.png") }
+.square.d1 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/d1.png") }
+.square.e1 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/e1.png") }
+.square.f1 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/f1.png") }
+.square.g1 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/g1.png") }
+.square.h1 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/h1.png") }
