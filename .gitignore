@@ -8,6 +8,8 @@ target/
 #
 node_modules/
 src/main/resources/static/built
+src/main/resources/static/js/built
+*.txt
 
 ### STS ###
 .apt_generated

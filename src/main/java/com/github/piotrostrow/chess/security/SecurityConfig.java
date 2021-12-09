@@ -60,6 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.authorizeRequests()
 				.antMatchers(HttpMethod.POST, "/users/").permitAll()
 				.antMatchers(HttpMethod.POST, "/auth/login/").permitAll()
+				.antMatchers("/websocket/**").permitAll() // auth at sub-protocol due to WebSocket API limitations
 				.anyRequest().authenticated();
 	}
 

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import GameApi from "./GameApi";
 
 let jwtToken = null;
 
@@ -21,6 +22,9 @@ const Api = {
                 authorization: 'Bearer ' + jwtToken
             }
         });
+    },
+    gameApi(onConnect) {
+        return new GameApi(jwtToken, onConnect);
     }
 }
 

@@ -1,15 +1,13 @@
 import React from "react";
 
-class Square extends React.Component {
-    render() {
-        return (
-            <div
-                onMouseEnter={() => this.props.onMouseEnter(this.props.position)}
-                onMouseLeave={() => this.props.onMouseLeave(this.props.position)}
-                className={"unselectable div-image square " + this.props.position + (this.props.highlight === this.props.position ? " highlight" : "")}
-            />
-        );
-    }
+function Square(props) {
+    return (
+        <div
+            onMouseEnter={() => props.onMouseEnter(props.position)}
+            onMouseLeave={() => props.onMouseLeave(props.position)}
+            className={"unselectable div-image square " + props.position + (props.highlight === props.position ? " highlight" : "")}
+        />
+    );
 }
 
 export default Square;
