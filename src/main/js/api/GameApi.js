@@ -4,9 +4,14 @@ import {Stomp} from "@stomp/stompjs";
 class GameApi {
     constructor(jwtToken, onConnect = () => {}) {
         this.stompClient = Stomp.over(new SockJS('/websocket'));
+
+        this.onRecvStart = () => {};
+        this.onRecvMove = () => {};
+
         this.stompClient.connect({auth: jwtToken}, frame => {
             onConnect();
-            this.stompClient.subscribe('/user/topic/private-messages', message => console.log(message.body));
+            this.stompClient.subscribe('/user/topic/game-start', message => this.onRecvStart(JSON.parse(message.body)));
+            this.stompClient.subscribe('/user/topic/game-move', message => this.onRecvMove(JSON.parse(message.body)));
         });
     }
 

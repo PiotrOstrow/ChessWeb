@@ -1,4 +1,4 @@
-import Api from "../Api";
+import Api from "../api/Api";
 import React, {useState} from "react";
 
 function LoginForm(props) {
