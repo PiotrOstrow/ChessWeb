@@ -37,7 +37,7 @@ public class Fen {
 	private List<Piece> parseRanks(String ranks) {
 		List<Piece> result = new ArrayList<>();
 
-		int rank = 8;
+		int rank = 7;
 		for (String rankString : ranks.split("/")) {
 			result.addAll(parseRank(rank, rankString));
 			--rank;

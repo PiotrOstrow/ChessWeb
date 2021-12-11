@@ -34,7 +34,6 @@ class FenTest {
 		assertThat(whitePieces).hasSize(16);
 		whitePieces.forEach(e -> assertThat(e.getY()).isLessThanOrEqualTo(2));
 
-
 		assertThat(actual.get("a8")).isExactlyInstanceOf(Rook.class);
 		assertThat(actual.get("b8")).isExactlyInstanceOf(Knight.class);
 		assertThat(actual.get("c8")).isExactlyInstanceOf(Bishop.class);

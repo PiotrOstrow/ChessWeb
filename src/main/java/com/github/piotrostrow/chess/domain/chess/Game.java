@@ -4,9 +4,7 @@ import com.github.piotrostrow.chess.domain.User;
 import com.github.piotrostrow.chess.domain.chess.pieces.Piece;
 import com.github.piotrostrow.chess.ws.dto.Move;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Game {
@@ -15,8 +13,9 @@ public class Game {
 	private final User black;
 
 	private final Map<Position, Piece> pieces;
+	private final Map<Position, Set<Position>> pseudoLegalMoves = new HashMap<>();
 
-	private final Map<Color, Set<Position>> controlledSquares = new HashMap<>();
+	private final Map<Color, Set<Position>> controlledSquares = new EnumMap<>(Color.class);
 
 	public Game(User white, User black) {
 		this(white, black, Fen.DEFAULT_STARTING_POSITION);
@@ -27,7 +26,16 @@ public class Game {
 		this.black = black;
 		this.pieces = fen.getPieces().stream().collect(Collectors.toMap(Piece::getPosition, e -> e));
 
+		calculatePseudoLegalMoves();
 		calculateControlledSquares();
+	}
+
+	private void calculatePseudoLegalMoves() {
+		Map<Position, Set<Position>> newPseudoLegalMoves = pieces.values().stream()
+				.collect(Collectors.toMap(Piece::getPosition, e -> e.getPseudoLegalMoves(pieces)));
+
+		pseudoLegalMoves.clear();
+		pseudoLegalMoves.putAll(newPseudoLegalMoves);
 	}
 
 	private void calculateControlledSquares() {
@@ -46,11 +54,28 @@ public class Game {
 	}
 
 	public synchronized boolean moveIfValid(Move move) {
-		Piece from = pieces.get(move.getFrom());
-		Piece to = pieces.get(move.getTo());
+		if (!isLegalMove(move)) {
+			return false;
+		}
 
+		Piece piece = pieces.get(move.getFrom()).moved(move.getTo());
+
+		pieces.remove(move.getFrom());
+		pieces.put(piece.getPosition(), piece);
+
+		calculatePseudoLegalMoves();
 		calculateControlledSquares();
 		return true;
+	}
+
+	private boolean isLegalMove(Move move) {
+		Piece from = pieces.get(move.getFrom());
+
+		if (!move.isValid() || from == null) {
+			return false;
+		}
+
+		return this.pseudoLegalMoves.getOrDefault(move.getFrom(), Collections.emptySet()).contains(move.getTo());
 	}
 
 	public User getWhite() {

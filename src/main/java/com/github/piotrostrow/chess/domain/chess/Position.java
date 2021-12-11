@@ -37,7 +37,7 @@ public class Position {
 	@JsonValue
 	public String getNotation() {
 		char file = (char) (((byte) 'a') + x);
-		return String.valueOf(file) + y;
+		return String.valueOf(file) + (y + 1);
 	}
 
 	@Override

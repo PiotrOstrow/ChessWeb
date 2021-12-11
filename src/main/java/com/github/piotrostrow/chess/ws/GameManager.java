@@ -43,4 +43,12 @@ public class GameManager {
 	public boolean isPlaying(User user) {
 		return gameByUsername.containsKey(user.getName());
 	}
+
+	public void disconnected(User user) {
+		Game game = gameByUsername.get(user.getName());
+		if (game != null) {
+			gameByUsername.remove(game.getWhite().getName());
+			gameByUsername.remove(game.getBlack().getName());
+		}
+	}
 }

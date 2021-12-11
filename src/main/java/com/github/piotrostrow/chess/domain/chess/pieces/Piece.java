@@ -3,14 +3,17 @@ package com.github.piotrostrow.chess.domain.chess.pieces;
 import com.github.piotrostrow.chess.domain.chess.Color;
 import com.github.piotrostrow.chess.domain.chess.Position;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 public abstract class Piece {
 
 	private final Color color;
-	private Position position;
+	private final Position position;
 
-	public Piece(Color color, Position position) {
+	protected Piece(Color color, Position position) {
 		this.color = color;
 		this.position = position;
 	}
@@ -23,14 +26,12 @@ public abstract class Piece {
 		return position;
 	}
 
-	public void setPosition(Position position) {
-		this.position = position;
-	}
+	public abstract Set<Position> getPseudoLegalMoves(Map<Position, Piece> pieces);
 
-	public abstract Collection<Position> getPseudoLegalMoves(Map<Position, Piece> pieces);
+	public abstract Piece moved(Position to);
 
-	protected List<Position> getDiagonalMoves(Map<Position, Piece> pieces) {
-		List<Position> result = new ArrayList<>();
+	protected Set<Position> getDiagonalMoves(Map<Position, Piece> pieces) {
+		Set<Position> result = new HashSet<>();
 
 		result.addAll(getPositions(pieces, 1, 1));
 		result.addAll(getPositions(pieces, -1, 1));
@@ -40,8 +41,8 @@ public abstract class Piece {
 		return result;
 	}
 
-	protected List<Position> getRookMoves(Map<Position, Piece> pieces) {
-		List<Position> result = new ArrayList<>();
+	protected Set<Position> getRookMoves(Map<Position, Piece> pieces) {
+		Set<Position> result = new HashSet<>();
 
 		result.addAll(getPositions(pieces, 0, 1));
 		result.addAll(getPositions(pieces, 0, -1));
@@ -51,11 +52,11 @@ public abstract class Piece {
 		return result;
 	}
 
-	private List<Position> getPositions(Map<Position, Piece> pieces, int xDirection, int yDirection) {
-		List<Position> result = new ArrayList<>();
+	private Set<Position> getPositions(Map<Position, Piece> pieces, int xDirection, int yDirection) {
+		Set<Position> result = new HashSet<>();
 
 		Position nextPosition = new Position(position.getX() + xDirection, position.getY() + yDirection);
-		;
+
 		while (nextPosition.isValid()) {
 			Piece occupyingPiece = pieces.get(nextPosition);
 			if (occupyingPiece != null) {

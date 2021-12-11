@@ -10,8 +10,8 @@ public class Move {
 
 	@JsonCreator
 	public Move(String from, String to) {
-		this.from = new Position((byte) from.charAt(0) - (byte) 'a', Integer.parseInt(from.substring(1)));
-		this.to = new Position((byte) to.charAt(0) - (byte) 'a', Integer.parseInt(to.substring(1)));
+		this.from = new Position((byte) from.charAt(0) - (byte) 'a', Integer.parseInt(from.substring(1)) - 1);
+		this.to = new Position((byte) to.charAt(0) - (byte) 'a', Integer.parseInt(to.substring(1)) - 1);
 	}
 
 	public Position getFrom() {
@@ -20,5 +20,9 @@ public class Move {
 
 	public Position getTo() {
 		return to;
+	}
+
+	public boolean isValid() {
+		return from.isValid() && to.isValid();
 	}
 }

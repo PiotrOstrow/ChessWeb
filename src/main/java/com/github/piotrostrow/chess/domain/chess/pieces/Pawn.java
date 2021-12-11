@@ -3,10 +3,9 @@ package com.github.piotrostrow.chess.domain.chess.pieces;
 import com.github.piotrostrow.chess.domain.chess.Color;
 import com.github.piotrostrow.chess.domain.chess.Position;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class Pawn extends Piece {
 
@@ -15,8 +14,8 @@ public class Pawn extends Piece {
 	}
 
 	@Override
-	public Collection<Position> getPseudoLegalMoves(Map<Position, Piece> pieces) {
-		List<Position> result = new ArrayList<>();
+	public Set<Position> getPseudoLegalMoves(Map<Position, Piece> pieces) {
+		Set<Position> result = new HashSet<>();
 
 		int direction = getColor() == Color.WHITE ? 1 : -1;
 
@@ -47,5 +46,10 @@ public class Pawn extends Piece {
 
 	private boolean hasNotMoved() {
 		return getColor() == Color.WHITE ? getPosition().getY() == 1 : getPosition().getY() == 6;
+	}
+
+	@Override
+	public Piece moved(Position to) {
+		return new Pawn(getColor(), to);
 	}
 }

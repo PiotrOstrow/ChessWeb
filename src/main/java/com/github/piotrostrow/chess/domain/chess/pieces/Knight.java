@@ -3,8 +3,8 @@ package com.github.piotrostrow.chess.domain.chess.pieces;
 import com.github.piotrostrow.chess.domain.chess.Color;
 import com.github.piotrostrow.chess.domain.chess.Position;
 
-import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -15,7 +15,7 @@ public class Knight extends Piece {
 	}
 
 	@Override
-	public Collection<Position> getPseudoLegalMoves(Map<Position, Piece> pieces) {
+	public Set<Position> getPseudoLegalMoves(Map<Position, Piece> pieces) {
 		return Stream.of(
 						new Position(getPosition().getX() + 2, getPosition().getY() + 1),
 						new Position(getPosition().getX() - 2, getPosition().getY() + 1),
@@ -28,6 +28,11 @@ public class Knight extends Piece {
 				)
 				.filter(Position::isValid)
 				.filter(e -> !pieces.containsKey(e) || pieces.get(e).getColor() != this.getColor())
-				.collect(Collectors.toList());
+				.collect(Collectors.toSet());
+	}
+
+	@Override
+	public Piece moved(Position to) {
+		return new Knight(getColor(), to);
 	}
 }

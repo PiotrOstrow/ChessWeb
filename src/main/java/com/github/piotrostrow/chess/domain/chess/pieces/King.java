@@ -3,10 +3,9 @@ package com.github.piotrostrow.chess.domain.chess.pieces;
 import com.github.piotrostrow.chess.domain.chess.Color;
 import com.github.piotrostrow.chess.domain.chess.Position;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class King extends Piece {
 
@@ -15,8 +14,8 @@ public class King extends Piece {
 	}
 
 	@Override
-	public Collection<Position> getPseudoLegalMoves(Map<Position, Piece> pieces) {
-		List<Position> result = new ArrayList<>();
+	public Set<Position> getPseudoLegalMoves(Map<Position, Piece> pieces) {
+		Set<Position> result = new HashSet<>();
 
 		Position pos = getPosition();
 		for (int x = Math.max(0, pos.getX() - 1); x <= Math.min(7, pos.getX() + 1); x++) {
@@ -30,5 +29,10 @@ public class King extends Piece {
 		}
 
 		return result;
+	}
+
+	@Override
+	public Piece moved(Position to) {
+		return new King(getColor(), to);
 	}
 }
