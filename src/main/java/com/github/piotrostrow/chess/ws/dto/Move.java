@@ -1,23 +1,24 @@
 package com.github.piotrostrow.chess.ws.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.github.piotrostrow.chess.domain.chess.Position;
+
 public class Move {
 
-	private String from;
-	private String to;
+	private final Position from;
+	private final Position to;
 
-	public String getFrom() {
+	@JsonCreator
+	public Move(String from, String to) {
+		this.from = new Position((byte) from.charAt(0) - (byte) 'a', Integer.parseInt(from.substring(1)));
+		this.to = new Position((byte) to.charAt(0) - (byte) 'a', Integer.parseInt(to.substring(1)));
+	}
+
+	public Position getFrom() {
 		return from;
 	}
 
-	public void setFrom(String from) {
-		this.from = from;
-	}
-
-	public String getTo() {
+	public Position getTo() {
 		return to;
-	}
-
-	public void setTo(String to) {
-		this.to = to;
 	}
 }

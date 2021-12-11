@@ -30,7 +30,7 @@ public class MatchmakerFIFOImpl implements Matchmaker {
 
 	@Override
 	public synchronized void removeFromQueue(User user) {
-		if(this.userInQueue.getName().equals(user.getName())) {
+		if (this.userInQueue != null && this.userInQueue.getName().equals(user.getName())) {
 			this.userInQueue = null;
 		}
 	}
