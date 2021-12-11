@@ -1,5 +1,6 @@
 import React from 'react';
 import Modal from "./Modal";
+import {Button, CircularProgress, Typography} from "@mui/material";
 
 function ChessBoardModal(props) {
     if(props.isPlaying) {
@@ -9,14 +10,24 @@ function ChessBoardModal(props) {
     if(props.isInQueue) {
         return (
             <Modal>
-                <p style={{color: 'black'}}>Looking for another player...</p>
+
+                <div>
+                    <CircularProgress sx={{display: 'block', margin: '10px auto'}}/>
+                    <Typography component="p" style={{color: 'white'}}>
+                        Looking for another player...
+                    </Typography>
+                </div>
             </Modal>
         );
     } else {
+        let style = {display: 'flex', flexDirection: 'column'};
         return (
             <Modal>
-                <button onClick={() => props.onPressPlay()}>Play against a player</button>
-                <button disabled>Play against a computer</button>
+
+                <div style={style}>
+                    <Button fullwidth onClick={() => props.onPressPlay()}>Play against a player</Button>
+                    <Button fullwidth disabled>Play against a computer</Button>
+                </div>
             </Modal>
         );
     }

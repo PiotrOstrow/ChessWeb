@@ -24,7 +24,7 @@ public class JwtTokenUtil {
 
 	private static final String ROLE_KEY = "roles";
 
-	private final String jwtSecret = "secret123";
+	private static final String SECRET_KEY = "secret123"; // TODO
 
 	public String generateAccessToken(UserDetails user) {
 		String roles = "";
@@ -34,13 +34,13 @@ public class JwtTokenUtil {
 				.setIssuedAt(new Date())
 				.setExpiration(new Date(System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000))
 				.claim(ROLE_KEY, roles)
-				.signWith(SignatureAlgorithm.HS512, jwtSecret)
+				.signWith(SignatureAlgorithm.HS512, SECRET_KEY)
 				.compact();
 	}
 
 	public Optional<Authentication> getAuthentication(String token) {
 		try {
-			Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
+			Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
 
 			// TODO: implement roles
 			List<GrantedAuthority> authorities = Collections.emptyList();

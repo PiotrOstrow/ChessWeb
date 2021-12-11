@@ -1,6 +1,6 @@
 :root {
-    --color-background: #2C2C2C;
-    --color-red: #CF6679;
+    --color-background: #121212;
+    --color-red: rgb(244, 67, 54);
 
     --color-blue: #197BBD;
     --color-yellow: #FCAB10;
@@ -9,16 +9,11 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background-color: var(--color-background);
-    font: 14px "Century Gothic", Futura, sans-serif;
-    margin: 20px;
     overflow: hidden;
-    color: var(--color-white);
+    margin: 0;
 }
 
 .form-container {
@@ -28,9 +23,8 @@ body {
 
 form {
     display: inline-block;
-    margin: auto;
-    padding: 15px;
-    background-color: rgba(255, 255, 255, 0.05);
+    margin: 20px auto;
+    padding: 20px;
 }
 
 input, button{
@@ -67,10 +61,10 @@ input[type="submit"] {
 }
 
 .modal {
-    background-color: rgba(255, 255, 255, 0.25);
+    background-color: rgba(0, 0, 0, 0.75);
 
     padding: 50px;
-    display: inline-block;
+    display: block;
     border: solid 1px black;
     position: absolute;
     top: 50%;

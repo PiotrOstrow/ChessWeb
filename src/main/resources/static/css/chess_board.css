@@ -4,7 +4,7 @@
     --board-dimension: min(80vh, 80vw);
     width: var(--board-dimension);
     height: var(--board-dimension);
-    margin: 0 auto;
+    margin: 10px auto;
     border: solid 4px white;
 }
 

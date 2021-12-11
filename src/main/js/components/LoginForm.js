@@ -1,5 +1,6 @@
 import Api from "../api/Api";
 import React, {useState} from "react";
+import {Box, Button, CssBaseline, FormHelperText, Grid, Link, TextField, Typography} from "@mui/material";
 
 function LoginForm(props) {
     const [username, setUsername] = useState('');
@@ -26,16 +27,63 @@ function LoginForm(props) {
     }
 
     return (
-        <div className="form-container">
-            <form onSubmit={onSubmit}>
-                <input placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} type="text"/>
-                <input placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} type="password"/>
+        <Box sx={{
+            marginTop: 8,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+        }}>
+            <CssBaseline/>
+            <Typography component="h1" variant="h5" sx={{mt: 1}}>
+                Sign in
+            </Typography>
 
-                {errorMessage !== null && <p className="form-error-message">{errorMessage}</p>}
+            <Box component="form" onSubmit={onSubmit} sx={{mt: 1}}>
+                <TextField
+                    required
+                    fullWidth
+                    variant="outlined"
+                    label="Username"
+                    value={username}
+                    onChange={e => setUsername(e.target.value)}
+                    margin="normal"
+                    id="margin-normal" />
 
-                <input type="submit" value="Login"/>
-            </form>
-        </div>
+                <TextField
+                    required
+                    fullWidth
+                    variant="outlined"
+                    label="Password"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    margin="normal"
+                    id="margin-normal"
+                    type="password" />
+
+                <FormHelperText error={true} >{errorMessage}</FormHelperText>
+
+                <Button
+                    variant="contained"
+                    type="submit"
+                    fullWidth
+                    sx={{mt: 3, mb: 3}}
+                >
+                    Login
+                </Button>
+                <Grid container>
+                    <Grid item xs>
+                        <Link href="#" variant="body2">
+                            Forgot password?
+                        </Link>
+                    </Grid>
+                    <Grid item>
+                        <Link href="#" variant="body2">
+                            {"Don't have an account? Sign Up"}
+                        </Link>
+                    </Grid>
+                </Grid>
+            </Box>
+        </Box>
     )
 }
 

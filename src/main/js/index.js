@@ -6,6 +6,13 @@ import Board from "./components/board/Board";
 import ChessPosition from "./ChessPosition";
 import ChessBoardModal from "./components/ChessBoardModal";
 import LoginForm from "./components/LoginForm";
+import {createTheme, ThemeProvider} from "@mui/material/styles";
+
+const theme = createTheme({
+    palette: {
+        mode: 'dark',
+    },
+});
 
 function App() {
     const [loggedIn, setLoggedIn] = useState(false);
@@ -54,6 +61,8 @@ function Game() {
 }
 
 ReactDOM.render(
-    <App/>,
+    <ThemeProvider theme={theme}>
+        <App/>
+    </ThemeProvider>,
     document.getElementById('root')
 );
