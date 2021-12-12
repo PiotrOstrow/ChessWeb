@@ -19,7 +19,7 @@ import static com.github.piotrostrow.chess.domain.chess.Color.WHITE;
  */
 public class Fen {
 
-	private static final Pattern PATTERN = Pattern.compile("(?<empty>\\d?)(?<piece>[kqrnbpKQRNBP])", Pattern.MULTILINE);
+	private static final Pattern PATTERN = Pattern.compile("((?<empty>\\d)|(?<piece>[kqrnbpKQRNBP]))", Pattern.MULTILINE);
 
 	public static final Fen DEFAULT_STARTING_POSITION = new Fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 

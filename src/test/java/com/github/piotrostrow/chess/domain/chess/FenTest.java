@@ -57,4 +57,15 @@ class FenTest {
 			assertThat(actual.get(String.valueOf((char) (((byte) 'a') + i)) + '2').getColor()).isEqualTo(Color.WHITE);
 		}
 	}
+
+	@Test
+	void testRankStartingWithGap() {
+		Fen fen = new Fen("1k6/8/8/8/8/8/8/1K6 w KQkq - 0 1");
+		Map<String, Piece> actual = fen.getPieces().stream()
+				.collect(Collectors.toMap(e -> e.getPosition().getNotation(), e -> e));
+
+		assertThat(actual).hasSize(2);
+		assertThat(actual.get("b8")).isExactlyInstanceOf(King.class).extracting(Piece::getColor).isEqualTo(Color.BLACK);
+		assertThat(actual.get("b1")).isExactlyInstanceOf(King.class).extracting(Piece::getColor).isEqualTo(Color.WHITE);
+	}
 }

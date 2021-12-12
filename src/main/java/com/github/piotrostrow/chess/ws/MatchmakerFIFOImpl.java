@@ -16,13 +16,13 @@ public class MatchmakerFIFOImpl implements Matchmaker {
 
 	@Override
 	public synchronized void addToQueue(User user) {
-		if(gameManager.isPlaying(user)){
+		if (gameManager.isPlaying(user)) {
 			return;
 		}
 
-		if(this.userInQueue == null) {
+		if (this.userInQueue == null) {
 			this.userInQueue = user;
-		} else if(!this.userInQueue.getName().equals(user.getName())){
+		} else if (!this.userInQueue.getName().equals(user.getName())) {
 			gameManager.startGame(this.userInQueue, user);
 			this.userInQueue = null;
 		}

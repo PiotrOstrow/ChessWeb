@@ -31,7 +31,7 @@ public class GameManager {
 
 	public void move(Principal principal, Move move) {
 		Game game = gameByUsername.get(principal.getName());
-		if (game != null && game.moveIfValid(move)) {
+		if (game != null && game.moveIfLegal(move)) {
 			if (principal.getName().equals(game.getWhite().getName())) {
 				webSocketService.sendMove(game.getBlack().getName(), move);
 			} else {
