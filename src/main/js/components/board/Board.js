@@ -31,10 +31,11 @@ function Board(props) {
                 onMouseEnter={pos => setHighlight(pos)}
                 onMouseLeave={() => setHighlight(null)}
                 onMouseUp={() => move(position)}
+                flipped={props.flipped}
             />);
 
     return (
-        <div className="board" onContextMenu={event => event.preventDefault()}>
+        <div className={'board' + (props.flipped ? ' flipped' : '')} onContextMenu={event => event.preventDefault()}>
             <div className="square-container">
                 {squares}
             </div>

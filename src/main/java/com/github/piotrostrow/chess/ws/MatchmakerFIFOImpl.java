@@ -23,7 +23,9 @@ public class MatchmakerFIFOImpl implements Matchmaker {
 		if (this.userInQueue == null) {
 			this.userInQueue = user;
 		} else if (!this.userInQueue.getName().equals(user.getName())) {
-			gameManager.startGame(this.userInQueue, user);
+			User white = Math.random() > 0.5 ? this.userInQueue : user;
+			User black = white == this.userInQueue ? user : this.userInQueue;
+			gameManager.startGame(white, black);
 			this.userInQueue = null;
 		}
 	}

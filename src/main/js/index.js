@@ -26,6 +26,7 @@ function Game() {
     const [isPlaying, setIsPlaying] = useState(false);
     const [isInQue, setIsInQue] = useState(false);
     const [lastGameResult, setLastGameResult] = useState(null);
+    const [color, setColor] = useState('WHITE');
 
     useEffect(() => {
         const gameApi = Api.gameApi();
@@ -33,6 +34,8 @@ function Game() {
         gameApi.onRecvStart = data => {
             setIsPlaying(true);
             setIsInQue(false)
+            setColor(data.color);
+            setChessPosition(ChessPosition.default());
         };
         gameApi.onRecvGameOver = data => onGameOver(data);
         setGameApi(gameApi);
@@ -65,7 +68,8 @@ function Game() {
 
     return (
         <div className="game-container">
-            <Board chessPosition={chessPosition} onMove={(from, to) => onOwnMove(from, to)}/>
+            <Board chessPosition={chessPosition} onMove={(from, to) => onOwnMove(from, to)}
+                   flipped={color === 'BLACK'}/>
             <ChessBoardModal isPlaying={isPlaying}
                              isInQueue={isInQue}
                              lastGameResult={lastGameResult}

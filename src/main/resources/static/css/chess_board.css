@@ -51,25 +51,80 @@
 
 .white-king     { background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/KingW.png")   }
 .black-king     { background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/KingB.png")   }
-.white-queen    { background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/QueenW.png")  }
-.black-queen    { background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/QueenB.png")  }
-.white-rook     { background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/RookW.png")   }
-.black-rook     { background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/RookB.png")   }
-.white-knight   { background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/KnightW.png") }
-.black-knight   { background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/KnightB.png") }
-.white-bishop   { background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/BishopW.png") }
-.black-bishop   { background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/BishopB.png") }
-.white-pawn     { background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/PawnW.png")   }
-.black-pawn     { background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/PawnB.png")   }
+.white-queen {
+    background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/QueenW.png")
+}
 
-.piece.a8 {}
-.piece.b8 { transform: translate(100%) }
-.piece.c8 { transform: translate(200%) }
-.piece.d8 { transform: translate(300%) }
-.piece.e8 { transform: translate(400%) }
-.piece.f8 { transform: translate(500%) }
-.piece.g8 { transform: translate(600%) }
-.piece.h8 { transform: translate(700%) }
+.black-queen {
+    background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/QueenB.png")
+}
+
+.white-rook {
+    background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/RookW.png")
+}
+
+.black-rook {
+    background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/RookB.png")
+}
+
+.white-knight {
+    background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/KnightW.png")
+}
+
+.black-knight {
+    background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/KnightB.png")
+}
+
+.white-bishop {
+    background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/BishopW.png")
+}
+
+.black-bishop {
+    background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/BishopB.png")
+}
+
+.white-pawn {
+    background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/PawnW.png")
+}
+
+.black-pawn {
+    background-image: url("../resources/Chess_Artwork/Chess_Pieces/Stone/PawnB.png")
+}
+
+.flipped {
+    transform: rotate(180deg);
+}
+
+.piece.a8 {
+}
+
+.piece.b8 {
+    transform: translate(100%)
+}
+
+.piece.c8 {
+    transform: translate(200%)
+}
+
+.piece.d8 {
+    transform: translate(300%)
+}
+
+.piece.e8 {
+    transform: translate(400%)
+}
+
+.piece.f8 {
+    transform: translate(500%)
+}
+
+.piece.g8 {
+    transform: translate(600%)
+}
+
+.piece.h8 {
+    transform: translate(700%)
+}
 
 .piece.a7 { transform: translate(0   , 100%) }
 .piece.b7 { transform: translate(100%, 100%) }
@@ -123,25 +178,331 @@
 .piece.e2 { transform: translate(400%, 600%) }
 .piece.f2 { transform: translate(500%, 600%) }
 .piece.g2 { transform: translate(600%, 600%) }
-.piece.h2 { transform: translate(700%, 600%) }
 
-.piece.a1 { transform: translate(0   , 700%) }
-.piece.b1 { transform: translate(100%, 700%) }
-.piece.c1 { transform: translate(200%, 700%) }
-.piece.d1 { transform: translate(300%, 700%) }
-.piece.e1 { transform: translate(400%, 700%) }
-.piece.f1 { transform: translate(500%, 700%) }
-.piece.g1 { transform: translate(600%, 700%) }
-.piece.h1 { transform: translate(700%, 700%) }
+.piece.h2 {
+    transform: translate(700%, 600%)
+}
 
-.square.a8 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/a8.png") }
-.square.b8 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/b8.png") }
-.square.c8 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/c8.png") }
-.square.d8 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/d8.png") }
-.square.e8 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/e8.png") }
-.square.f8 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/f8.png") }
-.square.g8 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/g8.png") }
-.square.h8 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/h8.png") }
+.piece.a1 {
+    transform: translate(0, 700%)
+}
+
+.piece.b1 {
+    transform: translate(100%, 700%)
+}
+
+.piece.c1 {
+    transform: translate(200%, 700%)
+}
+
+.piece.d1 {
+    transform: translate(300%, 700%)
+}
+
+.piece.e1 {
+    transform: translate(400%, 700%)
+}
+
+.piece.f1 {
+    transform: translate(500%, 700%)
+}
+
+.piece.g1 {
+    transform: translate(600%, 700%)
+}
+
+.piece.h1 {
+    transform: translate(700%, 700%)
+}
+
+
+.flipped .piece.a8 {
+    transform: rotate(180deg)
+}
+
+.flipped .piece.b8 {
+    transform: translate(100%) rotate(180deg)
+}
+
+.flipped .piece.c8 {
+    transform: translate(200%) rotate(180deg)
+}
+
+.flipped .piece.d8 {
+    transform: translate(300%) rotate(180deg)
+}
+
+.flipped .piece.e8 {
+    transform: translate(400%) rotate(180deg)
+}
+
+.flipped .piece.f8 {
+    transform: translate(500%) rotate(180deg)
+}
+
+.flipped .piece.g8 {
+    transform: translate(600%) rotate(180deg)
+}
+
+.flipped .piece.h8 {
+    transform: translate(700%) rotate(180deg)
+}
+
+.flipped .piece.a7 {
+    transform: translate(0, 100%) rotate(180deg)
+}
+
+.flipped .piece.b7 {
+    transform: translate(100%, 100%) rotate(180deg)
+}
+
+.flipped .piece.c7 {
+    transform: translate(200%, 100%) rotate(180deg)
+}
+
+.flipped .piece.d7 {
+    transform: translate(300%, 100%) rotate(180deg)
+}
+
+.flipped .piece.e7 {
+    transform: translate(400%, 100%) rotate(180deg)
+}
+
+.flipped .piece.f7 {
+    transform: translate(500%, 100%) rotate(180deg)
+}
+
+.flipped .piece.g7 {
+    transform: translate(600%, 100%) rotate(180deg)
+}
+
+.flipped .piece.h7 {
+    transform: translate(700%, 100%) rotate(180deg)
+}
+
+.flipped .piece.a6 {
+    transform: translate(0, 200%) rotate(180deg)
+}
+
+.flipped .piece.b6 {
+    transform: translate(100%, 200%) rotate(180deg)
+}
+
+.flipped .piece.c6 {
+    transform: translate(200%, 200%) rotate(180deg)
+}
+
+.flipped .piece.d6 {
+    transform: translate(300%, 200%) rotate(180deg)
+}
+
+.flipped .piece.e6 {
+    transform: translate(400%, 200%) rotate(180deg)
+}
+
+.flipped .piece.f6 {
+    transform: translate(500%, 200%) rotate(180deg)
+}
+
+.flipped .piece.g6 {
+    transform: translate(600%, 200%) rotate(180deg)
+}
+
+.flipped .piece.h6 {
+    transform: translate(700%, 200%) rotate(180deg)
+}
+
+.flipped .piece.a5 {
+    transform: translate(0, 300%) rotate(180deg)
+}
+
+.flipped .piece.b5 {
+    transform: translate(100%, 300%) rotate(180deg)
+}
+
+.flipped .piece.c5 {
+    transform: translate(200%, 300%) rotate(180deg)
+}
+
+.flipped .piece.d5 {
+    transform: translate(300%, 300%) rotate(180deg)
+}
+
+.flipped .piece.e5 {
+    transform: translate(400%, 300%) rotate(180deg)
+}
+
+.flipped .piece.f5 {
+    transform: translate(500%, 300%) rotate(180deg)
+}
+
+.flipped .piece.g5 {
+    transform: translate(600%, 300%) rotate(180deg)
+}
+
+.flipped .piece.h5 {
+    transform: translate(700%, 300%) rotate(180deg)
+}
+
+.flipped .piece.a4 {
+    transform: translate(0, 400%) rotate(180deg)
+}
+
+.flipped .piece.b4 {
+    transform: translate(100%, 400%) rotate(180deg)
+}
+
+.flipped .piece.c4 {
+    transform: translate(200%, 400%) rotate(180deg)
+}
+
+.flipped .piece.d4 {
+    transform: translate(300%, 400%) rotate(180deg)
+}
+
+.flipped .piece.e4 {
+    transform: translate(400%, 400%) rotate(180deg)
+}
+
+.flipped .piece.f4 {
+    transform: translate(500%, 400%) rotate(180deg)
+}
+
+.flipped .piece.g4 {
+    transform: translate(600%, 400%) rotate(180deg)
+}
+
+.flipped .piece.h4 {
+    transform: translate(700%, 400%) rotate(180deg)
+}
+
+.flipped .piece.a3 {
+    transform: translate(0, 500%) rotate(180deg)
+}
+
+.flipped .piece.b3 {
+    transform: translate(100%, 500%) rotate(180deg)
+}
+
+.flipped .piece.c3 {
+    transform: translate(200%, 500%) rotate(180deg)
+}
+
+.flipped .piece.d3 {
+    transform: translate(300%, 500%) rotate(180deg)
+}
+
+.flipped .piece.e3 {
+    transform: translate(400%, 500%) rotate(180deg)
+}
+
+.flipped .piece.f3 {
+    transform: translate(500%, 500%) rotate(180deg)
+}
+
+.flipped .piece.g3 {
+    transform: translate(600%, 500%) rotate(180deg)
+}
+
+.flipped .piece.h3 {
+    transform: translate(700%, 500%) rotate(180deg)
+}
+
+.flipped .piece.a2 {
+    transform: translate(0, 600%) rotate(180deg)
+}
+
+.flipped .piece.b2 {
+    transform: translate(100%, 600%) rotate(180deg)
+}
+
+.flipped .piece.c2 {
+    transform: translate(200%, 600%) rotate(180deg)
+}
+
+.flipped .piece.d2 {
+    transform: translate(300%, 600%) rotate(180deg)
+}
+
+.flipped .piece.e2 {
+    transform: translate(400%, 600%) rotate(180deg)
+}
+
+.flipped .piece.f2 {
+    transform: translate(500%, 600%) rotate(180deg)
+}
+
+.flipped .piece.g2 {
+    transform: translate(600%, 600%) rotate(180deg)
+}
+
+.flipped .piece.h2 {
+    transform: translate(700%, 600%) rotate(180deg)
+}
+
+.flipped .piece.a1 {
+    transform: translate(0, 700%) rotate(180deg)
+}
+
+.flipped .piece.b1 {
+    transform: translate(100%, 700%) rotate(180deg)
+}
+
+.flipped .piece.c1 {
+    transform: translate(200%, 700%) rotate(180deg)
+}
+
+.flipped .piece.d1 {
+    transform: translate(300%, 700%) rotate(180deg)
+}
+
+.flipped .piece.e1 {
+    transform: translate(400%, 700%) rotate(180deg)
+}
+
+.flipped .piece.f1 {
+    transform: translate(500%, 700%) rotate(180deg)
+}
+
+.flipped .piece.g1 {
+    transform: translate(600%, 700%) rotate(180deg)
+}
+
+.flipped .piece.h1 {
+    transform: translate(700%, 700%) rotate(180deg)
+}
+
+.square.a8 {
+    background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/a8.png")
+}
+
+.square.b8 {
+    background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/b8.png")
+}
+
+.square.c8 {
+    background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/c8.png")
+}
+
+.square.d8 {
+    background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/d8.png")
+}
+
+.square.e8 {
+    background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/e8.png")
+}
+
+.square.f8 {
+    background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/f8.png")
+}
+
+.square.g8 {
+    background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/g8.png")
+}
+
+.square.h8 {
+    background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/h8.png")
+}
 
 .square.a7 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/a7.png") }
 .square.b7 { background-image: url("../resources/Chess_Artwork/Chess_Board/Stone_Grey/b7.png") }

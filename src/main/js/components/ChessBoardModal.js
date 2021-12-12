@@ -16,7 +16,7 @@ function ChessBoardModal(props) {
                     <Typography style={{color: 'white'}} fullwidth align="center">
                         {message}
                     </Typography>
-                    <Button fullWidth onClick={() => props.onPressReplay()}>Play again</Button>
+                    <Button fullWidth="true" onClick={() => props.onPressReplay()}>Play again</Button>
                 </div>
             </Modal>
         );
@@ -38,8 +38,8 @@ function ChessBoardModal(props) {
         return (
             <Modal>
                 <div style={style}>
-                    <Button fullwidth onClick={() => props.onPressPlay()}>Play against a player</Button>
-                    <Button fullwidth disabled>Play against a computer</Button>
+                    <Button fullwidth="true" onClick={() => props.onPressPlay()}>Play against a player</Button>
+                    <Button fullwidth="true" disabled>Play against a computer</Button>
                 </div>
             </Modal>
         );

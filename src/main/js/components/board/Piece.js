@@ -33,6 +33,7 @@ class Piece extends React.Component {
 
     calculatePosition(event) {
         let factor = 100 / this.divElement.clientWidth;
+        factor *= this.props.flipped ? -1 : 1;
         return {
             x: (event.pageX - this.startingX) * factor + this.offsetX,
             y: (event.pageY - this.startingY) * factor + this.offsetY,
@@ -61,7 +62,7 @@ class Piece extends React.Component {
         const style = !this.state.dragging ? {} : {
             zIndex: 1000,
             pointerEvents: 'none',
-            transform: 'translate(' + this.state.x + '%, ' + this.state.y + '%)'
+            transform: 'translate(' + this.state.x + '%, ' + this.state.y + '%) ' + (this.props.flipped ? 'rotate(180deg)' : '')
         }
 
         return (
