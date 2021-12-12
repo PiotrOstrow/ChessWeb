@@ -6,12 +6,16 @@ class GameApi {
         this.stompClient = Stomp.over(new SockJS('/websocket'));
 
         this.onRecvStart = () => {};
-        this.onRecvMove = () => {};
+        this.onRecvMove = () => {
+        };
+        this.onRecvGameOver = () => {
+        };
 
         this.stompClient.connect({auth: jwtToken}, frame => {
             onConnect();
             this.stompClient.subscribe('/user/topic/game-start', message => this.onRecvStart(JSON.parse(message.body)));
             this.stompClient.subscribe('/user/topic/game-move', message => this.onRecvMove(JSON.parse(message.body)));
+            this.stompClient.subscribe('/user/topic/game-over', message => this.onRecvGameOver(JSON.parse(message.body)))
         });
     }
 

@@ -2,6 +2,7 @@ package com.github.piotrostrow.chess.ws;
 
 import com.github.piotrostrow.chess.domain.User;
 import com.github.piotrostrow.chess.domain.chess.Game;
+import com.github.piotrostrow.chess.domain.chess.GameResult;
 import com.github.piotrostrow.chess.ws.dto.Move;
 import org.springframework.stereotype.Component;
 
@@ -37,7 +38,20 @@ public class GameManager {
 			} else {
 				webSocketService.sendMove(game.getWhite().getName(), move);
 			}
+
+			GameResult gameResult = game.getGameResult();
+			if (gameResult != GameResult.NONE) {
+				endGame(game, gameResult);
+			}
 		}
+	}
+
+	private void endGame(Game game, GameResult gameResult) {
+		webSocketService.sendGameOver(game.getWhite().getName(), gameResult);
+		webSocketService.sendGameOver(game.getBlack().getName(), gameResult);
+
+		gameByUsername.remove(game.getWhite().getName());
+		gameByUsername.remove(game.getBlack().getName());
 	}
 
 	public boolean isPlaying(User user) {
@@ -49,6 +63,12 @@ public class GameManager {
 		if (game != null) {
 			gameByUsername.remove(game.getWhite().getName());
 			gameByUsername.remove(game.getBlack().getName());
+
+			if (user.getName().equals(game.getWhite().getName())) {
+				webSocketService.sendGameOver(game.getBlack().getName(), GameResult.DISCONNECTED);
+			} else {
+				webSocketService.sendGameOver(game.getWhite().getName(), GameResult.DISCONNECTED);
+			}
 		}
 	}
 }

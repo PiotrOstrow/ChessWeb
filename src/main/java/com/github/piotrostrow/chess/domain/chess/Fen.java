@@ -23,15 +23,18 @@ public class Fen {
 
 	public static final Fen DEFAULT_STARTING_POSITION = new Fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 
-	private final List<Piece> pieces;
+	private List<Piece> pieces;
+	private Color activeColor;
 
 	public Fen(String fenString) {
-		pieces = Collections.unmodifiableList(parseFen(fenString));
+		parseFen(fenString);
 	}
 
-	private List<Piece> parseFen(String fenString) {
-		String ranks = fenString.split(" ")[0];
-		return parseRanks(ranks);
+	private void parseFen(String fenString) {
+		String[] sections = fenString.split(" ");
+
+		pieces = Collections.unmodifiableList(parseRanks(sections[0]));
+		activeColor = parseActiveColor(sections[1]);
 	}
 
 	private List<Piece> parseRanks(String ranks) {
@@ -94,11 +97,15 @@ public class Fen {
 		}
 	}
 
+	private Color parseActiveColor(String section) {
+		return section.equalsIgnoreCase("w") ? WHITE : BLACK;
+	}
+
 	public List<Piece> getPieces() {
 		return pieces;
 	}
 
 	public Color getActiveColor() {
-		return WHITE;
+		return activeColor;
 	}
 }

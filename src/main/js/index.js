@@ -25,13 +25,24 @@ function Game() {
     const [chessPosition, setChessPosition] = useState(ChessPosition.default());
     const [isPlaying, setIsPlaying] = useState(false);
     const [isInQue, setIsInQue] = useState(false);
+    const [lastGameResult, setLastGameResult] = useState(null);
 
     useEffect(() => {
         const gameApi = Api.gameApi();
-        gameApi.onRecvMove = (data) => onMove(data.from, data.to);
-        gameApi.onRecvStart = (data) => setIsPlaying(true);
+        gameApi.onRecvMove = data => onMove(data.from, data.to);
+        gameApi.onRecvStart = data => {
+            setIsPlaying(true);
+            setIsInQue(false)
+        };
+        gameApi.onRecvGameOver = data => onGameOver(data);
         setGameApi(gameApi);
     }, []);
+
+    const onGameOver = data => {
+        setLastGameResult(data.gameResult);
+        setIsPlaying(false);
+        setIsInQue(false);
+    }
 
     const onMove = (from, to) => {
         setChessPosition(prevPosition => {
@@ -55,7 +66,12 @@ function Game() {
     return (
         <div className="game-container">
             <Board chessPosition={chessPosition} onMove={(from, to) => onOwnMove(from, to)}/>
-            <ChessBoardModal isPlaying={isPlaying} isInQueue={isInQue} onPressPlay={onPressPlay}/>
+            <ChessBoardModal isPlaying={isPlaying}
+                             isInQueue={isInQue}
+                             lastGameResult={lastGameResult}
+                             onPressPlay={onPressPlay}
+                             onPressReplay={() => setLastGameResult(null)}
+            />
         </div>
     );
 }

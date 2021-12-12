@@ -68,4 +68,16 @@ class FenTest {
 		assertThat(actual.get("b8")).isExactlyInstanceOf(King.class).extracting(Piece::getColor).isEqualTo(Color.BLACK);
 		assertThat(actual.get("b1")).isExactlyInstanceOf(King.class).extracting(Piece::getColor).isEqualTo(Color.WHITE);
 	}
+
+	@Test
+	void testGetActiveColorWhite() {
+		Fen fen = new Fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+		assertThat(fen.getActiveColor()).isEqualTo(Color.WHITE);
+	}
+
+	@Test
+	void testGetActiveColorBlack() {
+		Fen fen = new Fen("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1");
+		assertThat(fen.getActiveColor()).isEqualTo(Color.BLACK);
+	}
 }

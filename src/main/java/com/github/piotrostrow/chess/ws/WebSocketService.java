@@ -1,5 +1,7 @@
 package com.github.piotrostrow.chess.ws;
 
+import com.github.piotrostrow.chess.domain.chess.GameResult;
+import com.github.piotrostrow.chess.ws.dto.GameOver;
 import com.github.piotrostrow.chess.ws.dto.Message;
 import com.github.piotrostrow.chess.ws.dto.Move;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -21,5 +23,9 @@ public class WebSocketService {
 
 	public void sendMove(String username, Move move) {
 		simpMessagingTemplate.convertAndSendToUser(username, "/topic/game-move", move);
+	}
+
+	public void sendGameOver(String username, GameResult gameResult) {
+		simpMessagingTemplate.convertAndSendToUser(username, "/topic/game-over", new GameOver(gameResult));
 	}
 }

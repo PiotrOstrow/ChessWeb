@@ -13,6 +13,8 @@ public class MoveGenerator {
 	private MoveGenerator() {
 	}
 
+	// TODO: only generate moves for active player
+	// TODO: castling, en passant
 	public static Map<Position, Set<Position>> generateLegalMoves(Map<Position, Piece> pieces) {
 		return pieces.values().stream()
 				.collect(Collectors.toMap(
