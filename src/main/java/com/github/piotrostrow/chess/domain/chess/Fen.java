@@ -3,19 +3,16 @@ package com.github.piotrostrow.chess.domain.chess;
 import com.github.piotrostrow.chess.domain.chess.pieces.*;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.github.piotrostrow.chess.domain.chess.Color.BLACK;
 import static com.github.piotrostrow.chess.domain.chess.Color.WHITE;
 
 /**
  * https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation
- * Just position for now
- * TODO more unit tests, only covers default starting position
  */
 public class Fen {
 
@@ -25,6 +22,7 @@ public class Fen {
 
 	private List<Piece> pieces;
 	private Color activeColor;
+	private Set<CastlingMove> castlingAvailability;
 
 	public Fen(String fenString) {
 		parseFen(fenString);
@@ -35,6 +33,7 @@ public class Fen {
 
 		pieces = Collections.unmodifiableList(parseRanks(sections[0]));
 		activeColor = parseActiveColor(sections[1]);
+		castlingAvailability = Collections.unmodifiableSet(parseCastlingAvailability(sections[2]));
 	}
 
 	private List<Piece> parseRanks(String ranks) {
@@ -101,11 +100,21 @@ public class Fen {
 		return section.equalsIgnoreCase("w") ? WHITE : BLACK;
 	}
 
+	private Set<CastlingMove> parseCastlingAvailability(String section) {
+		return Arrays.stream(CastlingMove.values())
+				.filter(e -> section.contains(String.valueOf(e.value())))
+				.collect(Collectors.toSet());
+	}
+
 	public List<Piece> getPieces() {
 		return pieces;
 	}
 
 	public Color getActiveColor() {
 		return activeColor;
+	}
+
+	public Set<CastlingMove> getCastlingAvailability() {
+		return castlingAvailability;
 	}
 }

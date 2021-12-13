@@ -6,8 +6,20 @@ import java.util.Objects;
 
 public class Position {
 
+	public static final Position WHITE_KING = new Position("e1");
+	public static final Position BLACK_KING = new Position("e8");
+	public static final Position WHITE_ROOK_KING_SIDE = new Position("h1");
+	public static final Position BLACK_ROOK_KING_SIDE = new Position("h8");
+	public static final Position WHITE_ROOK_QUEEN_SIDE = new Position("a1");
+	public static final Position BLACK_ROOK_QUEEN_SIDE = new Position("a8");
+
 	private final int x;
 	private final int y;
+
+	public Position(String notation) {
+		this.x = (byte) notation.charAt(0) - (byte) 'a';
+		this.y = Integer.parseInt(notation.substring(1)) - 1;
+	}
 
 	public Position(int x, int y) {
 		this.x = x;
@@ -16,6 +28,10 @@ public class Position {
 
 	public Position plus(int x, int y) {
 		return new Position(this.x + x, this.y + y);
+	}
+
+	public Position plusX(int x) {
+		return new Position(this.x + x, this.y);
 	}
 
 	public Position plusY(int y) {

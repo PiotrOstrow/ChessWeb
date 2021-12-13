@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 
 import Api from "./api/Api";
 import Board from "./components/board/Board";
-import ChessPosition from "./ChessPosition";
+import ChessPosition from "./chess/ChessPosition";
 import ChessBoardModal from "./components/ChessBoardModal";
 import LoginForm from "./components/LoginForm";
 import {createTheme, ThemeProvider} from "@mui/material/styles";

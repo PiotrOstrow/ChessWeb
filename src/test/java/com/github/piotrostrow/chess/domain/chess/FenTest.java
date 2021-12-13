@@ -80,4 +80,11 @@ class FenTest {
 		Fen fen = new Fen("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1");
 		assertThat(fen.getActiveColor()).isEqualTo(Color.BLACK);
 	}
+
+	@Test
+	void testCastlingAvailabilityAllAvailable() {
+		Fen fen = new Fen("r1bqkb1r/pppp1ppp/2n1pn2/8/2B5/4PN2/PPPP1PPP/RNBQK2R w KQkq - 0 1");
+
+		assertThat(fen.getCastlingAvailability()).hasSize(CastlingMove.values().length);
+	}
 }

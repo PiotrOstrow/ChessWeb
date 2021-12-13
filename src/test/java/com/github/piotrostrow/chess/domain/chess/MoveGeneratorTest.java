@@ -1,5 +1,6 @@
 package com.github.piotrostrow.chess.domain.chess;
 
+import com.github.piotrostrow.chess.domain.User;
 import com.github.piotrostrow.chess.domain.chess.pieces.Piece;
 import com.github.piotrostrow.chess.domain.chess.pieces.Rook;
 import com.github.piotrostrow.chess.ws.dto.Move;
@@ -9,7 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static com.github.piotrostrow.chess.domain.chess.CastlingMove.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class MoveGeneratorTest {
@@ -94,9 +97,7 @@ class MoveGeneratorTest {
 				.flatMap(e -> legalMoves.get(e.getPosition()).stream().map(to -> new Move(e.getPosition(), to)))
 				.collect(Collectors.toList());
 
-		assertThat(whitesLegalMoves)
-				.hasSize(1)
-				.contains(new Move("h8", "b2"));
+		assertThat(whitesLegalMoves).hasSize(1).contains(new Move("h8", "b2"));
 	}
 
 	@Test
@@ -104,9 +105,7 @@ class MoveGeneratorTest {
 		Fen fen = new Fen("1k6/8/8/8/3q4/4Q3/5n2/3K4 w - - 0 1");
 		Map<Position, Set<Position>> legalMoves = getLegalMoves(fen);
 
-		Piece whiteQueen = fen.getPieces().stream().filter(e -> e.getPosition().equals(new Position(4, 2))).findFirst().orElseThrow();
-
-		assertThat(legalMoves.get(whiteQueen.getPosition())).isEmpty();
+		assertThat(legalMoves.get(new Position(4, 2))).isEmpty();
 	}
 
 	@Test
@@ -122,12 +121,176 @@ class MoveGeneratorTest {
 		assertThat(whitesLegalMoves).isEmpty();
 	}
 
+	@Test
+	void testPawnDoesNotControlSquareAhead() {
+		Fen fen = new Fen("r1b1kb1r/p1pp1ppp/1pn2n2/8/2q5/4Pp2/PPPP3P/1R2K2R w Kkq - 0 1");
+		Map<Position, Set<Position>> legalMoves = getLegalMoves(fen);
+
+		assertThat(legalMoves.get(new Position(4, 0))).contains(new Position(5, 1));
+	}
+
+	@Test
+	void testWhiteCanCastleKingSide() {
+		Fen fen = new Fen("r1bqkb1r/pppp1ppp/2n1pn2/8/2B5/4PN2/PPPP1PPP/RNBQK2R w KQkq - 0 1");
+		Map<Position, Set<Position>> legalMoves = getLegalMoves(fen);
+
+		assertThat(legalMoves.get(new Position(4, 0))).contains(new Position(6, 0));
+		assertCastling(WHITE_KING_SIDE, true, fen);
+	}
+
+	@Test
+	void testWhiteCantCastleKingSideNotAvailable() {
+		Fen fen = new Fen("r1bqkb1r/pppp1ppp/2n1pn2/8/2B5/4PN2/PPPP1PPP/RNBQK2R w Qkq - 0 1");
+		Map<Position, Set<Position>> legalMoves = getLegalMoves(fen);
+
+		assertThat(legalMoves.get(new Position(4, 0))).isNotEmpty().doesNotContain(new Position(6, 0));
+
+		assertCastling(WHITE_KING_SIDE, false, fen);
+	}
+
+	@Test
+	void testWhiteCanCastleQueenSide() {
+		Fen fen = new Fen("r1bqkb1r/p1pp1ppp/1pn1pn2/8/2B5/4PN2/PPPP1PPP/R3K1R1 w Qkq - 0 1");
+		assertCastling(WHITE_QUEEN_SIDE, true, fen);
+	}
+
+	@Test
+	void testWhiteCantCastleQueenSideNotAvailable() {
+		Fen fen = new Fen("r1bqkb1r/p1pp1ppp/1pn1pn2/8/2B5/4PN2/PPPP1PPP/R3K1R1 w kq - 0 1");
+		assertCastling(WHITE_QUEEN_SIDE, false, fen);
+	}
+
+
+	@Test
+	void testBlackCanCastleKingSide() {
+		Fen fen = new Fen("r1bqk2r/p1pp1ppp/1pnbpn2/8/2B5/4PN2/PPPP1PPP/RNBQK1R1 b Qkq - 0 1");
+		assertCastling(BLACK_KING_SIDE, true, fen);
+	}
+
+	@Test
+	void testBlackCantCastleKingSideNotAvailable() {
+		Fen fen = new Fen("r1bqk2r/p1pp1ppp/1pnbpn2/8/2B5/4PN2/PPPP1PPP/RNBQK1R1 b Qq - 0 1");
+		assertCastling(BLACK_KING_SIDE, false, fen);
+	}
+
+	@Test
+	void testBlackCanCastleQueenSide() {
+		Fen fen = new Fen("r3k2r/p1pp1ppp/1pnbpn2/8/2B5/4PN2/PPPP1PPP/RNBQK1R1 b Qkq - 0 1");
+		assertCastling(BLACK_QUEEN_SIDE, true, fen);
+	}
+
+	@Test
+	void testBlackCantCastleQueenSideNotAvailable() {
+		Fen fen = new Fen("r3k2r/p1pp1ppp/1pnbpn2/8/2B5/4PN2/PPPP1PPP/RNBQK1R1 b Qk - 0 1");
+		assertCastling(BLACK_QUEEN_SIDE, false, fen);
+	}
+
+	@Test
+	void testWhiteCantCastleKingSideCastlingAvailableButBlockedByOwnPiece() {
+		Fen fen = new Fen("r1bqkb1r/p1pp1ppp/1pn1pn2/8/2B5/4P3/PPPP1PPP/1R2K1NR w Kkq - 0 1");
+		Fen fen2 = new Fen("r1bqkb1r/p1pp1ppp/1pn1pn2/8/2B5/4P3/PPPP1PPP/1R2KN1R w Kkq - 0 1");
+
+		assertCastling(WHITE_KING_SIDE, false, fen);
+		assertCastling(WHITE_KING_SIDE, false, fen2);
+	}
+
+	@Test
+	void testWhiteCantCastleQueenSideCastlingAvailableButBlockedByOwnPiece() {
+		Stream.of(
+				new Fen("r1bqkb1r/p1pp1ppp/1pn1pn2/8/2B5/4P3/PPPP1PPP/RQ2K1NR w KQkq - 0 1"),
+				new Fen("r1bqkb1r/p1pp1ppp/1pn1pn2/8/2B5/4P3/PPPP1PPP/R1Q1K1NR w KQkq - 0 1"),
+				new Fen("r1bqkb1r/p1pp1ppp/1pn1pn2/8/2B5/4P3/PPPP1PPP/R2QK1NR w KQkq - 0 1")
+		).forEach(fen -> assertCastling(WHITE_QUEEN_SIDE, false, fen));
+	}
+
+	@Test
+	void testWhiteCantCastleKingSideCastlingAvailableButSquaresInCheck() {
+		Fen fen = new Fen("r1b1kb1r/p1pp1ppp/1pn1pn2/8/2q5/4P3/PPPP3P/1R2K2R w Kkq - 0 1");
+		Fen fen2 = new Fen("r1b1kb1r/p1pp1ppp/1pn1pn2/8/6q1/4P3/PPPP3P/1R2K2R w Kkq - 0 1");
+
+		assertCastling(WHITE_KING_SIDE, false, fen);
+		assertCastling(WHITE_KING_SIDE, false, fen2);
+	}
+
+	@Test
+	void testWhiteCantCastleQueenSideCastlingAvailableButSquaresInCheck() {
+		Fen canCastle = new Fen("r1b1kb1r/pqpp1ppp/p1n1pn2/8/2B5/4P3/P4PPP/R3K1NR w KQkq - 0 1");
+		Fen cantCastle = new Fen("r1b1kb1r/p1pp2pp/p1n1pn2/2q5/8/4P3/P4PPP/R3K1NR w KQkq - 0 1");
+		Fen cantCastle2 = new Fen("r1b1kb1r/p1pp2pp/p1n1pn2/3q4/8/4P3/P4PPP/R3K1NR w KQkq - 0 1");
+
+		assertCastling(WHITE_QUEEN_SIDE, true, canCastle);
+		assertCastling(WHITE_QUEEN_SIDE, false, cantCastle);
+		assertCastling(WHITE_QUEEN_SIDE, false, cantCastle2);
+	}
+
+	@Test
+	void testWhiteCantCastleCastlingAvailableButKingInCheck() {
+		Fen fen = new Fen("r1b1kb1r/p1pp1ppp/1pn2n2/8/7q/4Pp2/PPPP3P/R3K2R w KQkq - 0 1");
+		assertCastling(WHITE_KING_SIDE, false, fen);
+		assertCastling(WHITE_QUEEN_SIDE, false, fen);
+
+	}
+
+	@Test
+	void testBlackCantCastleKingSideCastlingAvailableButBlockedByOwnPiece() {
+		Fen fen = new Fen("r1bqkb1r/p1pp1ppp/1pn1pn2/8/2B5/4P3/PPPP1PPP/1R2K1NR b Kkq - 0 1");
+		Fen fen2 = new Fen("r1bqk1nr/p1pp1ppp/1pn1p3/8/2B5/4P3/PPPP1PPP/1R2K1NR b Kkq - 0 1");
+
+		assertCastling(BLACK_KING_SIDE, false, fen);
+		assertCastling(BLACK_KING_SIDE, false, fen2);
+	}
+
+	@Test
+	void testBlackCantCastleQueenSideCastlingAvailableButBlockedByOwnPiece() {
+		Stream.of(
+				new Fen("r2qk1nr/p1pp1ppp/1pn1p3/2b5/2B5/4P3/PPPP1PPP/1R2K1NR b Kkq - 0 1"),
+				new Fen("r1q1k1nr/p1pp1ppp/1pn1p3/2b5/2B5/4P3/PPPP1PPP/1R2K1NR b Kkq - 0 1"),
+				new Fen("rq2k1nr/p1pp1ppp/1pn1p3/2b5/2B5/4P3/PPPP1PPP/1R2K1NR b Kkq - 0 1")
+		).forEach(fen -> assertCastling(BLACK_QUEEN_SIDE, false, fen));
+	}
+
+	@Test
+	void testBlackCantCastleKingSideCastlingAvailableButSquaresInCheck() {
+		Fen fen = new Fen("r1b1k2r/p1pp3p/1pn1p3/3n4/2q5/4P3/PPPP3P/1R2KR2 b kq - 0 1");
+		Fen fen2 = new Fen("r1b1k2r/p1pp3p/1pn1p3/3n4/2q5/4P3/PPPP3P/1R2K1R1 b kq - 0 1");
+
+		assertCastling(BLACK_KING_SIDE, false, fen);
+		assertCastling(BLACK_KING_SIDE, false, fen2);
+	}
+
+	@Test
+	void testBlackCantCastleQueenSideCastlingAvailableButSquaresInCheck() {
+		Fen canCastle = new Fen("r3k2r/p2p3p/4p3/1Q1n4/8/4P3/P2P3P/4K1R1 b kq - 0 1");
+		Fen cantCastle = new Fen("r3k2r/p2p3p/4p3/Q2n4/8/4P3/P2P3P/4K1R1 b kq - 0 1");
+		Fen cantCastle2 = new Fen("r3k2r/p2p3p/4p3/2Qn4/8/4P3/P2P3P/4K1R1 b kq - 0 1");
+
+		assertCastling(BLACK_QUEEN_SIDE, true, canCastle);
+		assertCastling(BLACK_QUEEN_SIDE, false, cantCastle);
+		assertCastling(BLACK_QUEEN_SIDE, false, cantCastle2);
+	}
+
+	@Test
+	void testBlackCantCastleCastlingAvailableButKingInCheck() {
+		Fen fen = new Fen("r3k2r/p6p/4p3/1Q1n4/8/4P3/P2P3P/4K1R1 b kq - 0 1");
+		assertCastling(BLACK_KING_SIDE, false, fen);
+		assertCastling(BLACK_QUEEN_SIDE, false, fen);
+	}
+
 	private Map<Position, Set<Position>> getLegalMoves(Fen fen) {
-		Map<Position, Piece> pieces = fen.getPieces().stream().collect(Collectors.toMap(Piece::getPosition, e -> e));
-		return MoveGenerator.generateLegalMoves(pieces);
+		Game game = new Game(new User("white"), new User("black"), fen);
+		return MoveGenerator.generateLegalMoves(game);
 	}
 
 	private boolean isMoveLegal(Move move, Map<Position, Set<Position>> legalMoves) {
 		return legalMoves.get(move.getFrom()).contains(move.getTo());
+	}
+
+	private void assertCastling(CastlingMove castlingMove, boolean expected, Fen fen) {
+		Map<Position, Set<Position>> legalMoves = getLegalMoves(fen);
+
+		Position to = castlingMove.getKingTargetPosition();
+		Position kingPosition = castlingMove.getKingPosition();
+
+		assertThat(legalMoves.get(kingPosition).contains(to)).isEqualTo(expected);
 	}
 }
