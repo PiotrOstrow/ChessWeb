@@ -7,6 +7,7 @@ import ChessPosition from "./chess/ChessPosition";
 import ChessBoardModal from "./components/ChessBoardModal";
 import LoginForm from "./components/LoginForm";
 import {createTheme, ThemeProvider} from "@mui/material/styles";
+import Game from "./chess/Game";
 
 const theme = createTheme({
     palette: {
@@ -17,11 +18,13 @@ const theme = createTheme({
 function App() {
     const [loggedIn, setLoggedIn] = useState(false);
 
-    return loggedIn ? <Game/> : <LoginForm onLoggedIn={() => setLoggedIn(true)}/>;
+    return loggedIn ? <GameComponent/> : <LoginForm onLoggedIn={() => setLoggedIn(true)}/>;
 }
 
-function Game() {
+
+function GameComponent() {
     const [gameApi, setGameApi] = useState(null);
+    const [game, setGame] = useState(new Game());
     const [chessPosition, setChessPosition] = useState(ChessPosition.default());
     const [isPlaying, setIsPlaying] = useState(false);
     const [isInQue, setIsInQue] = useState(false);
@@ -36,6 +39,7 @@ function Game() {
             setIsInQue(false)
             setColor(data.color);
             setChessPosition(ChessPosition.default());
+            game.reset();
         };
         gameApi.onRecvGameOver = data => onGameOver(data);
         setGameApi(gameApi);
@@ -48,12 +52,8 @@ function Game() {
     }
 
     const onMove = (from, to) => {
-        setChessPosition(prevPosition => {
-            const newPosition = prevPosition.copy();
-            newPosition.pieces.set(to, newPosition.getPiece(from));
-            newPosition.pieces.set(from, null);
-            setChessPosition(newPosition);
-        });
+        game.move(from, to);
+        setChessPosition(game.getChessPosition());
     }
 
     const onOwnMove = (from, to) => {
