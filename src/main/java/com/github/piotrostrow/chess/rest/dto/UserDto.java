@@ -1,4 +1,4 @@
-package com.github.piotrostrow.chess.dto;
+package com.github.piotrostrow.chess.rest.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

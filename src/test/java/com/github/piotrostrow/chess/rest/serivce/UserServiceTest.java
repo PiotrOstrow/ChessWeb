@@ -1,11 +1,11 @@
-package com.github.piotrostrow.chess.serivce;
+package com.github.piotrostrow.chess.rest.serivce;
 
-import com.github.piotrostrow.chess.dto.UserDto;
 import com.github.piotrostrow.chess.entity.RoleEntity;
 import com.github.piotrostrow.chess.entity.UserEntity;
-import com.github.piotrostrow.chess.excetion.BadRequestException;
-import com.github.piotrostrow.chess.excetion.ConflictException;
 import com.github.piotrostrow.chess.repository.UserRepository;
+import com.github.piotrostrow.chess.rest.dto.UserDto;
+import com.github.piotrostrow.chess.rest.exception.BadRequestException;
+import com.github.piotrostrow.chess.rest.exception.ConflictException;
 import com.github.piotrostrow.chess.security.Role;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -80,7 +79,7 @@ class UserServiceTest {
 	void testCreateSuccessiveUsersAreNotAdmins() {
 		UserRepository userRepository = mock(UserRepository.class);
 		when(userRepository.save(any())).thenAnswer(e -> e.getArgument(0));
-		when(userRepository.findAll()).thenReturn(List.of(new UserEntity()));
+		when(userRepository.count()).thenReturn(1L);
 
 		UserService userService = new UserService(userRepository, passwordEncoder, modelMapper, roleService);
 

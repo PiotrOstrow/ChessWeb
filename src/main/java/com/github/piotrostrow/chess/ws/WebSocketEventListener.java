@@ -1,6 +1,8 @@
 package com.github.piotrostrow.chess.ws;
 
 import com.github.piotrostrow.chess.domain.User;
+import com.github.piotrostrow.chess.ws.service.GameManager;
+import com.github.piotrostrow.chess.ws.service.Matchmaker;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Component;

@@ -1,4 +1,4 @@
-package com.github.piotrostrow.chess.controller;
+package com.github.piotrostrow.chess.rest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;

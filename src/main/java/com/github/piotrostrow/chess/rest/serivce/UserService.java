@@ -1,10 +1,10 @@
-package com.github.piotrostrow.chess.serivce;
+package com.github.piotrostrow.chess.rest.serivce;
 
-import com.github.piotrostrow.chess.dto.UserDto;
 import com.github.piotrostrow.chess.entity.UserEntity;
-import com.github.piotrostrow.chess.excetion.BadRequestException;
-import com.github.piotrostrow.chess.excetion.ConflictException;
 import com.github.piotrostrow.chess.repository.UserRepository;
+import com.github.piotrostrow.chess.rest.dto.UserDto;
+import com.github.piotrostrow.chess.rest.exception.BadRequestException;
+import com.github.piotrostrow.chess.rest.exception.ConflictException;
 import com.github.piotrostrow.chess.security.Role;
 import com.github.piotrostrow.chess.util.Util;
 import org.modelmapper.ModelMapper;
@@ -62,7 +62,7 @@ public class UserService {
 	}
 
 	private boolean isFirstUser() {
-		return !userRepository.findAll().iterator().hasNext();
+		return userRepository.count() == 0;
 	}
 
 	public Collection<UserDto> getAllUsers() {

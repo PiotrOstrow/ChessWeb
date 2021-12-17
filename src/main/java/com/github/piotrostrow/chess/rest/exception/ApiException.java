@@ -1,4 +1,4 @@
-package com.github.piotrostrow.chess.excetion;
+package com.github.piotrostrow.chess.rest.exception;
 
 import org.springframework.http.HttpStatus;
 

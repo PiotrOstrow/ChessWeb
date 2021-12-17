@@ -1,4 +1,4 @@
-package com.github.piotrostrow.chess.ws;
+package com.github.piotrostrow.chess.ws.service;
 
 import com.github.piotrostrow.chess.domain.User;
 import com.github.piotrostrow.chess.domain.chess.Game;

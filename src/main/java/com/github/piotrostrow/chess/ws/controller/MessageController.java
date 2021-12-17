@@ -1,7 +1,9 @@
-package com.github.piotrostrow.chess.ws;
+package com.github.piotrostrow.chess.ws.controller;
 
 import com.github.piotrostrow.chess.domain.User;
 import com.github.piotrostrow.chess.ws.dto.Move;
+import com.github.piotrostrow.chess.ws.service.GameManager;
+import com.github.piotrostrow.chess.ws.service.Matchmaker;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 

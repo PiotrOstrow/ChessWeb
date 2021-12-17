@@ -1,6 +1,6 @@
-package com.github.piotrostrow.chess.controller;
+package com.github.piotrostrow.chess.rest.controller;
 
-import com.github.piotrostrow.chess.dto.AuthRequest;
+import com.github.piotrostrow.chess.rest.dto.AuthRequest;
 import com.github.piotrostrow.chess.security.JwtTokenUtil;
 import com.github.piotrostrow.chess.security.UserDetailsImpl;
 import org.junit.jupiter.api.BeforeAll;

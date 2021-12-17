@@ -1,4 +1,4 @@
-package com.github.piotrostrow.chess.serivce;
+package com.github.piotrostrow.chess.rest.serivce;
 
 import com.github.piotrostrow.chess.entity.RoleEntity;
 import com.github.piotrostrow.chess.repository.RoleRepository;

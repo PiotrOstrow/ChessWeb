@@ -1,4 +1,4 @@
-package com.github.piotrostrow.chess.excetion;
+package com.github.piotrostrow.chess.rest.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

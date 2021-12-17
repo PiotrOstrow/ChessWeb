@@ -1,6 +1,6 @@
-package com.github.piotrostrow.chess.controller;
+package com.github.piotrostrow.chess.rest.controller;
 
-import com.github.piotrostrow.chess.dto.AuthRequest;
+import com.github.piotrostrow.chess.rest.dto.AuthRequest;
 import com.github.piotrostrow.chess.security.JwtTokenUtil;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

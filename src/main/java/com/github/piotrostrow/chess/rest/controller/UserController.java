@@ -1,7 +1,7 @@
-package com.github.piotrostrow.chess.controller;
+package com.github.piotrostrow.chess.rest.controller;
 
-import com.github.piotrostrow.chess.dto.UserDto;
-import com.github.piotrostrow.chess.serivce.UserService;
+import com.github.piotrostrow.chess.rest.dto.UserDto;
+import com.github.piotrostrow.chess.rest.serivce.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
