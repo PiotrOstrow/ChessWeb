@@ -1,9 +1,7 @@
 package com.github.piotrostrow.chess.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@JsonInclude(JsonInclude.Include.NON_ABSENT)
 public class UserDto {
 
 	private Long id;
@@ -14,6 +12,15 @@ public class UserDto {
 	private String password;
 
 	private String email;
+
+	public UserDto() {
+
+	}
+
+	public UserDto(String username, String password) {
+		this.username = username;
+		this.password = password;
+	}
 
 	public Long getId() {
 		return id;

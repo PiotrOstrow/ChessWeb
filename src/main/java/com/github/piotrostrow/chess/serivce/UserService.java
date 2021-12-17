@@ -2,34 +2,73 @@ package com.github.piotrostrow.chess.serivce;
 
 import com.github.piotrostrow.chess.dto.UserDto;
 import com.github.piotrostrow.chess.entity.UserEntity;
+import com.github.piotrostrow.chess.excetion.BadRequestException;
+import com.github.piotrostrow.chess.excetion.ConflictException;
 import com.github.piotrostrow.chess.repository.UserRepository;
+import com.github.piotrostrow.chess.security.Role;
+import com.github.piotrostrow.chess.util.Util;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static com.github.piotrostrow.chess.util.Util.toSet;
+import static org.springframework.util.StringUtils.hasLength;
 
 @Service
 public class UserService {
 
+	private static final int MIN_PASSWORD_LENGTH = 6;
+
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final ModelMapper modelMapper;
+	private final RoleService roleService;
 
-	public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper) {
+	public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper, RoleService roleService) {
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.modelMapper = modelMapper;
+		this.roleService = roleService;
 	}
 
 	public UserDto createUser(UserDto userDto) {
+		validate(userDto);
+
 		UserEntity userEntity = modelMapper.map(userDto, UserEntity.class);
 		userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
+
+		if (isFirstUser()) {
+			userEntity.setRoles(toSet(roleService.getAllRoles()));
+		} else {
+			userEntity.setRoles(Set.of(roleService.getRole(Role.USER)));
+		}
+
 		return modelMapper.map(userRepository.save(userEntity), UserDto.class);
 	}
 
-	public Iterable<UserEntity> getAllUsers() {
-		return userRepository.findAll();
+	private void validate(UserDto userDto) {
+		if (!hasLength(userDto.getPassword()) || userDto.getPassword().length() < MIN_PASSWORD_LENGTH) {
+			throw new BadRequestException("Password must have a minimum length of " + MIN_PASSWORD_LENGTH);
+		}
+
+		if (userRepository.findByUsername(userDto.getUsername()).isPresent()) {
+			throw new ConflictException("Choose different username");
+		}
+	}
+
+	private boolean isFirstUser() {
+		return !userRepository.findAll().iterator().hasNext();
+	}
+
+	public Collection<UserDto> getAllUsers() {
+		return Util.stream(userRepository.findAll())
+				.map(e -> modelMapper.map(e, UserDto.class))
+				.collect(Collectors.toList());
 	}
 
 	public Optional<UserDto> getUserByUsername(String username) {

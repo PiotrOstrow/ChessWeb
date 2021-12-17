@@ -1,12 +1,12 @@
 package com.github.piotrostrow.chess.controller;
 
 import com.github.piotrostrow.chess.dto.UserDto;
-import com.github.piotrostrow.chess.entity.UserEntity;
 import com.github.piotrostrow.chess.serivce.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.Collection;
 
 @RestController
 @RequestMapping("users")
@@ -20,12 +20,11 @@ public class UserController {
 
 	@PostMapping
 	public ResponseEntity<UserDto> createUser(@RequestBody UserDto user) {
-		userService.createUser(user);
-		return ResponseEntity.created(URI.create("/")).body(user);
+		return ResponseEntity.created(URI.create("/" + user.getUsername())).body(userService.createUser(user));
 	}
 
 	@GetMapping
-	public ResponseEntity<Iterable<UserEntity>> getAllUsers() {
+	public ResponseEntity<Collection<UserDto>> getAllUsers() {
 		return ResponseEntity.ok(userService.getAllUsers());
 	}
 

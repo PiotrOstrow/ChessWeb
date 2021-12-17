@@ -44,17 +44,17 @@ class UserControllerIntegrationTest {
 	}
 
 	@Test
-	void testCreateUserNoPasswordShouldReturn500() throws Exception {
+	void testCreateUserNoPasswordShouldReturn400BadRequest() throws Exception {
 		Object content = Map.of(
 				"username", "username123",
 				"email", "john.smith@email.com"
 		);
 
-		// TODO: error message
 		mockMvc.perform(post("/users/")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(content)))
-				.andExpect(MockMvcResultMatchers.status().is5xxServerError());
+				.andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.error", is("Password must have a minimum length of 6")));
 	}
 
 	@Test

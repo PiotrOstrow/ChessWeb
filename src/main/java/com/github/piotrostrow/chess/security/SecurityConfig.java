@@ -12,12 +12,15 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import javax.servlet.http.HttpServletResponse;
+
+import static com.github.piotrostrow.chess.security.Role.ADMIN;
 
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -42,25 +45,33 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		web.ignoring().antMatchers("/", "/resources/**", "/js/**", "/css/**", "/favicon.ico");
 	}
 
+	@Bean
+	public DefaultWebSecurityExpressionHandler defaultWebSecurityExpressionHandler() {
+		DefaultWebSecurityExpressionHandler defaultWebSecurityExpressionHandler = new DefaultWebSecurityExpressionHandler();
+		defaultWebSecurityExpressionHandler.setDefaultRolePrefix("");
+		return defaultWebSecurityExpressionHandler;
+	}
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http
-			.cors().and().csrf().disable()
+				.cors().and().csrf().disable()
 
-			.sessionManagement()
-			.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-			.and()
+				.sessionManagement()
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+				.and()
 
-			.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
+				.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
 
-			.exceptionHandling()
-			.authenticationEntryPoint((req, res, ex) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage()))
-			.and()
+				.exceptionHandling()
+				.authenticationEntryPoint((req, res, ex) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage()))
+				.and()
 
-			.authorizeRequests()
+				.authorizeRequests()
 				.antMatchers(HttpMethod.POST, "/users/").permitAll()
 				.antMatchers(HttpMethod.POST, "/auth/login/").permitAll()
 				.antMatchers("/websocket/**").permitAll() // auth at sub-protocol due to WebSocket API limitations
+				.antMatchers(HttpMethod.GET, "/users/").hasAuthority(ADMIN.toString())
 				.anyRequest().authenticated();
 	}
 

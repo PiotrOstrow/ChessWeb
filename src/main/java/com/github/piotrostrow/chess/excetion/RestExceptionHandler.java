@@ -36,6 +36,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 	}
 
+	@ExceptionHandler(ApiException.class)
+	public ResponseEntity<Object> handleApiException(ApiException e) {
+		// TODO: dto on all of these
+		return ResponseEntity.status(e.getStatus()).body(Map.of("error", e.getMessage()));
+	}
+
 	@Override
 	protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Malformed request body"));

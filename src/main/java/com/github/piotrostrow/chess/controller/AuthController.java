@@ -36,6 +36,7 @@ public class AuthController {
 					new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
 			);
 
+			// TODO: DTO
 			UserDetails userDetails = (UserDetails) authenticate.getPrincipal();
 
 			return ResponseEntity.ok()

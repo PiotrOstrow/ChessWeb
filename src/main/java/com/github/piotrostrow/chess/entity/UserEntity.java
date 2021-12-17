@@ -3,6 +3,7 @@ package com.github.piotrostrow.chess.entity;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import java.util.Set;
 
 @Entity
 @Table(indexes = @Index(name = "name_index", columnList = "username"))
@@ -20,6 +21,9 @@ public class UserEntity {
 	@Email
 	@NotEmpty
 	private String email;
+
+	@ManyToMany(fetch = FetchType.EAGER)
+	private Set<RoleEntity> roles;
 
 	//@OneToMany(fetch = FetchType.LAZY)
 	//private Set<GameRecordEntity> gamesPlayed;
@@ -63,4 +67,13 @@ public class UserEntity {
 	//public Set<GameRecordEntity> getGamesPlayed() {
 	//	return gamesPlayed;
 	//}
+
+
+	public Set<RoleEntity> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(Set<RoleEntity> roles) {
+		this.roles = roles;
+	}
 }
