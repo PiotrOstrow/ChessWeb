@@ -16,6 +16,13 @@ const Api = {
             'password': password
         })
     },
+    register(username, password, email) {
+        return authInstance.post('/users/', {
+            'username': username,
+            'password': password,
+            'email': email
+        });
+    },
     get(url) {
         return axios.get(url, {
             headers: {

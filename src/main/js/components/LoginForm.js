@@ -1,30 +1,51 @@
 import Api from "../api/Api";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Box, Button, CssBaseline, FormHelperText, Grid, Link, TextField, Typography} from "@mui/material";
 
 function LoginForm(props) {
     const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState(null);
+    const [loggingIn, setLoggingIn] = useState(true);
+
+    useEffect(() => setErrorMessage(null), [loggingIn]);
 
     const onSubmit = event => {
         event.preventDefault();
 
         setErrorMessage(null);
 
-        Api.login(username, password)
-            .then(response => props.onLoggedIn())
-            .catch(error => {
-                if(error.response) {
-                    switch (error.response.status) {
-                        case 401: setErrorMessage('Incorrect username or password'); break;
-                        default: setErrorMessage('Unknown error: ' + error.message);
-                    }
-                } else {
-                    setErrorMessage('Error connecting to the server: ' + error.message);
-                }
-            });
+        if (loggingIn) {
+            Api.login(username, password)
+                .then(response => props.onLoggedIn())
+                .catch(handleError);
+        } else {
+            Api.register(username, password, email)
+                .then(response => {
+                    setLoggingIn(true);
+                    alert("Signed up!")
+                }).catch(handleError);
+        }
     }
+
+    const handleError = error => {
+        if (error.response) {
+            console.log(error.response);
+            switch (error.response.status) {
+                case 401:
+                    setErrorMessage('Incorrect username or password');
+                    break;
+                case 400:
+                    setErrorMessage(error.response.data.error);
+                    break;
+                default:
+                    setErrorMessage('Unknown error: ' + error.message);
+            }
+        } else {
+            setErrorMessage('Error connecting to the server: ' + error.message);
+        }
+    };
 
     return (
         <Box sx={{
@@ -35,10 +56,10 @@ function LoginForm(props) {
         }}>
             <CssBaseline/>
             <Typography component="h1" variant="h5" sx={{mt: 1}}>
-                Sign in
+                {loggingIn ? 'Sign in' : 'Sign up'}
             </Typography>
 
-            <Box component="form" onSubmit={onSubmit} sx={{mt: 1}}>
+            <Box component="form" onSubmit={onSubmit} sx={{mt: 3, width: '460px'}}>
                 <TextField
                     required
                     fullWidth
@@ -47,7 +68,19 @@ function LoginForm(props) {
                     value={username}
                     onChange={e => setUsername(e.target.value)}
                     margin="normal"
-                    id="margin-normal" />
+                    id="margin-normal"/>
+
+                {!loggingIn &&
+                <TextField
+                    required
+                    fullWidth
+                    variant="outlined"
+                    label="E-mail"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    margin="normal"
+                    id="email"/>
+                }
 
                 <TextField
                     required
@@ -68,8 +101,9 @@ function LoginForm(props) {
                     fullWidth
                     sx={{mt: 3, mb: 3}}
                 >
-                    Login
+                    {loggingIn ? 'Login' : 'Sign up'}
                 </Button>
+                {loggingIn &&
                 <Grid container>
                     <Grid item xs>
                         <Link href="#" variant="body2">
@@ -77,11 +111,21 @@ function LoginForm(props) {
                         </Link>
                     </Grid>
                     <Grid item>
-                        <Link href="#" variant="body2">
+                        <Link href="#" variant="body2" onClick={() => setLoggingIn(false)}>
                             {"Don't have an account? Sign Up"}
                         </Link>
                     </Grid>
                 </Grid>
+                }
+                {!loggingIn &&
+                <Grid container justifyContent="flex-end">
+                    <Grid item>
+                        <Link href="#" variant="body2" onClick={() => setLoggingIn(true)}>
+                            {"Already have an account? Sign in"}
+                        </Link>
+                    </Grid>
+                </Grid>
+                }
             </Box>
         </Box>
     )
