@@ -4,8 +4,10 @@ import Piece from "./Piece";
 
 function Board(props) {
     const [highlight, setHighlight] = useState(null);
+    const [draggingFrom, setDraggingFrom] = useState(null);
 
     const move = (from) => {
+        setDraggingFrom(null);
         if(highlight !== null && from !== highlight) {
             props.onMove(from, highlight);
         }
@@ -17,6 +19,7 @@ function Board(props) {
             key={i}
             position={position}
             highlight={highlight}
+            highlightLegalMove={props.legalMoves.has(draggingFrom) && props.legalMoves.get(draggingFrom).has(position)}
             onMouseEnter={pos => setHighlight(pos)}
             onMouseLeave={() => setHighlight(null)}
         />)
@@ -31,6 +34,7 @@ function Board(props) {
                 onMouseEnter={pos => setHighlight(pos)}
                 onMouseLeave={() => setHighlight(null)}
                 onMouseUp={() => move(position)}
+                onMouseDown={() => setDraggingFrom(position)}
                 flipped={props.flipped}
             />);
 

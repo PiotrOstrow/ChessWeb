@@ -46,11 +46,27 @@ class Game {
     }
 
     move(from, to) {
-        this.chess.move(from + to, {sloppy: true});
+        if (this.isMoveLegal(from, to)) {
+            this.chess.move(from + to, {sloppy: true});
+        }
+    }
+
+    isMoveLegal(from, to) {
+        return this.getLegalMoves().has(from) && this.getLegalMoves().get(from).has(to);
     }
 
     getLegalMoves() {
-        this.chess.moves({verbose: true});
+        const map = new Map();
+        this.chess.moves({verbose: true})
+            .forEach(e => {
+                if (!map.has(e.from)) {
+                    map.set(e.from, new Set());
+                }
+
+                const value = map.get(e.from);
+                value.add(e.to);
+            });
+        return map;
     }
 
     reset() {

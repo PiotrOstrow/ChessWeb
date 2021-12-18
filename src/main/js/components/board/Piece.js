@@ -28,6 +28,7 @@ class Piece extends React.Component {
                 y: position.y,
                 dragging: true
             });
+            this.props.onMouseDown();
         }
     }
 
