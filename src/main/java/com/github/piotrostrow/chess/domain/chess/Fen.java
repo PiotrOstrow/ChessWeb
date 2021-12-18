@@ -23,6 +23,7 @@ public class Fen {
 	private List<Piece> pieces;
 	private Color activeColor;
 	private Set<CastlingMove> castlingAvailability;
+	private Position enPassantTarget;
 
 	public Fen(String fenString) {
 		parseFen(fenString);
@@ -34,6 +35,7 @@ public class Fen {
 		pieces = Collections.unmodifiableList(parseRanks(sections[0]));
 		activeColor = parseActiveColor(sections[1]);
 		castlingAvailability = Collections.unmodifiableSet(parseCastlingAvailability(sections[2]));
+		enPassantTarget = parseEnPassantTarget(sections[3]);
 	}
 
 	private List<Piece> parseRanks(String ranks) {
@@ -106,6 +108,18 @@ public class Fen {
 				.collect(Collectors.toSet());
 	}
 
+	private Position parseEnPassantTarget(String section) {
+		if (section.length() == 0 || section.length() > 2) {
+			throw new IllegalArgumentException("Invalid FEN - error parsing en passant target square");
+		}
+
+		if (section.equals("-")) {
+			return null;
+		}
+
+		return new Position(section);
+	}
+
 	public List<Piece> getPieces() {
 		return pieces;
 	}
@@ -116,5 +130,9 @@ public class Fen {
 
 	public Set<CastlingMove> getCastlingAvailability() {
 		return castlingAvailability;
+	}
+
+	public Optional<Position> getEnPassantTarget() {
+		return Optional.ofNullable(enPassantTarget);
 	}
 }

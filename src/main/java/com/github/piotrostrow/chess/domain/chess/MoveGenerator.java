@@ -1,6 +1,7 @@
 package com.github.piotrostrow.chess.domain.chess;
 
 import com.github.piotrostrow.chess.domain.chess.pieces.King;
+import com.github.piotrostrow.chess.domain.chess.pieces.Pawn;
 import com.github.piotrostrow.chess.domain.chess.pieces.Piece;
 
 import java.util.Arrays;
@@ -15,7 +16,6 @@ public class MoveGenerator {
 	}
 
 	// TODO: only generate moves for active player
-	// TODO: en passant
 	static Map<Position, Set<Position>> generateLegalMoves(Game game) {
 		Map<Position, Piece> pieces = game.getPieces();
 		Set<Position> controlledSquares = game.getControlledSquares(game.getNonActiveColor());
@@ -32,6 +32,22 @@ public class MoveGenerator {
 				.filter(game::canCastle)
 				.filter(e -> canCastle(pieces, controlledSquares, e))
 				.forEach(e -> legalMoves.get(e.getKingPosition()).add(e.getKingTargetPosition()));
+
+		if (game.getEnPassantTarget().isPresent()) {
+			Position enPassantPosition = game.getEnPassantTarget().orElseThrow(IllegalStateException::new);
+			int direction = game.getActiveColor() == Color.WHITE ? 1 : -1;
+			Position captureTargetPosition = enPassantPosition.plusY(direction);
+
+			Piece left = pieces.get(enPassantPosition.plusX(-1));
+			if (left instanceof Pawn && left.getColor() == game.getActiveColor()) {
+				legalMoves.get(left.getPosition()).add(captureTargetPosition);
+			}
+
+			Piece right = pieces.get(enPassantPosition.plusX(1));
+			if (right instanceof Pawn && right.getColor() == game.getActiveColor()) {
+				legalMoves.get(right.getPosition()).add(captureTargetPosition);
+			}
+		}
 
 		return legalMoves;
 	}

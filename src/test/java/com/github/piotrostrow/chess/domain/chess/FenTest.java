@@ -87,4 +87,18 @@ class FenTest {
 
 		assertThat(fen.getCastlingAvailability()).hasSize(CastlingMove.values().length);
 	}
+
+	@Test
+	void testEnPassantTargetSquare() {
+		Fen fen = new Fen("r1bqkbnr/ppppp1pp/2n5/4Pp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f5 0 1");
+
+		assertThat(fen.getEnPassantTarget()).isPresent().contains(new Position("f5"));
+	}
+
+	@Test
+	void testEnPassantTargetSquareNone() {
+		Fen fen = new Fen("r1bqkbnr/ppppp1pp/2n5/4Pp2/8/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1");
+
+		assertThat(fen.getEnPassantTarget()).isEmpty();
+	}
 }

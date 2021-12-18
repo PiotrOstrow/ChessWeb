@@ -272,8 +272,66 @@ class MoveGeneratorTest {
 	@Test
 	void testBlackCantCastleCastlingAvailableButKingInCheck() {
 		Fen fen = new Fen("r3k2r/p6p/4p3/1Q1n4/8/4P3/P2P3P/4K1R1 b kq - 0 1");
+
 		assertCastling(BLACK_KING_SIDE, false, fen);
 		assertCastling(BLACK_QUEEN_SIDE, false, fen);
+	}
+
+	@Test
+	void testEnPassantNoTargetSquare() {
+		Fen fen = new Fen("r1bqkbnr/ppppp1pp/2n5/4Pp2/8/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1");
+
+		Map<Position, Set<Position>> legalMoves = getLegalMoves(fen);
+
+		assertThat(legalMoves.get(new Position("e5"))).isNotEmpty().doesNotContain(new Position("f6"));
+	}
+
+	@Test
+	void testEnPassantLegalMoveWhite() {
+		Fen fenRight = new Fen("r1bqkbnr/ppppp1pp/2n5/4Pp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f5 0 1");
+		Fen fenLeft = new Fen("r1bqkbnr/ppp1p1pp/2n5/3pPp2/8/8/PPPP1PPP/RNBQKBNR w KQkq d5 0 1");
+
+		Map<Position, Set<Position>> legalMovesRight = getLegalMoves(fenRight);
+		Map<Position, Set<Position>> legalMovesLeft = getLegalMoves(fenLeft);
+
+		assertThat(legalMovesRight.get(new Position("e5"))).contains(new Position("f6"));
+		assertThat(legalMovesLeft.get(new Position("e5"))).contains(new Position("d6"));
+	}
+
+	@Test
+	void testEnPassantLegalMoveWhiteEdge() {
+		Fen fenRight = new Fen("r1bqkbnr/ppppppp1/2n5/6Pp/8/8/PPPPPP1P/RNBQKBNR w KQkq h5 0 1");
+		Fen fenLeft = new Fen("r1bqkbnr/1ppppppp/2n5/pP6/8/8/P1PPPPPP/RNBQKBNR w KQkq a5 0 1");
+
+		Map<Position, Set<Position>> legalMovesRight = getLegalMoves(fenRight);
+		Map<Position, Set<Position>> legalMovesLeft = getLegalMoves(fenLeft);
+
+		assertThat(legalMovesRight.get(new Position("g5"))).contains(new Position("h6"));
+		assertThat(legalMovesLeft.get(new Position("b5"))).contains(new Position("a6"));
+	}
+
+	@Test
+	void testEnPassantLegalMoveBlack() {
+		Fen fenLeft = new Fen("r1bqkbnr/ppp1p1pp/2n5/8/3pPp2/8/PPPP1PPP/RNBQKBNR b KQkq e4 0 1");
+		Fen fenRight = new Fen("r1bqkbnr/ppp1p1pp/2n5/8/3pPp2/8/PPPP1PPP/RNBQKBNR b KQkq e4 0 1");
+
+		Map<Position, Set<Position>> legalMovesLeft = getLegalMoves(fenLeft);
+		Map<Position, Set<Position>> legalMovesRight = getLegalMoves(fenRight);
+
+		assertThat(legalMovesLeft.get(new Position("d4"))).contains(new Position("e3"));
+		assertThat(legalMovesRight.get(new Position("f4"))).contains(new Position("e3"));
+	}
+
+	@Test
+	void testEnPassantLegalMoveBlackEdge() {
+		Fen fenLeft = new Fen("r1bqkbnr/2pppppp/2n5/p7/Pp6/8/1PPPPPPP/RNBQKBNR b KQkq a4 0 1");
+		Fen fenRight = new Fen("r1bqkbnr/2pppp2/2n5/p6p/1p4pP/8/PPPPPPP1/RNBQKBNR b KQkq h4 0 1");
+
+		Map<Position, Set<Position>> legalMovesLeft = getLegalMoves(fenLeft);
+		Map<Position, Set<Position>> legalMovesRight = getLegalMoves(fenRight);
+
+		assertThat(legalMovesLeft.get(new Position("b4"))).contains(new Position("a3"));
+		assertThat(legalMovesRight.get(new Position("g4"))).contains(new Position("h3"));
 	}
 
 	private Map<Position, Set<Position>> getLegalMoves(Fen fen) {

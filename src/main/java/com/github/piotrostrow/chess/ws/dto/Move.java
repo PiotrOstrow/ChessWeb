@@ -33,6 +33,10 @@ public class Move {
 		return from.isValid() && to.isValid();
 	}
 
+	public int deltaY() {
+		return Math.abs(from.getY() - to.getY());
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;

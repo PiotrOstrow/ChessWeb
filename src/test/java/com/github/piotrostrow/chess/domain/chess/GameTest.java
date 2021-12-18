@@ -2,6 +2,7 @@ package com.github.piotrostrow.chess.domain.chess;
 
 import com.github.piotrostrow.chess.domain.User;
 import com.github.piotrostrow.chess.domain.chess.pieces.King;
+import com.github.piotrostrow.chess.domain.chess.pieces.Pawn;
 import com.github.piotrostrow.chess.domain.chess.pieces.Piece;
 import com.github.piotrostrow.chess.domain.chess.pieces.Rook;
 import com.github.piotrostrow.chess.ws.dto.Move;
@@ -174,6 +175,49 @@ class GameTest {
 		assertThat(game.moveIfLegal(new Move("e8", "f8"))).isTrue();
 
 		assertThat(game.moveIfLegal(new Move("e1", "g1"))).isFalse();
+	}
+
+	@Test
+	void testEnPassantMove() {
+		Game game = gameFrom("r1bqkbnr/ppppp1pp/2n5/4Pp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f5 0 1");
+
+		assertThat(game.moveIfLegal(new Move("e5", "f6"))).isTrue();
+
+		Map<Position, Piece> pieces = game.getPieces();
+
+		assertThat(pieces)
+				.doesNotContainKey(new Position("e5"))
+				.doesNotContainKey(new Position("f5"));
+
+		assertThat(pieces.get(new Position("f6")))
+				.isNotNull()
+				.isInstanceOf(Pawn.class)
+				.extracting(Piece::getColor)
+				.isEqualTo(Color.WHITE);
+
+		assertThat(game.getEnPassantTarget()).isEmpty();
+	}
+
+	@Test
+	void testEnPassantTargetCaptured() {
+		Game game = gameFrom("r1bqkbnr/pppppppp/2n5/4P3/8/8/PPPP1PPP/RNBQKBNR w KQkq - 0 1");
+
+		assertThat(game.getEnPassantTarget()).isEmpty();
+		assertThat(game.moveIfLegal(new Move("e5", "f6"))).isFalse();
+		assertThat(game.moveIfLegal(new Move("g1", "f3"))).isTrue();
+		assertThat(game.moveIfLegal(new Move("f7", "f5"))).isTrue();
+		assertThat(game.getEnPassantTarget()).isPresent().get().isEqualTo(new Position("f5"));
+		assertThat(game.moveIfLegal(new Move("e5", "f6"))).isTrue();
+	}
+
+	@Test
+	void testEnPassantTargetNotCaptured() {
+		Game game = gameFrom("r1bqkbnr/pppppppp/2n5/4P3/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1");
+
+		assertThat(game.moveIfLegal(new Move("f7", "f5"))).isTrue();
+		assertThat(game.getEnPassantTarget()).isPresent().get().isEqualTo(new Position("f5"));
+		assertThat(game.moveIfLegal(new Move("e5", "e6"))).isTrue();
+		assertThat(game.getEnPassantTarget()).isEmpty();
 	}
 
 	private Game gameFrom(String fen) {

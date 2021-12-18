@@ -2,6 +2,7 @@ package com.github.piotrostrow.chess.domain.chess;
 
 import com.github.piotrostrow.chess.domain.User;
 import com.github.piotrostrow.chess.domain.chess.pieces.King;
+import com.github.piotrostrow.chess.domain.chess.pieces.Pawn;
 import com.github.piotrostrow.chess.domain.chess.pieces.Piece;
 import com.github.piotrostrow.chess.ws.dto.Move;
 
@@ -20,6 +21,8 @@ public class Game {
 	private Color activeColor;
 	private final Set<CastlingMove> castlingAvailability;
 
+	private Position enPassantTarget;
+
 	public Game(User white, User black) {
 		this(white, black, Fen.DEFAULT_STARTING_POSITION);
 	}
@@ -30,6 +33,7 @@ public class Game {
 		this.pieces = fen.getPieces().stream().collect(Collectors.toMap(Piece::getPosition, e -> e));
 		this.activeColor = fen.getActiveColor();
 		this.castlingAvailability = new HashSet<>(fen.getCastlingAvailability());
+		this.enPassantTarget = fen.getEnPassantTarget().orElse(null);
 
 		calculateControlledSquares();
 		generateLegalMoves();
@@ -76,17 +80,30 @@ public class Game {
 	private void move(Move move) {
 		if (isCastlingMove(move)) {
 			handleCastlingMove(move);
+		} else if (isEnPassantMove(move)) {
+			handleEnPassantMove(move);
 		} else {
-			Piece movedPiece = pieces.get(move.getFrom());
-			pieces.put(move.getTo(), movedPiece.moved(move.getTo()));
-			pieces.remove(move.getFrom());
+			handleRegularMove(move);
 		}
+
 		updateCastlingAvailability();
+		updateEnPassantTarget(move);
+
 		activeColor = getNonActiveColor();
 	}
 
 	private boolean isCastlingMove(Move move) {
 		return pieces.get(move.getFrom()) instanceof King && Math.abs(move.getFrom().getX() - move.getTo().getX()) == 2;
+	}
+
+	private boolean isEnPassantMove(Move move) {
+		if (enPassantTarget == null) {
+			return false;
+		}
+
+		return pieces.get(move.getFrom()) instanceof Pawn &&
+				move.getFrom().getY() == enPassantTarget.getY() &&
+				move.getTo().getX() == enPassantTarget.getX();
 	}
 
 	private void handleCastlingMove(Move move) {
@@ -106,6 +123,21 @@ public class Game {
 		pieces.put(newRookPosition, rook.moved(newRookPosition));
 	}
 
+	private void handleEnPassantMove(Move move) {
+		Piece moving = pieces.get(move.getFrom());
+
+		pieces.remove(move.getFrom());
+		pieces.remove(enPassantTarget);
+
+		pieces.put(move.getTo(), moving.moved(move.getTo()));
+	}
+
+	private void handleRegularMove(Move move) {
+		Piece movedPiece = pieces.get(move.getFrom());
+		pieces.put(move.getTo(), movedPiece.moved(move.getTo()));
+		pieces.remove(move.getFrom());
+	}
+
 	private void updateCastlingAvailability() {
 		if (!pieces.containsKey(Position.WHITE_KING)) {
 			castlingAvailability.removeIf(move -> move.getColor() == Color.WHITE);
@@ -117,6 +149,15 @@ public class Game {
 
 		castlingAvailability.removeIf(move -> !pieces.containsKey(move.getRookPosition())
 				|| pieces.get(move.getRookPosition()).getColor() != move.getColor());
+	}
+
+	private void updateEnPassantTarget(Move lastMove) {
+		Piece piece = pieces.get(lastMove.getTo());
+		if (piece instanceof Pawn && lastMove.deltaY() == 2) {
+			enPassantTarget = lastMove.getTo();
+		} else {
+			enPassantTarget = null;
+		}
 	}
 
 	public synchronized GameResult getGameResult() {
@@ -145,6 +186,10 @@ public class Game {
 		return controlledSquares.get(getNonActiveColor()).contains(king.getPosition());
 	}
 
+	Color getActiveColor() {
+		return activeColor;
+	}
+
 	Color getNonActiveColor() {
 		return activeColor == Color.WHITE ? Color.BLACK : Color.WHITE;
 	}
@@ -163,6 +208,10 @@ public class Game {
 
 	boolean canCastle(CastlingMove castlingMove) {
 		return this.castlingAvailability.contains(castlingMove);
+	}
+
+	Optional<Position> getEnPassantTarget() {
+		return Optional.ofNullable(enPassantTarget);
 	}
 
 	Set<Position> getControlledSquares(Color color) {
