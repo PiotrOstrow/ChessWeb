@@ -9,6 +9,7 @@ import com.github.piotrostrow.chess.ws.dto.Move;
 import java.util.*;
 import java.util.stream.Collectors;
 
+// TODO: promotion
 public class Game {
 
 	private final User white;
@@ -58,7 +59,15 @@ public class Game {
 		controlledSquares.put(Color.BLACK, blacksControlledSquares);
 	}
 
-	public synchronized boolean moveIfLegal(Move move) {
+	public synchronized boolean moveIfLegal(Move move, String playerName) {
+		if (getActivePlayer().getName().equals(playerName)) {
+			return moveIfLegal(move);
+		}
+
+		return false;
+	}
+
+	boolean moveIfLegal(Move move) {
 		if (isMoveLegal(move)) {
 			move(move);
 			calculateControlledSquares();
@@ -216,5 +225,9 @@ public class Game {
 
 	Set<Position> getControlledSquares(Color color) {
 		return Collections.unmodifiableSet(controlledSquares.get(color));
+	}
+
+	private User getActivePlayer() {
+		return activeColor == Color.WHITE ? white : black;
 	}
 }

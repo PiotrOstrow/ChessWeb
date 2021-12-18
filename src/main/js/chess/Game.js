@@ -45,6 +45,10 @@ class Game {
         return new ChessPosition(pieces);
     }
 
+    getActiveColor() {
+        return this.chess.turn() === 'w' ? 'WHITE' : 'BLACK';
+    }
+
     move(from, to) {
         if (this.isMoveLegal(from, to)) {
             this.chess.move(from + to, {sloppy: true});

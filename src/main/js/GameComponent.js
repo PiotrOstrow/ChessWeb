@@ -46,8 +46,10 @@ function GameComponent() {
     }
 
     const onOwnMove = (from, to) => {
-        onMove(from, to);
-        gameApi.move(from, to);
+        if (game.getActiveColor() === color) {
+            onMove(from, to);
+            gameApi.move(from, to);
+        }
     }
 
     const onPressPlay = () => {
