@@ -4,12 +4,12 @@ import com.github.piotrostrow.chess.domain.User;
 import com.github.piotrostrow.chess.domain.chess.pieces.King;
 import com.github.piotrostrow.chess.domain.chess.pieces.Pawn;
 import com.github.piotrostrow.chess.domain.chess.pieces.Piece;
+import com.github.piotrostrow.chess.domain.chess.pieces.Queen;
 import com.github.piotrostrow.chess.ws.dto.Move;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-// TODO: promotion
 public class Game {
 
 	private final User white;
@@ -143,8 +143,13 @@ public class Game {
 
 	private void handleRegularMove(Move move) {
 		Piece movedPiece = pieces.get(move.getFrom());
-		pieces.put(move.getTo(), movedPiece.moved(move.getTo()));
 		pieces.remove(move.getFrom());
+
+		if (movedPiece instanceof Pawn && (move.getTo().getY() == 7 || move.getTo().getY() == 0)) {
+			pieces.put(move.getTo(), new Queen(movedPiece.getColor(), move.getTo()));
+		} else {
+			pieces.put(move.getTo(), movedPiece.moved(move.getTo()));
+		}
 	}
 
 	private void updateCastlingAvailability() {

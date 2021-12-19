@@ -31,17 +31,7 @@ function LoginForm(props) {
 
     const handleError = error => {
         if (error.response) {
-            console.log(error.response);
-            switch (error.response.status) {
-                case 401:
-                    setErrorMessage('Incorrect username or password');
-                    break;
-                case 400:
-                    setErrorMessage(error.response.data.error);
-                    break;
-                default:
-                    setErrorMessage('Unknown error: ' + error.message);
-            }
+            setErrorMessage(error.response.data.message);
         } else {
             setErrorMessage('Error connecting to the server: ' + error.message);
         }

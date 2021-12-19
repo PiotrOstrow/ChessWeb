@@ -1,10 +1,7 @@
 package com.github.piotrostrow.chess.domain.chess;
 
 import com.github.piotrostrow.chess.domain.User;
-import com.github.piotrostrow.chess.domain.chess.pieces.King;
-import com.github.piotrostrow.chess.domain.chess.pieces.Pawn;
-import com.github.piotrostrow.chess.domain.chess.pieces.Piece;
-import com.github.piotrostrow.chess.domain.chess.pieces.Rook;
+import com.github.piotrostrow.chess.domain.chess.pieces.*;
 import com.github.piotrostrow.chess.ws.dto.Move;
 import org.junit.jupiter.api.Test;
 
@@ -218,6 +215,48 @@ class GameTest {
 		assertThat(game.getEnPassantTarget()).isPresent().get().isEqualTo(new Position("f5"));
 		assertThat(game.moveIfLegal(new Move("e5", "e6"))).isTrue();
 		assertThat(game.getEnPassantTarget()).isEmpty();
+	}
+
+	@Test
+	void testPromoteWhitePawn() {
+		Game game = gameFrom("6k1/3PK1p1/5pPp/5P2/p7/P7/1p5P/8 w - - 0 1");
+		assertThat(game.moveIfLegal(new Move("d7", "d8"))).isTrue();
+		assertThat(game.getPieces().get(new Position("d8")))
+				.isInstanceOf(Queen.class)
+				.extracting(Piece::getColor)
+				.isEqualTo(Color.WHITE);
+	}
+
+	@Test
+	void testPromoteBlackPawn() {
+		Game game = gameFrom("6k1/3PK1p1/5pPp/5P2/p7/P7/1p5P/8 b - - 0 1");
+		assertThat(game.moveIfLegal(new Move("b2", "b1"))).isTrue();
+		assertThat(game.getPieces().get(new Position("b1")))
+				.isInstanceOf(Queen.class)
+				.extracting(Piece::getColor)
+				.isEqualTo(Color.BLACK);
+	}
+
+	@Test
+	void testPromoteWhitePawnWithCapture() {
+		Game game = gameFrom("rnbqkbnr/p1pppppP/8/8/8/8/pPPPPP1P/RNBQKBNR w KQkq - 0 1");
+
+		assertThat(game.moveIfLegal(new Move("h7", "g8"))).isTrue();
+		assertThat(game.getPieces().get(new Position("g8")))
+				.isInstanceOf(Queen.class)
+				.extracting(Piece::getColor)
+				.isEqualTo(Color.WHITE);
+	}
+
+	@Test
+	void testPromoteBlackPawnWithCapture() {
+		Game game = gameFrom("rnbqkbnr/p1pppppP/8/8/8/8/pPPPPP1P/RNBQKBNR b KQkq - 0 1");
+
+		assertThat(game.moveIfLegal(new Move("a2", "b1"))).isTrue();
+		assertThat(game.getPieces().get(new Position("b1")))
+				.isInstanceOf(Queen.class)
+				.extracting(Piece::getColor)
+				.isEqualTo(Color.BLACK);
 	}
 
 	private Game gameFrom(String fen) {

@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.Collection;
+import java.util.Map;
 
 @RestController
 @RequestMapping("users")
@@ -24,8 +24,8 @@ public class UserController {
 	}
 
 	@GetMapping
-	public ResponseEntity<Collection<UserDto>> getAllUsers() {
-		return ResponseEntity.ok(userService.getAllUsers());
+	public ResponseEntity<Object> getAllUsers() {
+		return ResponseEntity.ok(Map.of("users", userService.getAllUsers()));
 	}
 
 	@GetMapping("{username}")
