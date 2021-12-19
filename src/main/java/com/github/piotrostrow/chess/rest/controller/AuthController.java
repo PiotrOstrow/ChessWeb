@@ -1,7 +1,9 @@
 package com.github.piotrostrow.chess.rest.controller;
 
 import com.github.piotrostrow.chess.rest.dto.AuthRequest;
+import com.github.piotrostrow.chess.rest.dto.AuthResponse;
 import com.github.piotrostrow.chess.security.JwtTokenUtil;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,25 +25,28 @@ public class AuthController {
 
 	private final AuthenticationManager authenticationManager;
 	private final JwtTokenUtil jwtTokenUtil;
+	private final ModelMapper modelMapper;
 
-	public AuthController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil) {
+	// TODO: service
+	public AuthController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, ModelMapper modelMapper) {
 		this.authenticationManager = authenticationManager;
 		this.jwtTokenUtil = jwtTokenUtil;
+		this.modelMapper = modelMapper;
 	}
 
 	@PostMapping("login")
-	public ResponseEntity<Object> login(@RequestBody @Valid AuthRequest request) {
+	public ResponseEntity<AuthResponse> login(@RequestBody @Valid AuthRequest request) {
 		try {
 			Authentication authenticate = authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
 			);
 
-			// TODO: DTO
 			UserDetails userDetails = (UserDetails) authenticate.getPrincipal();
+			AuthResponse authResponse = modelMapper.map(userDetails, AuthResponse.class);
 
 			return ResponseEntity.ok()
 					.header(HttpHeaders.AUTHORIZATION, jwtTokenUtil.generateAccessToken(userDetails))
-					.body(userDetails);
+					.body(authResponse);
 		} catch (AuthenticationException e) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
