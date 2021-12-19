@@ -17,10 +17,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -50,12 +52,13 @@ class AuthControllerTest {
 	}
 
 	@Test
-	void testLoginFailure() {
+	void testLoginFailureThrowsException() {
 		when(authenticationManager.authenticate(any())).thenThrow(BadCredentialsException.class);
 		AuthController authController = new AuthController(authenticationManager, jwtTokenUtil, modelMapper);
 
-		ResponseEntity<AuthResponse> responseEntity = authController.login(new AuthRequest(LOGIN, PASSWORD));
-		assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+		AuthRequest authRequest = new AuthRequest(LOGIN, PASSWORD);
+		assertThatThrownBy(() -> authController.login(authRequest))
+				.isInstanceOf(AuthenticationException.class);
 	}
 
 	@Test

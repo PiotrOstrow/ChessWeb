@@ -54,7 +54,7 @@ class UserControllerIntegrationTest {
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(content)))
 				.andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.error", is("Password must have a minimum length of 6")));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.message", is("Password must have a minimum length of 6")));
 	}
 
 	@Test
@@ -69,7 +69,7 @@ class UserControllerIntegrationTest {
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(content)))
 				.andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.error", is("email: must be a well-formed email address")));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.message", is("email: must be a well-formed email address")));
 	}
 
 	@Test
@@ -80,7 +80,7 @@ class UserControllerIntegrationTest {
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(content))
 				.andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.error", is("Malformed request body")));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.message", is("Malformed request body")));
 	}
 
 	@Test

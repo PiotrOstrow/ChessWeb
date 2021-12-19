@@ -5,12 +5,10 @@ import com.github.piotrostrow.chess.rest.dto.AuthResponse;
 import com.github.piotrostrow.chess.security.JwtTokenUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,19 +34,15 @@ public class AuthController {
 
 	@PostMapping("login")
 	public ResponseEntity<AuthResponse> login(@RequestBody @Valid AuthRequest request) {
-		try {
-			Authentication authenticate = authenticationManager.authenticate(
-					new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-			);
+		Authentication authenticate = authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+		);
 
-			UserDetails userDetails = (UserDetails) authenticate.getPrincipal();
-			AuthResponse authResponse = modelMapper.map(userDetails, AuthResponse.class);
+		UserDetails userDetails = (UserDetails) authenticate.getPrincipal();
+		AuthResponse authResponse = modelMapper.map(userDetails, AuthResponse.class);
 
-			return ResponseEntity.ok()
-					.header(HttpHeaders.AUTHORIZATION, jwtTokenUtil.generateAccessToken(userDetails))
-					.body(authResponse);
-		} catch (AuthenticationException e) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-		}
+		return ResponseEntity.ok()
+				.header(HttpHeaders.AUTHORIZATION, jwtTokenUtil.generateAccessToken(userDetails))
+				.body(authResponse);
 	}
 }
