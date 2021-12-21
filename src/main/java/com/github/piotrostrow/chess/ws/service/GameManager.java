@@ -3,6 +3,7 @@ package com.github.piotrostrow.chess.ws.service;
 import com.github.piotrostrow.chess.domain.User;
 import com.github.piotrostrow.chess.domain.chess.Game;
 import com.github.piotrostrow.chess.domain.chess.GameResult;
+import com.github.piotrostrow.chess.rest.serivce.GameService;
 import com.github.piotrostrow.chess.ws.dto.Move;
 import org.springframework.stereotype.Component;
 
@@ -14,11 +15,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GameManager {
 
 	private final WebSocketService webSocketService;
+	private final GameService gameService;
 
 	private final Map<String, Game> gameByUsername = new ConcurrentHashMap<>();
 
-	public GameManager(WebSocketService webSocketService) {
+	public GameManager(WebSocketService webSocketService, GameService gameService) {
 		this.webSocketService = webSocketService;
+		this.gameService = gameService;
 	}
 
 	public void startGame(User white, User black) {
@@ -30,6 +33,7 @@ public class GameManager {
 		webSocketService.sendStartGame(white.getName(), black.getName());
 	}
 
+	// TODO unit test
 	public void move(Principal principal, Move move) {
 		Game game = gameByUsername.get(principal.getName());
 		if (game != null && game.moveIfLegal(move, principal.getName())) {
@@ -42,6 +46,7 @@ public class GameManager {
 			GameResult gameResult = game.getGameResult();
 			if (gameResult != GameResult.NONE) {
 				endGame(game, gameResult);
+				gameService.saveGame(game);
 			}
 		}
 	}
@@ -58,6 +63,7 @@ public class GameManager {
 		return gameByUsername.containsKey(user.getName());
 	}
 
+	// TODO event listener here
 	public void disconnected(User user) {
 		Game game = gameByUsername.get(user.getName());
 		if (game != null) {

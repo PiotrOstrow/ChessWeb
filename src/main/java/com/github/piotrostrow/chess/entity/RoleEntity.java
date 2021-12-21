@@ -2,10 +2,7 @@ package com.github.piotrostrow.chess.entity;
 
 import com.github.piotrostrow.chess.security.Role;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 import java.util.Set;
 
 @Entity
@@ -17,7 +14,7 @@ public class RoleEntity {
 
 	private Role role;
 
-	@ManyToMany(mappedBy = "roles")
+	@ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
 	private Set<UserEntity> users;
 
 	public RoleEntity() {

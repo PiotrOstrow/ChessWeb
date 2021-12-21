@@ -4,6 +4,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -28,8 +29,16 @@ public class UserEntity {
 	@ManyToMany(fetch = FetchType.EAGER)
 	private Set<RoleEntity> roles;
 
-	//@OneToMany(fetch = FetchType.LAZY)
-	//private Set<GameRecordEntity> gamesPlayed;
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+	private Set<GamePlayedEntity> gamesPlayed = new HashSet<>();
+
+	public UserEntity() {
+
+	}
+
+	public UserEntity(String username) {
+		this.username = username;
+	}
 
 	public Long getId() {
 		return id;
@@ -63,14 +72,18 @@ public class UserEntity {
 		this.email = email;
 	}
 
-	//public void setGamesPlayed(Set<GameRecordEntity> gamesPlayed) {
-	//	this.gamesPlayed = gamesPlayed;
-	//}
+	public void setGamesPlayed(Set<GamePlayedEntity> gamesPlayed) {
+		this.gamesPlayed = gamesPlayed;
+	}
 
-	//public Set<GameRecordEntity> getGamesPlayed() {
-	//	return gamesPlayed;
-	//}
+	public Set<GamePlayedEntity> getGamesPlayed() {
+		return gamesPlayed;
+	}
 
+	public void addGamePlayed(GamePlayedEntity gamePlayedEntity) {
+		gamesPlayed.add(gamePlayedEntity);
+		gamePlayedEntity.setUser(this);
+	}
 
 	public Set<RoleEntity> getRoles() {
 		return roles;

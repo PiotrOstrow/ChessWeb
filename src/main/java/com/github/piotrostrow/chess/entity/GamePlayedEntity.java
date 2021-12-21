@@ -6,24 +6,22 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
-public class GameRecordEntity {
+public class GamePlayedEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	@ManyToOne
 	@NotNull
+	@ManyToOne
 	private UserEntity user;
 
-	@OneToOne
 	@NotNull
-	private PGNEntity pgn;
+	@ManyToOne
+	private GameEntity game;
 
 	@NotNull
 	private Color color;
-
-	// TODO: add date
 
 	public Long getId() {
 		return id;
@@ -41,12 +39,13 @@ public class GameRecordEntity {
 		this.user = user;
 	}
 
-	public PGNEntity getPgn() {
-		return pgn;
+	public GameEntity getGame() {
+		return game;
 	}
 
-	public void setPgn(PGNEntity pgn) {
-		this.pgn = pgn;
+	public void setGame(GameEntity gameEntity) {
+		this.game = gameEntity;
+		gameEntity.addGameRecord(this);
 	}
 
 	public Color getColor() {
