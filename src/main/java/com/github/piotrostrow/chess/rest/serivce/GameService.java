@@ -2,6 +2,8 @@ package com.github.piotrostrow.chess.rest.serivce;
 
 import com.github.piotrostrow.chess.domain.chess.Color;
 import com.github.piotrostrow.chess.domain.chess.Game;
+import com.github.piotrostrow.chess.domain.chess.Pgn;
+import com.github.piotrostrow.chess.domain.chess.PgnSerializer;
 import com.github.piotrostrow.chess.entity.GameEntity;
 import com.github.piotrostrow.chess.entity.GamePlayedEntity;
 import com.github.piotrostrow.chess.entity.UserEntity;
@@ -40,12 +42,18 @@ public class GameService {
 				.collect(Collectors.toList());
 	}
 
+	public List<GameDto> getGamesForUser(String username) {
+		return List.of();
+	}
+
 	public void saveGame(Game game) {
 		UserEntity white = userRepository.findByUsername(game.getWhite().getName()).orElseThrow();
 		UserEntity black = userRepository.findByUsername(game.getBlack().getName()).orElseThrow();
 
+		Pgn pgn = PgnSerializer.serialize(game);
+
 		GameEntity gameEntity = new GameEntity();
-		gameEntity.setPgn("pgn placeholder");
+		gameEntity.setPgn(pgn.toString());
 		gameEntity.setWinner(Color.WHITE);
 		gameRepository.save(gameEntity);
 
@@ -61,4 +69,5 @@ public class GameService {
 		black.addGamePlayed(blackGamePlayedEntity);
 		gamePlayedRepository.save(blackGamePlayedEntity);
 	}
+
 }

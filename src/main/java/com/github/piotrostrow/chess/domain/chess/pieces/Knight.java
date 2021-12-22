@@ -15,6 +15,11 @@ public class Knight extends Piece {
 	}
 
 	@Override
+	public String getPieceLetter() {
+		return "N";
+	}
+
+	@Override
 	public Set<Position> getPseudoLegalMoves(Map<Position, Piece> pieces) {
 		return Stream.of(
 						new Position(getPosition().getX() + 2, getPosition().getY() + 1),

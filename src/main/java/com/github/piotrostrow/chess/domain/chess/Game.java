@@ -24,6 +24,8 @@ public class Game {
 
 	private Position enPassantTarget;
 
+	private final List<MoveNotation> moves = new ArrayList<>();
+
 	public Game(User white, User black) {
 		this(white, black, Fen.DEFAULT_STARTING_POSITION);
 	}
@@ -69,9 +71,11 @@ public class Game {
 
 	boolean moveIfLegal(Move move) {
 		if (isMoveLegal(move)) {
+			recordMoveNotation(move);
 			move(move);
 			calculateControlledSquares();
 			generateLegalMoves();
+			correctMoveNotationForCheck();
 			return true;
 		}
 
@@ -84,6 +88,40 @@ public class Game {
 			return false;
 		}
 		return legalMoves.get(move.getFrom()).contains(move.getTo());
+	}
+
+	private void recordMoveNotation(Move move) {
+		if (isCastlingMove(move)) {
+			moves.add(move.getCastlingNotation());
+		} else {
+			Piece movedPiece = pieces.get(move.getFrom());
+			boolean captured = pieces.containsKey(move.getTo()) || isEnPassantMove(move);
+
+			if (captured && movedPiece instanceof Pawn) {
+				moves.add(MoveNotation.pawnCapture(move));
+			} else {
+				String ambiguityNotation = getAmbiguityNotation(move, movedPiece);
+				moves.add(MoveNotation.move(movedPiece, ambiguityNotation, captured, move.getTo()));
+			}
+		}
+	}
+
+	private String getAmbiguityNotation(Move move, Piece movedPiece) {
+		List<Piece> samePieces = pieces.values().stream()
+				.filter(e -> e.getClass().isInstance(movedPiece) && e.getColor() == activeColor)
+				.collect(Collectors.toList());
+
+		boolean isAmbiguous = samePieces.size() > 1 && samePieces.stream()
+				.flatMap(e -> e.getPseudoLegalMoves(pieces).stream())
+				.filter(e -> e.equals(move.getTo()))
+				.count() > 1;
+
+		if (isAmbiguous) {
+			boolean isAmbiguityOnSameFile = samePieces.stream().filter(e -> e.getPosition().getX() == move.getFrom().getX()).count() > 1;
+			return isAmbiguityOnSameFile ? String.valueOf(move.getFrom().getRank()) : String.valueOf(move.getFrom().getFile());
+		}
+
+		return "";
 	}
 
 	private void move(Move move) {
@@ -147,9 +185,15 @@ public class Game {
 
 		if (movedPiece instanceof Pawn && (move.getTo().getY() == 7 || move.getTo().getY() == 0)) {
 			pieces.put(move.getTo(), new Queen(movedPiece.getColor(), move.getTo()));
+			updateMoveNotationForPromote(move);
 		} else {
 			pieces.put(move.getTo(), movedPiece.moved(move.getTo()));
 		}
+	}
+
+	private void updateMoveNotationForPromote(Move move) {
+		Piece promotedTo = pieces.get(move.getTo());
+		moves.set(moves.size() - 1, moves.get(moves.size() - 1).withPromote(promotedTo));
 	}
 
 	private void updateCastlingAvailability() {
@@ -174,6 +218,24 @@ public class Game {
 		}
 	}
 
+	private void correctMoveNotationForCheck() {
+		Position kingPosition = pieces.values().stream()
+				.filter(e -> e instanceof King && e.getColor() == activeColor)
+				.map(Piece::getPosition)
+				.findFirst().orElseThrow(IllegalStateException::new);
+
+		boolean isInCheck = controlledSquares.get(getNonActiveColor()).contains(kingPosition);
+		boolean isInCheckMate = getGameResult() == GameResult.CHECKMATE;
+
+		if (isInCheckMate) {
+			MoveNotation lastMoveNotation = moves.remove(moves.size() - 1);
+			moves.add(lastMoveNotation.withCheckMate());
+		} else if (isInCheck) {
+			MoveNotation lastMoveNotation = moves.remove(moves.size() - 1);
+			moves.add(lastMoveNotation.withCheck());
+		}
+	}
+
 	public synchronized GameResult getGameResult() {
 		boolean activeColorHasLegalMoves = pieces.values().stream()
 				.filter(e -> e.getColor() == activeColor)
@@ -182,7 +244,7 @@ public class Game {
 				.isPresent();
 
 		if (activeColorHasLegalMoves) {
-			return GameResult.NONE;
+			return GameResult.ONGOING;
 		}
 
 		if (isActiveColorInCheck()) {
@@ -234,5 +296,9 @@ public class Game {
 
 	private User getActivePlayer() {
 		return activeColor == Color.WHITE ? white : black;
+	}
+
+	public List<MoveNotation> getMoves() {
+		return new ArrayList<>(moves);
 	}
 }

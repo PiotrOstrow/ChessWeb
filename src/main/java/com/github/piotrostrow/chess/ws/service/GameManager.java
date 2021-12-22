@@ -44,7 +44,7 @@ public class GameManager {
 			}
 
 			GameResult gameResult = game.getGameResult();
-			if (gameResult != GameResult.NONE) {
+			if (gameResult != GameResult.ONGOING) {
 				endGame(game, gameResult);
 				gameService.saveGame(game);
 			}

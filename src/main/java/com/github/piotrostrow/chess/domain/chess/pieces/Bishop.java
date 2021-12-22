@@ -13,6 +13,11 @@ public class Bishop extends Piece {
 	}
 
 	@Override
+	public String getPieceLetter() {
+		return "B";
+	}
+
+	@Override
 	public Set<Position> getPseudoLegalMoves(Map<Position, Piece> pieces) {
 		return getDiagonalMoves(pieces);
 	}

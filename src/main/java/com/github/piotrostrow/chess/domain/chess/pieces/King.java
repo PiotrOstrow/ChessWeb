@@ -14,6 +14,11 @@ public class King extends Piece {
 	}
 
 	@Override
+	public String getPieceLetter() {
+		return "K";
+	}
+
+	@Override
 	public Set<Position> getPseudoLegalMoves(Map<Position, Piece> pieces) {
 		Set<Position> result = new HashSet<>();
 

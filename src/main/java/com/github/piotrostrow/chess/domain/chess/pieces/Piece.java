@@ -26,6 +26,8 @@ public abstract class Piece {
 		return position;
 	}
 
+	public abstract String getPieceLetter();
+
 	public abstract Set<Position> getPseudoLegalMoves(Map<Position, Piece> pieces);
 
 	public abstract Piece moved(Position to);

@@ -14,6 +14,11 @@ public class Pawn extends Piece {
 	}
 
 	@Override
+	public String getPieceLetter() {
+		return "";
+	}
+
+	@Override
 	public Set<Position> getPseudoLegalMoves(Map<Position, Piece> pieces) {
 		Set<Position> result = new HashSet<>();
 

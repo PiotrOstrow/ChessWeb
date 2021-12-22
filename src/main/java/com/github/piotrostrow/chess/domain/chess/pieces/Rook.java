@@ -13,6 +13,11 @@ public class Rook extends Piece {
 	}
 
 	@Override
+	public String getPieceLetter() {
+		return "R";
+	}
+
+	@Override
 	public Set<Position> getPseudoLegalMoves(Map<Position, Piece> pieces) {
 		return getRookMoves(pieces);
 	}

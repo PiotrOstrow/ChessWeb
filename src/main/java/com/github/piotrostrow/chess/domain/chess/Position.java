@@ -52,8 +52,16 @@ public class Position {
 
 	@JsonValue
 	public String getNotation() {
-		char file = (char) (((byte) 'a') + x);
-		return String.valueOf(file) + (y + 1);
+		char file = getFile();
+		return String.valueOf(file) + getRank();
+	}
+
+	public char getFile() {
+		return (char) (((byte) 'a') + x);
+	}
+
+	public int getRank() {
+		return (y + 1);
 	}
 
 	@Override
