@@ -27,7 +27,7 @@ class GameTest {
 
 	@Test
 	void testGameResultDefaultStartingPosition() {
-		assertGameResult("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", GameResult.NONE);
+		assertGameResult("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", GameResult.ONGOING);
 	}
 
 	@Test
