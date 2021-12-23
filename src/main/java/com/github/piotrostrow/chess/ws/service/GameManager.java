@@ -27,8 +27,10 @@ public class GameManager {
 	public void startGame(User white, User black) {
 		Game game = new Game(white, black);
 
-		gameByUsername.put(white.getName(), game);
-		gameByUsername.put(black.getName(), game);
+		synchronized (gameByUsername) {
+			gameByUsername.put(white.getName(), game);
+			gameByUsername.put(black.getName(), game);
+		}
 
 		webSocketService.sendStartGame(white.getName(), black.getName());
 	}
@@ -60,7 +62,9 @@ public class GameManager {
 	}
 
 	public boolean isPlaying(User user) {
-		return gameByUsername.containsKey(user.getName());
+		synchronized (gameByUsername) { // locking here and on inserts is enough
+			return gameByUsername.containsKey(user.getName());
+		}
 	}
 
 	// TODO event listener here

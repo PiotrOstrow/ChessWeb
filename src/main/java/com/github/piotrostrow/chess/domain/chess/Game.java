@@ -61,6 +61,7 @@ public class Game {
 		controlledSquares.put(Color.BLACK, blacksControlledSquares);
 	}
 
+	// TODO: unit test method, maybe move it up to game manager
 	public synchronized boolean moveIfLegal(Move move, String playerName) {
 		if (getActivePlayer().getName().equals(playerName)) {
 			return moveIfLegal(move);
@@ -300,5 +301,21 @@ public class Game {
 
 	public List<MoveNotation> getMoves() {
 		return new ArrayList<>(moves);
+	}
+
+	/**
+	 * @throws IllegalStateException if game is ongoing or did not end in a checkmate
+	 */
+	public Color getWinner() throws IllegalStateException {
+		GameResult gameResult = getGameResult();
+		if (gameResult == GameResult.ONGOING) {
+			throw new IllegalStateException("Game is still ongoing");
+		}
+
+		if (gameResult != GameResult.CHECKMATE) {
+			throw new IllegalStateException("Game ended in a draw (" + gameResult + ") - no winner");
+		}
+
+		return getNonActiveColor();
 	}
 }
