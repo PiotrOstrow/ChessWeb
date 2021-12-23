@@ -188,6 +188,13 @@ class MoveNotationTest {
 		assertThat(moveNotation.getNotation()).isEqualTo("fxe8=Q#");
 	}
 
+	@Test
+	void testStackedPawnWithOneOnInitialPosition() {
+		MoveNotation moveNotation = notationFrom("4Q3/1pp4p/1p1p2pk/8/1PB5/P7/2PP1PPP/6K1 b - - 0 22", new Move("b6", "b5"));
+
+		assertThat(moveNotation.getNotation()).isEqualTo("b5");
+	}
+
 	private MoveNotation notationFrom(String fen, Move move) {
 		return notationFrom(new Fen(fen), move);
 	}

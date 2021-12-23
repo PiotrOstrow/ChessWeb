@@ -6,16 +6,24 @@ public class PgnSerializer {
 
 	static final int MAX_LINE_LENGTH = 80;
 	static final char LINE_BREAK = '\n';
+	static final boolean LIMIT_LINE_LENGTH_DEFAULT = false;
 
 	private PgnSerializer() {
 	}
 
 	public static String serialize(Game game) {
+		return serialize(game, LIMIT_LINE_LENGTH_DEFAULT);
+	}
+
+	public static String serialize(Game game, boolean limitLineLength) {
 		StringBuilder stringBuilder = new StringBuilder();
 
 		buildMoves(game, stringBuilder);
 		appendGameResult(game, stringBuilder);
-		breakIntoLines(stringBuilder);
+
+		if (limitLineLength) {
+			breakIntoLines(stringBuilder);
+		}
 
 		return stringBuilder.toString();
 	}

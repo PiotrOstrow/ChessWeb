@@ -17,6 +17,7 @@ public class GameEntity {
 	@OneToMany(mappedBy = "game", fetch = FetchType.LAZY)
 	private Set<GamePlayedEntity> gamesPlayed = new HashSet<>();
 
+	@Column(length = 4096)
 	private String pgn;
 
 	private Color winner;

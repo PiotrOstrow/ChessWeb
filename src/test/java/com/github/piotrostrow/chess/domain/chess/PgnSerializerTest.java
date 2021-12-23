@@ -92,7 +92,7 @@ class PgnSerializerTest {
 			game.moveIfLegal(new Move("c6", "b8"));
 		}
 
-		String actual = PgnSerializer.serialize(game);
+		String actual = PgnSerializer.serialize(game, true);
 
 		Arrays.stream(actual.split(String.valueOf(PgnSerializer.LINE_BREAK)))
 				.forEach(e -> assertThat(e.length()).isLessThanOrEqualTo(PgnSerializer.MAX_LINE_LENGTH));

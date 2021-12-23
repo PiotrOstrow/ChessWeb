@@ -74,11 +74,34 @@ class PawnTest {
 		Piece piece = new Bishop(Color.BLACK, pawn.getPosition().plus(1, 1));
 		Piece piece2 = new Pawn(Color.BLACK, pawn.getPosition().plus(-1, 1));
 		Map<Position, Piece> pieces = Map.of(piece.getPosition(), piece, piece2.getPosition(), piece2);
+
 		Collection<Position> actual = pawn.getPseudoLegalMoves(pieces);
 
 		assertThat(actual)
 				.hasSize(3)
 				.contains(piece.getPosition())
 				.contains(piece2.getPosition());
+	}
+
+	@Test
+	void testWhitePawnInInitialPositionBlockedByOwnPawn() {
+		Pawn pawn = new Pawn(Color.WHITE, new Position("e2"));
+		Pawn blockingPawn = new Pawn(Color.WHITE, new Position("e3"));
+
+		Map<Position, Piece> pieces = Map.of(pawn.getPosition(), pawn, blockingPawn.getPosition(), blockingPawn);
+
+		Collection<Position> actual = pawn.getPseudoLegalMoves(pieces);
+		assertThat(actual).isEmpty();
+	}
+
+	@Test
+	void testBlackPawnInInitialPositionBlockedByOwnPawn() {
+		Pawn pawn = new Pawn(Color.BLACK, new Position("e7"));
+		Pawn blockingPawn = new Pawn(Color.WHITE, new Position("e6"));
+
+		Map<Position, Piece> pieces = Map.of(pawn.getPosition(), pawn, blockingPawn.getPosition(), blockingPawn);
+
+		Collection<Position> actual = pawn.getPseudoLegalMoves(pieces);
+		assertThat(actual).isEmpty();
 	}
 }

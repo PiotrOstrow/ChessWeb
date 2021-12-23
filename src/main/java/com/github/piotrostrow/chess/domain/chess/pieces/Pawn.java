@@ -27,12 +27,12 @@ public class Pawn extends Piece {
 		Position first = getPosition().plusY(direction);
 		if (!pieces.containsKey(first)) {
 			result.add(first);
-		}
 
-		if (hasNotMoved()) {
-			Position second = getPosition().plusY(direction * 2);
-			if (!pieces.containsKey(second)) {
-				result.add(second);
+			if (hasNotMoved()) {
+				Position second = getPosition().plusY(direction * 2);
+				if (!pieces.containsKey(second)) {
+					result.add(second);
+				}
 			}
 		}
 
