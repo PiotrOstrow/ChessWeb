@@ -1,6 +1,5 @@
-package com.github.piotrostrow.chess.ws;
+package com.github.piotrostrow.chess.ws.game;
 
-import com.github.piotrostrow.chess.domain.User;
 import com.github.piotrostrow.chess.domain.chess.Color;
 import com.github.piotrostrow.chess.domain.chess.Game;
 import com.github.piotrostrow.chess.domain.chess.GameResult;
@@ -10,20 +9,20 @@ import java.security.Principal;
 
 public class GameSession {
 
-	private final User white;
-	private final User black;
+	private final Player white;
+	private final Player black;
 
 	private final Game game;
 
 	public GameSession(Principal white, Principal black) {
-		this.white = new User(white.getName(), Color.WHITE);
-		this.black = new User(black.getName(), Color.BLACK);
+		this.white = new Player(white.getName(), Color.WHITE);
+		this.black = new Player(black.getName(), Color.BLACK);
 
 		this.game = new Game();
 	}
 
 	public boolean move(Move move, Principal player) {
-		User user = getPlayerByName(player.getName());
+		Player user = getPlayerByName(player.getName());
 
 		synchronized (game) {
 			if (game.getActiveColor() == user.getColor()) {
@@ -34,7 +33,7 @@ public class GameSession {
 		return false;
 	}
 
-	private User getPlayerByName(String name) {
+	private Player getPlayerByName(String name) {
 		if (white.getName().equals(name)) {
 			return white;
 		} else if (black.getName().equals(name)) {
@@ -54,11 +53,11 @@ public class GameSession {
 		return game;
 	}
 
-	public User getWhite() {
+	public Player getWhite() {
 		return white;
 	}
 
-	public User getBlack() {
+	public Player getBlack() {
 		return black;
 	}
 }

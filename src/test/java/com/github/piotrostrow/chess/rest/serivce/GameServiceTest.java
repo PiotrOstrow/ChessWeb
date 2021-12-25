@@ -6,7 +6,7 @@ import com.github.piotrostrow.chess.entity.UserEntity;
 import com.github.piotrostrow.chess.repository.GamePlayedRepository;
 import com.github.piotrostrow.chess.repository.GameRepository;
 import com.github.piotrostrow.chess.repository.UserRepository;
-import com.github.piotrostrow.chess.ws.GameSession;
+import com.github.piotrostrow.chess.ws.game.GameSession;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;

@@ -1,6 +1,7 @@
 package com.github.piotrostrow.chess.ws;
 
 import com.github.piotrostrow.chess.ws.dto.Move;
+import com.github.piotrostrow.chess.ws.game.GameSession;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 

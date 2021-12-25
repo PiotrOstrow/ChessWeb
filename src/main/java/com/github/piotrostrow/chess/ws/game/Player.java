@@ -1,13 +1,13 @@
-package com.github.piotrostrow.chess.domain;
+package com.github.piotrostrow.chess.ws.game;
 
 import com.github.piotrostrow.chess.domain.chess.Color;
 
-public class User { // TODO: rename to player
+public class Player {
 
 	private final String name;
 	private final Color color;
 
-	public User(String name, Color color) {
+	public Player(String name, Color color) {
 		this.name = name;
 		this.color = color;
 	}

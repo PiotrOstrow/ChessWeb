@@ -2,8 +2,8 @@ package com.github.piotrostrow.chess.ws.service;
 
 import com.github.piotrostrow.chess.domain.chess.GameResult;
 import com.github.piotrostrow.chess.rest.serivce.GameService;
-import com.github.piotrostrow.chess.ws.GameSession;
 import com.github.piotrostrow.chess.ws.dto.Move;
+import com.github.piotrostrow.chess.ws.game.GameSession;
 import org.springframework.stereotype.Component;
 
 import java.security.Principal;

@@ -10,7 +10,7 @@ import com.github.piotrostrow.chess.repository.GameRepository;
 import com.github.piotrostrow.chess.repository.UserRepository;
 import com.github.piotrostrow.chess.rest.dto.GameDto;
 import com.github.piotrostrow.chess.util.Util;
-import com.github.piotrostrow.chess.ws.GameSession;
+import com.github.piotrostrow.chess.ws.game.GameSession;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
