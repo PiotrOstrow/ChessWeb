@@ -1,6 +1,5 @@
 package com.github.piotrostrow.chess.ws.service;
 
-import com.github.piotrostrow.chess.domain.User;
 import com.github.piotrostrow.chess.domain.chess.GameResult;
 import com.github.piotrostrow.chess.rest.serivce.GameService;
 import com.github.piotrostrow.chess.ws.dto.Move;
@@ -16,11 +15,8 @@ import static org.mockito.Mockito.*;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class GameManagerTest {
 
-	private final User white = new User("white123");
-	private final User black = new User("black321");
-
-	private final Principal principalWhite = new UsernamePasswordAuthenticationToken(white.getName(), "");
-	private final Principal principalBlack = new UsernamePasswordAuthenticationToken(black.getName(), "");
+	private final Principal white = new UsernamePasswordAuthenticationToken("white123", "");
+	private final Principal black = new UsernamePasswordAuthenticationToken("black321", "");
 
 	@Test
 	void testStartGame() {
@@ -45,10 +41,10 @@ class GameManagerTest {
 		Move whiteMove = new Move("e2", "e4");
 		Move blackMove = new Move("e7", "e5");
 
-		gameManager.move(principalWhite, whiteMove);
+		gameManager.move(white, whiteMove);
 		verify(webSocketService, times(1)).sendMove(black.getName(), whiteMove);
 
-		gameManager.move(principalBlack, blackMove);
+		gameManager.move(black, blackMove);
 		verify(webSocketService, times(1)).sendMove(white.getName(), blackMove);
 
 		verify(gameService, never()).saveGame(any());
@@ -60,7 +56,7 @@ class GameManagerTest {
 		GameService gameService = mock(GameService.class);
 		GameManager gameManager = new GameManager(webSocketService, gameService);
 
-		gameManager.move(principalWhite, new Move("e2", "e4"));
+		gameManager.move(white, new Move("e2", "e4"));
 
 		verify(webSocketService, never()).sendMove(any(), any());
 		verify(gameService, never()).saveGame(any());
@@ -74,7 +70,7 @@ class GameManagerTest {
 		gameManager.startGame(white, black);
 
 		assertThat(gameManager.isPlaying(white)).isTrue();
-		gameManager.move(principalWhite, new Move("e2", "f4"));
+		gameManager.move(white, new Move("e2", "f4"));
 
 		verify(webSocketService, never()).sendMove(any(), any());
 		verify(gameService, never()).saveGame(any());
@@ -88,7 +84,7 @@ class GameManagerTest {
 		gameManager.startGame(white, black);
 
 		assertThat(gameManager.isPlaying(black)).isTrue();
-		gameManager.move(principalBlack, new Move("e7", "e6"));
+		gameManager.move(black, new Move("e7", "e6"));
 
 		verify(webSocketService, never()).sendMove(any(), any());
 		verify(gameService, never()).saveGame(any());
@@ -106,10 +102,10 @@ class GameManagerTest {
 		Move whiteMove2 = new Move("g2", "g4");
 		Move blackMove2 = new Move("d8", "h4");
 
-		gameManager.move(principalWhite, whiteMove1);
-		gameManager.move(principalBlack, blackMove1);
-		gameManager.move(principalWhite, whiteMove2);
-		gameManager.move(principalBlack, blackMove2);
+		gameManager.move(white, whiteMove1);
+		gameManager.move(black, blackMove1);
+		gameManager.move(white, whiteMove2);
+		gameManager.move(black, blackMove2);
 
 		verify(gameService, times(1)).saveGame(any());
 		verify(webSocketService, times(1)).sendGameOver(white.getName(), GameResult.CHECKMATE);

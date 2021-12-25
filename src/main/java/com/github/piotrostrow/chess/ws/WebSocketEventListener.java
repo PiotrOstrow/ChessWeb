@@ -1,6 +1,5 @@
 package com.github.piotrostrow.chess.ws;
 
-import com.github.piotrostrow.chess.domain.User;
 import com.github.piotrostrow.chess.ws.service.GameManager;
 import com.github.piotrostrow.chess.ws.service.Matchmaker;
 import org.springframework.context.event.EventListener;
@@ -25,10 +24,12 @@ public class WebSocketEventListener {
 	public void handleSessionDisconnected(SessionDisconnectEvent event) {
 		SimpMessageHeaderAccessor accessor = SimpMessageHeaderAccessor.wrap(event.getMessage());
 		Principal principal = accessor.getUser();
-		if(principal != null) {
-			User user = new User(principal.getName());
-			matchmaker.removeFromQueue(user);
-			gameManager.disconnected(user);
+
+		if (principal == null) {
+			throw new IllegalStateException("principal is null on disconnect");
 		}
+
+		matchmaker.removeFromQueue(principal);
+		gameManager.disconnected(principal);
 	}
 }

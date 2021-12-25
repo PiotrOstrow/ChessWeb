@@ -1,6 +1,5 @@
 package com.github.piotrostrow.chess.domain.chess;
 
-import com.github.piotrostrow.chess.domain.User;
 import com.github.piotrostrow.chess.ws.dto.Move;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +11,7 @@ class PgnSerializerTest {
 
 	@Test
 	void testSingleMove() {
-		Game game = new Game(new User("white"), new User("black"));
+		Game game = new Game();
 		game.moveIfLegal(new Move("e2", "e4"));
 
 		String actual = PgnSerializer.serialize(game);
@@ -22,7 +21,7 @@ class PgnSerializerTest {
 
 	@Test
 	void testTwoMoves() {
-		Game game = new Game(new User("white"), new User("black"));
+		Game game = new Game();
 		game.moveIfLegal(new Move("e2", "e4"));
 		game.moveIfLegal(new Move("e7", "e5"));
 
@@ -33,7 +32,7 @@ class PgnSerializerTest {
 
 	@Test
 	void testFourMoves() {
-		Game game = new Game(new User("white"), new User("black"));
+		Game game = new Game();
 		game.moveIfLegal(new Move("e2", "e4"));
 		game.moveIfLegal(new Move("e7", "e5"));
 		game.moveIfLegal(new Move("g1", "f3"));
@@ -46,7 +45,7 @@ class PgnSerializerTest {
 
 	@Test
 	void testCheckMateWhiteWins() {
-		Game game = new Game(new User("white"), new User("black"));
+		Game game = new Game();
 		game.moveIfLegal(new Move("e2", "e4"));
 		game.moveIfLegal(new Move("f7", "f6"));
 		game.moveIfLegal(new Move("b1", "c3"));
@@ -59,7 +58,7 @@ class PgnSerializerTest {
 
 	@Test
 	void testCheckMateBlackWins() {
-		Game game = new Game(new User("white"), new User("black"));
+		Game game = new Game();
 		game.moveIfLegal(new Move("f2", "f3"));
 		game.moveIfLegal(new Move("e7", "e5"));
 		game.moveIfLegal(new Move("g2", "g4"));
@@ -72,7 +71,7 @@ class PgnSerializerTest {
 	@Test
 	void testDrawStaleMate() {
 		// TODO: starting fen
-		Game game = new Game(new User("white"), new User("black"), new Fen("6k1/1Q6/4K3/8/8/8/PPP5/3R4 w - - 0 1"));
+		Game game = new Game(new Fen("6k1/1Q6/4K3/8/8/8/PPP5/3R4 w - - 0 1"));
 		game.moveIfLegal(new Move("b7", "f7"));
 		game.moveIfLegal(new Move("g8", "h8"));
 		game.moveIfLegal(new Move("d1", "d7"));
@@ -83,7 +82,7 @@ class PgnSerializerTest {
 
 	@Test
 	void testMaxLineLength() {
-		Game game = new Game(new User("white"), new User("black"));
+		Game game = new Game();
 
 		for (int i = 0; i < 10; i++) {
 			game.moveIfLegal(new Move("b1", "c3"));

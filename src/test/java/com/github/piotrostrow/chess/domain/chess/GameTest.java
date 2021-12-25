@@ -1,6 +1,5 @@
 package com.github.piotrostrow.chess.domain.chess;
 
-import com.github.piotrostrow.chess.domain.User;
 import com.github.piotrostrow.chess.domain.chess.pieces.*;
 import com.github.piotrostrow.chess.ws.dto.Move;
 import org.junit.jupiter.api.Test;
@@ -12,13 +11,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class GameTest {
 
-	private final User white = new User("white");
-	private final User black = new User("white");
-
 	@Test
 	void testGameActiveColor() {
 		Fen fen = new Fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-		Game game = new Game(white, black, fen);
+		Game game = new Game(fen);
 
 		assertThat(game.moveIfLegal(new Move("e2", "e4"))).isTrue();
 		assertThat(game.moveIfLegal(new Move("d2", "d4"))).isFalse();
@@ -262,7 +258,7 @@ class GameTest {
 
 	@Test
 	void testGetWinnerGameOngoingShouldThrowIllegalStateException() {
-		Game game = new Game(white, black, new Fen("6k1/2Q5/4K3/8/8/8/PPP1R3/8 b - - 0 1"));
+		Game game = new Game(new Fen("6k1/2Q5/4K3/8/8/8/PPP1R3/8 b - - 0 1"));
 		assertThat(game.getGameResult()).isEqualTo(GameResult.ONGOING);
 		assertThatThrownBy(game::getWinner).isInstanceOf(IllegalStateException.class);
 	}
@@ -274,32 +270,32 @@ class GameTest {
 
 	@Test
 	void testGetWinnerGameEndedInStaleMateShouldThrowIllegalStateException() {
-		Game game = new Game(white, black, new Fen("7k/5Q2/4K3/3R4/8/8/PPP5/8 b - - 0 1"));
+		Game game = new Game(new Fen("7k/5Q2/4K3/3R4/8/8/PPP5/8 b - - 0 1"));
 		assertThat(game.getGameResult()).isEqualTo(GameResult.STALEMATE);
 		assertThatThrownBy(game::getWinner).isInstanceOf(IllegalStateException.class);
 	}
 
 	@Test
 	void testGetWinnerWhite() {
-		Game game = new Game(white, black, new Fen("rnbqkbnr/ppppp2p/5p2/6pQ/4P3/2N5/PPPP1PPP/R1B1KBNR b KQkq - 1 3"));
+		Game game = new Game(new Fen("rnbqkbnr/ppppp2p/5p2/6pQ/4P3/2N5/PPPP1PPP/R1B1KBNR b KQkq - 1 3"));
 		assertThat(game.getGameResult()).isEqualTo(GameResult.CHECKMATE);
 		assertThat(game.getWinner()).isEqualTo(Color.WHITE);
 	}
 
 	@Test
 	void testGetWinnerBlack() {
-		Game game = new Game(white, black, new Fen("rnb1kbnr/pppp1ppp/8/4p3/6Pq/5P2/PPPPP2P/RNBQKBNR w KQkq - 1 3"));
+		Game game = new Game(new Fen("rnb1kbnr/pppp1ppp/8/4p3/6Pq/5P2/PPPPP2P/RNBQKBNR w KQkq - 1 3"));
 		assertThat(game.getGameResult()).isEqualTo(GameResult.CHECKMATE);
 		assertThat(game.getWinner()).isEqualTo(Color.BLACK);
 	}
 
 	private Game gameFrom(String fen) {
-		return new Game(white, black, new Fen(fen));
+		return new Game(new Fen(fen));
 	}
 
 	private void assertGameResult(String s, GameResult checkmate) {
 		Fen fen = new Fen(s);
-		Game game = new Game(white, black, fen);
+		Game game = new Game(fen);
 
 		assertThat(game.getGameResult()).isEqualTo(checkmate);
 	}

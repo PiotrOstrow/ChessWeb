@@ -1,6 +1,5 @@
 package com.github.piotrostrow.chess.ws.controller;
 
-import com.github.piotrostrow.chess.domain.User;
 import com.github.piotrostrow.chess.ws.dto.Move;
 import com.github.piotrostrow.chess.ws.service.GameManager;
 import com.github.piotrostrow.chess.ws.service.Matchmaker;
@@ -22,7 +21,7 @@ public class MessageController {
 
 	@MessageMapping("/play")
 	public void handlePlay(Principal principal) {
-		matchmaker.addToQueue(new User(principal.getName()));
+		matchmaker.addToQueue(principal);
 	}
 
 	@MessageMapping("/move")

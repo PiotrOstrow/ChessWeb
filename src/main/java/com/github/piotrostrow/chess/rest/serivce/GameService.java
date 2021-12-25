@@ -1,7 +1,6 @@
 package com.github.piotrostrow.chess.rest.serivce;
 
 import com.github.piotrostrow.chess.domain.chess.Color;
-import com.github.piotrostrow.chess.domain.chess.Game;
 import com.github.piotrostrow.chess.domain.chess.PgnSerializer;
 import com.github.piotrostrow.chess.entity.GameEntity;
 import com.github.piotrostrow.chess.entity.GamePlayedEntity;
@@ -11,6 +10,7 @@ import com.github.piotrostrow.chess.repository.GameRepository;
 import com.github.piotrostrow.chess.repository.UserRepository;
 import com.github.piotrostrow.chess.rest.dto.GameDto;
 import com.github.piotrostrow.chess.util.Util;
+import com.github.piotrostrow.chess.ws.GameSession;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -45,11 +45,11 @@ public class GameService {
 		return List.of();
 	}
 
-	public void saveGame(Game game) {
-		UserEntity white = userRepository.findByUsername(game.getWhite().getName()).orElseThrow();
-		UserEntity black = userRepository.findByUsername(game.getBlack().getName()).orElseThrow();
+	public void saveGame(GameSession gameSession) {
+		UserEntity white = userRepository.findByUsername(gameSession.getWhite().getName()).orElseThrow();
+		UserEntity black = userRepository.findByUsername(gameSession.getBlack().getName()).orElseThrow();
 
-		String pgnSerialized = PgnSerializer.serialize(game);
+		String pgnSerialized = PgnSerializer.serialize(gameSession.getGame());
 
 		GameEntity gameEntity = new GameEntity();
 		gameEntity.setPgn(pgnSerialized);

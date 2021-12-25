@@ -1,10 +1,10 @@
 package com.github.piotrostrow.chess.ws.service;
 
-import com.github.piotrostrow.chess.domain.User;
+import java.security.Principal;
 
 public interface Matchmaker {
 
-	void addToQueue(User user);
+	void addToQueue(Principal user);
 
-	void removeFromQueue(User user);
+	void removeFromQueue(Principal user);
 }

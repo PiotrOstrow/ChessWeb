@@ -1,6 +1,5 @@
 package com.github.piotrostrow.chess.domain.chess;
 
-import com.github.piotrostrow.chess.domain.User;
 import com.github.piotrostrow.chess.domain.chess.pieces.King;
 import com.github.piotrostrow.chess.domain.chess.pieces.Pawn;
 import com.github.piotrostrow.chess.domain.chess.pieces.Piece;
@@ -11,9 +10,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Game {
-
-	private final User white;
-	private final User black;
 
 	private final Map<Position, Piece> pieces;
 	private final Map<Color, Set<Position>> controlledSquares = new EnumMap<>(Color.class);
@@ -26,13 +22,11 @@ public class Game {
 
 	private final List<MoveNotation> moves = new ArrayList<>();
 
-	public Game(User white, User black) {
-		this(white, black, Fen.DEFAULT_STARTING_POSITION);
+	public Game() {
+		this(Fen.DEFAULT_STARTING_POSITION);
 	}
 
-	public Game(User white, User black, Fen fen) {
-		this.white = white;
-		this.black = black;
+	public Game(Fen fen) {
 		this.pieces = fen.getPieces().stream().collect(Collectors.toMap(Piece::getPosition, e -> e));
 		this.activeColor = fen.getActiveColor();
 		this.castlingAvailability = new HashSet<>(fen.getCastlingAvailability());
@@ -61,16 +55,7 @@ public class Game {
 		controlledSquares.put(Color.BLACK, blacksControlledSquares);
 	}
 
-	// TODO: unit test method, maybe move it up to game manager
-	public synchronized boolean moveIfLegal(Move move, String playerName) {
-		if (getActivePlayer().getName().equals(playerName)) {
-			return moveIfLegal(move);
-		}
-
-		return false;
-	}
-
-	boolean moveIfLegal(Move move) {
+	public boolean moveIfLegal(Move move) {
 		if (isMoveLegal(move)) {
 			recordMoveNotation(move);
 			move(move);
@@ -237,7 +222,7 @@ public class Game {
 		}
 	}
 
-	public synchronized GameResult getGameResult() {
+	public GameResult getGameResult() {
 		boolean activeColorHasLegalMoves = pieces.values().stream()
 				.filter(e -> e.getColor() == activeColor)
 				.flatMap(e -> legalMoves.get(e.getPosition()).stream())
@@ -263,20 +248,12 @@ public class Game {
 		return controlledSquares.get(getNonActiveColor()).contains(king.getPosition());
 	}
 
-	Color getActiveColor() {
+	public Color getActiveColor() {
 		return activeColor;
 	}
 
-	Color getNonActiveColor() {
+	public Color getNonActiveColor() {
 		return activeColor == Color.WHITE ? Color.BLACK : Color.WHITE;
-	}
-
-	public User getWhite() {
-		return white;
-	}
-
-	public User getBlack() {
-		return black;
 	}
 
 	Map<Position, Piece> getPieces() {
@@ -293,10 +270,6 @@ public class Game {
 
 	Set<Position> getControlledSquares(Color color) {
 		return Collections.unmodifiableSet(controlledSquares.get(color));
-	}
-
-	private User getActivePlayer() {
-		return activeColor == Color.WHITE ? white : black;
 	}
 
 	public List<MoveNotation> getMoves() {

@@ -1,6 +1,5 @@
 package com.github.piotrostrow.chess.domain.chess;
 
-import com.github.piotrostrow.chess.domain.User;
 import com.github.piotrostrow.chess.domain.chess.pieces.Piece;
 import com.github.piotrostrow.chess.domain.chess.pieces.Rook;
 import com.github.piotrostrow.chess.ws.dto.Move;
@@ -335,7 +334,7 @@ class MoveGeneratorTest {
 	}
 
 	private Map<Position, Set<Position>> getLegalMoves(Fen fen) {
-		Game game = new Game(new User("white"), new User("black"), fen);
+		Game game = new Game(fen);
 		return MoveGenerator.generateLegalMoves(game);
 	}
 

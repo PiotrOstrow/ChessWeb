@@ -1,9 +1,8 @@
 package com.github.piotrostrow.chess.ws.service;
 
-import com.github.piotrostrow.chess.domain.User;
-import com.github.piotrostrow.chess.domain.chess.Game;
 import com.github.piotrostrow.chess.domain.chess.GameResult;
 import com.github.piotrostrow.chess.rest.serivce.GameService;
+import com.github.piotrostrow.chess.ws.GameSession;
 import com.github.piotrostrow.chess.ws.dto.Move;
 import org.springframework.stereotype.Component;
 
@@ -17,67 +16,69 @@ public class GameManager {
 	private final WebSocketService webSocketService;
 	private final GameService gameService;
 
-	private final Map<String, Game> gameByUsername = new ConcurrentHashMap<>();
+	private final Map<String, GameSession> gamesByUsername = new ConcurrentHashMap<>();
 
 	public GameManager(WebSocketService webSocketService, GameService gameService) {
 		this.webSocketService = webSocketService;
 		this.gameService = gameService;
 	}
 
-	public void startGame(User white, User black) {
-		Game game = new Game(white, black);
+	public void startGame(Principal white, Principal black) {
+		GameSession game = new GameSession(white, black);
 
-		synchronized (gameByUsername) {
-			gameByUsername.put(white.getName(), game);
-			gameByUsername.put(black.getName(), game);
+		synchronized (gamesByUsername) {
+			gamesByUsername.put(white.getName(), game);
+			gamesByUsername.put(black.getName(), game);
 		}
 
 		webSocketService.sendStartGame(white.getName(), black.getName());
 	}
 
-	// TODO unit test
 	public void move(Principal principal, Move move) {
-		Game game = gameByUsername.get(principal.getName());
-		if (game != null && game.moveIfLegal(move, principal.getName())) {
-			if (principal.getName().equals(game.getWhite().getName())) {
-				webSocketService.sendMove(game.getBlack().getName(), move);
-			} else {
-				webSocketService.sendMove(game.getWhite().getName(), move);
-			}
+		GameSession gameSession = gamesByUsername.get(principal.getName());
 
-			GameResult gameResult = game.getGameResult();
-			if (gameResult != GameResult.ONGOING) {
-				endGame(game, gameResult);
-				gameService.saveGame(game);
-			}
+		if (gameSession == null || !gameSession.move(move, principal)) {
+			return;
+		}
+
+		if (principal.getName().equals(gameSession.getWhite().getName())) {
+			webSocketService.sendMove(gameSession.getBlack().getName(), move);
+		} else {
+			webSocketService.sendMove(gameSession.getWhite().getName(), move);
+		}
+
+		if (gameSession.getGameResult() != GameResult.ONGOING) {
+			endGame(gameSession, gameSession.getGameResult());
 		}
 	}
 
-	private void endGame(Game game, GameResult gameResult) {
-		webSocketService.sendGameOver(game.getWhite().getName(), gameResult);
-		webSocketService.sendGameOver(game.getBlack().getName(), gameResult);
+	private void endGame(GameSession gameSession, GameResult gameResult) {
+		webSocketService.sendGameOver(gameSession.getWhite().getName(), gameResult);
+		webSocketService.sendGameOver(gameSession.getBlack().getName(), gameResult);
 
-		gameByUsername.remove(game.getWhite().getName());
-		gameByUsername.remove(game.getBlack().getName());
+		gamesByUsername.remove(gameSession.getWhite().getName());
+		gamesByUsername.remove(gameSession.getBlack().getName());
+
+		gameService.saveGame(gameSession);
 	}
 
-	public boolean isPlaying(User user) {
-		synchronized (gameByUsername) { // locking here and on inserts is enough
-			return gameByUsername.containsKey(user.getName());
+	public boolean isPlaying(Principal user) {
+		synchronized (gamesByUsername) { // locking here and on inserts is enough
+			return gamesByUsername.containsKey(user.getName());
 		}
 	}
 
 	// TODO event listener here
-	public void disconnected(User user) {
-		Game game = gameByUsername.get(user.getName());
-		if (game != null) {
-			gameByUsername.remove(game.getWhite().getName());
-			gameByUsername.remove(game.getBlack().getName());
+	public void disconnected(Principal user) {
+		GameSession gameSession = gamesByUsername.get(user.getName());
+		if (gameSession != null) {
+			gamesByUsername.remove(gameSession.getWhite().getName());
+			gamesByUsername.remove(gameSession.getBlack().getName());
 
-			if (user.getName().equals(game.getWhite().getName())) {
-				webSocketService.sendGameOver(game.getBlack().getName(), GameResult.DISCONNECTED);
+			if (user.getName().equals(gameSession.getWhite().getName())) {
+				webSocketService.sendGameOver(gameSession.getBlack().getName(), GameResult.DISCONNECTED);
 			} else {
-				webSocketService.sendGameOver(game.getWhite().getName(), GameResult.DISCONNECTED);
+				webSocketService.sendGameOver(gameSession.getWhite().getName(), GameResult.DISCONNECTED);
 			}
 		}
 	}

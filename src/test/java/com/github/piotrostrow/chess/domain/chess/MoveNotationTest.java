@@ -1,6 +1,5 @@
 package com.github.piotrostrow.chess.domain.chess;
 
-import com.github.piotrostrow.chess.domain.User;
 import com.github.piotrostrow.chess.ws.dto.Move;
 import org.junit.jupiter.api.Test;
 
@@ -200,7 +199,7 @@ class MoveNotationTest {
 	}
 
 	private MoveNotation notationFrom(Fen fen, Move move) {
-		Game game = new Game(new User("white"), new User("black"), fen);
+		Game game = new Game(fen);
 		game.moveIfLegal(move);
 		List<MoveNotation> moves = game.getMoves();
 		return moves.get(moves.size() - 1);
