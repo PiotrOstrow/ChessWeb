@@ -2,10 +2,18 @@ import axios from 'axios';
 import GameApi from "./GameApi";
 
 let jwtToken = null;
+let user = {
+    username: null,
+    roles: []
+}
 
 const authInstance = axios.create();
 authInstance.interceptors.response.use(response => {
     jwtToken = response.headers.authorization;
+
+    user.username = response.data.username;
+    user.roles = response.data.roles;
+
     return response;
 })
 
@@ -32,6 +40,9 @@ const Api = {
     },
     gameApi(onConnect) {
         return new GameApi(jwtToken, onConnect);
+    },
+    getUsername() {
+        return user.username;
     }
 }
 

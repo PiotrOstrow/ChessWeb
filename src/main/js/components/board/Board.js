@@ -34,7 +34,10 @@ function Board(props) {
                 onMouseEnter={pos => setHighlight(pos)}
                 onMouseLeave={() => setHighlight(null)}
                 onMouseUp={() => move(position)}
-                onMouseDown={() => setDraggingFrom(position)}
+                onMouseDown={() => {
+                    setDraggingFrom(position);
+                    props.onStartMove()
+                }}
                 flipped={props.flipped}
             />);
 
@@ -44,6 +47,7 @@ function Board(props) {
                 {squares}
             </div>
             {pieces}
+            {props.children}
         </div>
     )
 }

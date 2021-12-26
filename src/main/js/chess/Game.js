@@ -23,6 +23,7 @@ function getPieceName(type) {
 class Game {
     constructor() {
         this.chess = new Chess();
+        this.positionHistory = [this.getChessPosition()];
     }
 
     getChessPosition() {
@@ -45,6 +46,10 @@ class Game {
         return new ChessPosition(pieces);
     }
 
+    getPreviousPosition(i) {
+        return this.positionHistory[i];
+    }
+
     getActiveColor() {
         return this.chess.turn() === 'w' ? 'WHITE' : 'BLACK';
     }
@@ -52,6 +57,7 @@ class Game {
     move(from, to) {
         if (this.isMoveLegal(from, to)) {
             this.chess.move(from + to, {sloppy: true});
+            this.positionHistory.push(this.getChessPosition())
         }
     }
 
@@ -75,6 +81,10 @@ class Game {
 
     reset() {
         this.chess.reset();
+    }
+
+    getMoveHistory() {
+        return this.chess.history({verbose: true});
     }
 }
 

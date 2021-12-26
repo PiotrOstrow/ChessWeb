@@ -27,7 +27,7 @@ form {
     padding: 20px;
 }
 
-input, button{
+form input, form button {
     display: block;
     padding: 8px;
     width: 200px;
@@ -75,3 +75,17 @@ input[type="submit"] {
 .modal button {
     border: solid 1px blacK;
 }
+
+::-webkit-scrollbar-track {
+    background-color: white;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    background-color: white;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #90caf9;
+}
+

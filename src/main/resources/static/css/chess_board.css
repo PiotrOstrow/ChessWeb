@@ -1,11 +1,17 @@
+:root {
+    --board-dimension: min(80vh, calc(80vw - 300px));
+}
 
 .board {
     position: relative;
-    --board-dimension: min(80vh, 80vw);
     width: var(--board-dimension);
     height: var(--board-dimension);
-    margin: 10px auto;
     border: solid 4px white;
+}
+
+.side-panel {
+    height: var(--board-dimension);
+    width: 250px;
 }
 
 .square-container {

@@ -18,8 +18,8 @@ public class WebSocketService {
 	}
 
 	public void sendStartGame(String whiteUsername, String blackUsername) {
-		simpMessagingTemplate.convertAndSendToUser(whiteUsername, "/topic/game-start", new Start(Color.WHITE));
-		simpMessagingTemplate.convertAndSendToUser(blackUsername, "/topic/game-start", new Start(Color.BLACK));
+		simpMessagingTemplate.convertAndSendToUser(whiteUsername, "/topic/game-start", new Start(Color.WHITE, blackUsername));
+		simpMessagingTemplate.convertAndSendToUser(blackUsername, "/topic/game-start", new Start(Color.BLACK, whiteUsername));
 	}
 
 	public void sendMove(String username, Move move) {

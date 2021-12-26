@@ -25,11 +25,9 @@ public class WebSocketEventListener {
 		SimpMessageHeaderAccessor accessor = SimpMessageHeaderAccessor.wrap(event.getMessage());
 		Principal principal = accessor.getUser();
 
-		if (principal == null) {
-			throw new IllegalStateException("principal is null on disconnect");
+		if (principal != null) {
+			matchmaker.removeFromQueue(principal);
+			gameManager.disconnected(principal);
 		}
-
-		matchmaker.removeFromQueue(principal);
-		gameManager.disconnected(principal);
 	}
 }

@@ -4,6 +4,7 @@ import ChessPosition from "./chess/ChessPosition";
 import Api from "./api/Api";
 import Board from "./components/board/Board";
 import ChessBoardModal from "./components/ChessBoardModal";
+import SidePanel from "./components/SidePanel";
 
 function GameComponent() {
     const [gameApi, setGameApi] = useState(null);
@@ -14,6 +15,8 @@ function GameComponent() {
     const [lastGameResult, setLastGameResult] = useState(null);
     const [color, setColor] = useState('WHITE');
     const [legalMoves, setLegalMoves] = useState(new Map());
+    const [moveHistory, setMoveHistory] = useState([]);
+    const [opponentName, setOpponentName] = useState(null);
 
     useEffect(() => {
         const gameApi = Api.gameApi();
@@ -23,6 +26,7 @@ function GameComponent() {
             setIsInQue(false)
             setColor(data.color);
             setChessPosition(ChessPosition.default());
+            setOpponentName(data.opponent);
             game.reset();
         };
         gameApi.onRecvGameOver = data => onGameOver(data);
@@ -30,7 +34,6 @@ function GameComponent() {
     }, []);
 
     useEffect(() => {
-        console.log(game.getLegalMoves());
         setLegalMoves(game.getLegalMoves());
     }, [chessPosition]);
 
@@ -43,6 +46,7 @@ function GameComponent() {
     const onMove = (from, to) => {
         game.move(from, to);
         setChessPosition(game.getChessPosition());
+        setMoveHistory(game.getMoveHistory());
     }
 
     const onOwnMove = (from, to) => {
@@ -57,16 +61,38 @@ function GameComponent() {
         gameApi.play();
     }
 
+    const showMove = i => {
+        if (i === moveHistory.length - 1) {
+            setChessPosition(game.getChessPosition());
+        } else {
+            setChessPosition(game.getPreviousPosition(i + 1));
+        }
+    }
+
     return (
         <div className="game-container">
-            <Board chessPosition={chessPosition} onMove={(from, to) => onOwnMove(from, to)}
-                   flipped={color === 'BLACK'}
-                   legalMoves={legalMoves}/>
-            <ChessBoardModal isPlaying={isPlaying}
-                             isInQueue={isInQue}
-                             lastGameResult={lastGameResult}
-                             onPressPlay={onPressPlay}
-                             onPressReplay={() => setLastGameResult(null)}/>
+            <div style={{display: 'flex', flexDirection: 'horizontal', margin: '25px auto', justifyContent: 'center'}}>
+                <Board chessPosition={chessPosition}
+                       onStartMove={() => showMove(moveHistory.length - 1)}
+                       onMove={(from, to) => onOwnMove(from, to)}
+                       flipped={color === 'BLACK'}
+                       legalMoves={legalMoves}>
+                    <ChessBoardModal isPlaying={isPlaying}
+                                     isInQueue={isInQue}
+                                     lastGameResult={lastGameResult}
+                                     onPressPlay={onPressPlay}
+                                     onPressReplay={() => setLastGameResult(null)}
+                                     flipped={color === 'BLACK'}
+                    />
+                </Board>
+                {(isPlaying || opponentName != null) && <SidePanel
+                    moveHistory={moveHistory}
+                    onShowMove={i => showMove(i)}
+                    playerName={Api.getUsername()}
+                    opponentName={opponentName}
+                />}
+            </div>
+
         </div>
     );
 }
