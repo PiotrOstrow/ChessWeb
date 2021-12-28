@@ -1,6 +1,7 @@
 package com.github.piotrostrow.chess.mapper;
 
 import com.github.piotrostrow.chess.domain.chess.Color;
+import com.github.piotrostrow.chess.domain.chess.GameResult;
 import com.github.piotrostrow.chess.entity.GameEntity;
 import com.github.piotrostrow.chess.entity.GamePlayedEntity;
 import com.github.piotrostrow.chess.entity.UserEntity;
@@ -28,6 +29,7 @@ class GameConverterTest {
 		GameEntity gameEntity = new GameEntity();
 		gameEntity.setPgn(PGN);
 		gameEntity.setWinner(Color.BLACK);
+		gameEntity.setGameResult(GameResult.CHECKMATE);
 		gameEntity.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
 
 		GamePlayedEntity gamePlayedWhite = createGamePlayedEntity(gameEntity, Color.WHITE, USERNAME_WHITE);
@@ -41,6 +43,8 @@ class GameConverterTest {
 		assertThat(actual.getWhite()).isEqualTo(USERNAME_WHITE);
 		assertThat(actual.getBlack()).isEqualTo(USERNAME_BLACK);
 		assertThat(actual.getTimestamp()).isEqualTo(gameEntity.getTimestamp().toLocalDateTime());
+		assertThat(actual.getGameResult()).isEqualTo(gameEntity.getGameResult());
+		assertThat(actual.getWinner()).isEqualTo(gameEntity.getWinner());
 	}
 
 	private GamePlayedEntity createGamePlayedEntity(GameEntity gameEntity, Color color, String username) {

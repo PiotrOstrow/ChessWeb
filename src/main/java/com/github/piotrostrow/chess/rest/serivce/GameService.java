@@ -53,7 +53,8 @@ public class GameService {
 
 		GameEntity gameEntity = new GameEntity();
 		gameEntity.setPgn(pgnSerialized);
-		gameEntity.setWinner(Color.WHITE);
+		gameEntity.setGameResult(gameSession.getGameResult());
+		gameEntity.setWinner(gameSession.getWinner().orElse(null));
 		gameRepository.save(gameEntity);
 
 		GamePlayedEntity whiteGamePlayedEntity = new GamePlayedEntity();

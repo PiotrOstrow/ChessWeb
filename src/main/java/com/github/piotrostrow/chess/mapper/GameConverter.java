@@ -24,6 +24,8 @@ public class GameConverter implements Converter<GameEntity, GameDto> {
 		d.setWhite(usernameByColor.get(Color.WHITE));
 		d.setBlack(usernameByColor.get(Color.BLACK));
 		d.setTimestamp(s.getTimestamp().toLocalDateTime());
+		d.setGameResult(s.getGameResult());
+		d.setWinner(s.getWinner());
 
 		return d;
 	}

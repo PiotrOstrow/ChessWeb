@@ -13,7 +13,7 @@ function ChessBoardModal(props) {
         return (
             <Modal>
                 <div className={props.flipped ? ' flipped' : ''}>
-                    <Typography style={{color: 'white'}} fullwidth align="center">
+                    <Typography style={{color: 'white'}} align="center">
                         {message}
                     </Typography>
                     <Button fullWidth="true" onClick={() => props.onPressReplay()}>Play again</Button>

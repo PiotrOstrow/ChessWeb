@@ -1,6 +1,7 @@
 import {Typography} from "@mui/material";
 import React from "react";
 import MoveButton from "./MoveButton";
+import Timer from "./Timer";
 
 function SidePanel(props) {
     const style = {
@@ -30,15 +31,21 @@ function SidePanel(props) {
 
     return (
         <div style={style} className="side-panel">
-            <Typography component="h2" style={{color: 'white', padding: '25px'}} align="center">
-                {props.opponentName}
-            </Typography>
+            <div style={{display: 'flex'}}>
+                <Typography component="h2" style={{color: 'white', padding: '25px', flexGrow: 2}} align="center">
+                    {props.opponentName}
+                </Typography>
+                <Timer time={props.playingAs === 'WHITE' ? props.blackTime : props.whiteTime} maxTime={props.maxTime}/>
+            </div>
             <div style={{overflowY: 'auto', flexGrow: 8}}>
                 {moveList}
             </div>
-            <Typography component="h2" style={{color: 'white', padding: '25px'}} align="center">
-                {props.playerName}
-            </Typography>
+            <div style={{display: 'flex'}}>
+                <Typography component="h2" style={{color: 'white', padding: '25px', flexGrow: 2}} align="center">
+                    {props.playerName}
+                </Typography>
+                <Timer time={props.playingAs === 'WHITE' ? props.whiteTime : props.blackTime} maxTime={props.maxTime}/>
+            </div>
         </div>
     );
 }

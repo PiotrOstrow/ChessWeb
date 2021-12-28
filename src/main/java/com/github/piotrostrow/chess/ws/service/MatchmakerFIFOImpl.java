@@ -1,6 +1,9 @@
 package com.github.piotrostrow.chess.ws.service;
 
+import org.springframework.context.event.EventListener;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.security.Principal;
 
@@ -35,6 +38,16 @@ public class MatchmakerFIFOImpl implements Matchmaker {
 	public synchronized void removeFromQueue(Principal user) {
 		if (this.userInQueue != null && this.userInQueue.getName().equals(user.getName())) {
 			this.userInQueue = null;
+		}
+	}
+
+	@EventListener
+	public void handleSessionDisconnected(SessionDisconnectEvent event) {
+		SimpMessageHeaderAccessor accessor = SimpMessageHeaderAccessor.wrap(event.getMessage());
+		Principal principal = accessor.getUser();
+
+		if (principal != null) {
+			removeFromQueue(principal);
 		}
 	}
 }

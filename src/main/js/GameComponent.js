@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import Game from "./chess/Game";
 import ChessPosition from "./chess/ChessPosition";
 import Api from "./api/Api";
@@ -17,16 +17,23 @@ function GameComponent() {
     const [legalMoves, setLegalMoves] = useState(new Map());
     const [moveHistory, setMoveHistory] = useState([]);
     const [opponentName, setOpponentName] = useState(null);
+    const [maxTime, setMaxTime] = useState(180 * 1000);
+    const [whiteTime, setWhiteTime] = useState(180 * 1000);
+    const [blackTime, setBlackTime] = useState(180 * 1000);
 
     useEffect(() => {
         const gameApi = Api.gameApi();
-        gameApi.onRecvMove = data => onMove(data.from, data.to);
+        gameApi.onRecvMove = data => onRecvMove(data);
         gameApi.onRecvStart = data => {
             setIsPlaying(true);
             setIsInQue(false)
             setColor(data.color);
             setChessPosition(ChessPosition.default());
             setOpponentName(data.opponent);
+            setMaxTime(data.time * 1000);
+            setWhiteTime(data.time * 1000);
+            setBlackTime(data.time * 1000);
+            setMoveHistory([]);
             game.reset();
         };
         gameApi.onRecvGameOver = data => onGameOver(data);
@@ -37,13 +44,33 @@ function GameComponent() {
         setLegalMoves(game.getLegalMoves());
     }, [chessPosition]);
 
+
+    useInterval(() => {
+        if (moveHistory.length % 2 === 0) {
+            setWhiteTime(Math.max(0, whiteTime - 100));
+        } else {
+            setBlackTime(Math.max(0, blackTime - 100));
+        }
+    }, isPlaying ? 100 : null);
+
     const onGameOver = data => {
         setLastGameResult(data.gameResult);
         setIsPlaying(false);
         setIsInQue(false);
     }
 
-    const onMove = (from, to) => {
+    const onRecvMove = data => {
+        // if last move was our own, don't update the game state
+        const lastMove = moveHistory[moveHistory.length - 1];
+        if (lastMove == null || lastMove.color.toUpperCase() !== color.charAt(0)) {
+            move(data.move.from, data.move.to);
+        }
+
+        setWhiteTime(data.whiteTime);
+        setBlackTime(data.blackTime);
+    }
+
+    const move = (from, to) => {
         game.move(from, to);
         setChessPosition(game.getChessPosition());
         setMoveHistory(game.getMoveHistory());
@@ -51,7 +78,7 @@ function GameComponent() {
 
     const onOwnMove = (from, to) => {
         if (game.getActiveColor() === color) {
-            onMove(from, to);
+            move(from, to);
             gameApi.move(from, to);
         }
     }
@@ -90,11 +117,30 @@ function GameComponent() {
                     onShowMove={i => showMove(i)}
                     playerName={Api.getUsername()}
                     opponentName={opponentName}
+                    whiteTime={whiteTime}
+                    blackTime={blackTime}
+                    playingAs={color}
+                    maxTime={maxTime}
                 />}
             </div>
 
         </div>
     );
+}
+
+function useInterval(callback, interval) {
+    const savedCallback = useRef();
+
+    useEffect(() => {
+        savedCallback.current = callback;
+    }, [callback]);
+
+    useEffect(() => {
+        if (interval !== null) {
+            let id = setInterval(() => savedCallback.current(), interval);
+            return () => clearInterval(id);
+        }
+    }, [interval]);
 }
 
 export default GameComponent;

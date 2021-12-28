@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -43,7 +44,8 @@ class GameServiceTest {
 
 		GameService gameService = new GameService(gamePlayedRepository, gameRepository, userRepository, modelMapper);
 
-		gameService.saveGame(new GameSession(white, black));
+		GameSession gameSession = new GameSession(white, black, mock(TaskScheduler.class), null);
+		gameService.saveGame(gameSession);
 
 		ArgumentCaptor<GameEntity> argumentCaptor = ArgumentCaptor.forClass(GameEntity.class);
 		verify(gameRepository, times(1)).save(argumentCaptor.capture());
@@ -51,6 +53,9 @@ class GameServiceTest {
 		ArgumentCaptor<GamePlayedEntity> gamePlayedArgumentCaptor = ArgumentCaptor.forClass(GamePlayedEntity.class);
 		verify(gamePlayedRepository, times(2)).save(gamePlayedArgumentCaptor.capture());
 
-		assertThat(argumentCaptor.getValue().getGamesPlayed()).hasSize(2).containsAll(gamePlayedArgumentCaptor.getAllValues());
+		GameEntity gameEntity = argumentCaptor.getValue();
+		assertThat(gameEntity.getGameResult()).isEqualTo(gameSession.getGameResult());
+		assertThat(gameEntity.getWinner()).isEqualTo(gameSession.getWinner().orElse(null));
+		assertThat(gameEntity.getGamesPlayed()).hasSize(2).containsAll(gamePlayedArgumentCaptor.getAllValues());
 	}
 }

@@ -1,6 +1,7 @@
 package com.github.piotrostrow.chess.entity;
 
 import com.github.piotrostrow.chess.domain.chess.Color;
+import com.github.piotrostrow.chess.domain.chess.GameResult;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -19,6 +20,8 @@ public class GameEntity {
 
 	@Column(length = 4096)
 	private String pgn;
+
+	private GameResult gameResult;
 
 	private Color winner;
 
@@ -39,6 +42,14 @@ public class GameEntity {
 
 	public void setPgn(String pgn) {
 		this.pgn = pgn;
+	}
+
+	public GameResult getGameResult() {
+		return gameResult;
+	}
+
+	public void setGameResult(GameResult gameResult) {
+		this.gameResult = gameResult;
 	}
 
 	public Color getWinner() {

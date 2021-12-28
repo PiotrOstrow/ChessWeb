@@ -4,7 +4,12 @@ import com.github.piotrostrow.chess.domain.chess.GameResult;
 import com.github.piotrostrow.chess.rest.serivce.GameService;
 import com.github.piotrostrow.chess.ws.dto.Move;
 import com.github.piotrostrow.chess.ws.game.GameSession;
+import org.springframework.context.event.EventListener;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.security.Principal;
 import java.util.Map;
@@ -15,41 +20,48 @@ public class GameManager {
 
 	private final WebSocketService webSocketService;
 	private final GameService gameService;
+	private final TaskScheduler taskScheduler;
 
 	private final Map<String, GameSession> gamesByUsername = new ConcurrentHashMap<>();
 
-	public GameManager(WebSocketService webSocketService, GameService gameService) {
+	public GameManager(WebSocketService webSocketService, GameService gameService, ThreadPoolTaskScheduler taskScheduler) {
 		this.webSocketService = webSocketService;
 		this.gameService = gameService;
+		this.taskScheduler = taskScheduler;
 	}
 
 	public void startGame(Principal white, Principal black) {
-		GameSession game = new GameSession(white, black);
+		GameSession gameSession;
 
 		synchronized (gamesByUsername) {
-			gamesByUsername.put(white.getName(), game);
-			gamesByUsername.put(black.getName(), game);
+			if (isPlaying(white) || isPlaying(black)) {
+				return;
+			}
+
+			gameSession = new GameSession(white, black, taskScheduler, this::endGame);
+			gamesByUsername.put(white.getName(), gameSession);
+			gamesByUsername.put(black.getName(), gameSession);
 		}
 
-		webSocketService.sendStartGame(white.getName(), black.getName());
+		webSocketService.sendStartGame(white.getName(), black.getName(), gameSession.getTime());
 	}
 
 	public void move(Principal principal, Move move) {
 		GameSession gameSession = gamesByUsername.get(principal.getName());
 
-		if (gameSession == null || !gameSession.move(move, principal)) {
+		if (gameSession == null) {
 			return;
 		}
 
-		if (principal.getName().equals(gameSession.getWhite().getName())) {
-			webSocketService.sendMove(gameSession.getBlack().getName(), move);
-		} else {
-			webSocketService.sendMove(gameSession.getWhite().getName(), move);
-		}
+		gameSession.move(move, principal).ifPresent(moveResponse -> {
+			webSocketService.sendMove(gameSession.getBlack().getName(), moveResponse);
+			webSocketService.sendMove(gameSession.getWhite().getName(), moveResponse);
 
-		if (gameSession.getGameResult() != GameResult.ONGOING) {
-			endGame(gameSession, gameSession.getGameResult());
-		}
+			GameResult gameResult = gameSession.getGameResult();
+			if (gameResult != GameResult.ONGOING) {
+				endGame(gameSession, gameResult);
+			}
+		});
 	}
 
 	private void endGame(GameSession gameSession, GameResult gameResult) {
@@ -68,18 +80,30 @@ public class GameManager {
 		}
 	}
 
-	// TODO event listener here
-	public void disconnected(Principal user) {
-		GameSession gameSession = gamesByUsername.get(user.getName());
+	@EventListener
+	public void handleSessionDisconnected(SessionDisconnectEvent event) {
+		SimpMessageHeaderAccessor accessor = SimpMessageHeaderAccessor.wrap(event.getMessage());
+		Principal principal = accessor.getUser();
+
+		if (principal != null) {
+			onDisconnect(principal);
+		}
+	}
+
+	void onDisconnect(Principal principal) {
+		GameSession gameSession = gamesByUsername.get(principal.getName());
 		if (gameSession != null) {
+			gameSession.disconnected(principal);
 			gamesByUsername.remove(gameSession.getWhite().getName());
 			gamesByUsername.remove(gameSession.getBlack().getName());
 
-			if (user.getName().equals(gameSession.getWhite().getName())) {
+			if (principal.getName().equals(gameSession.getWhite().getName())) {
 				webSocketService.sendGameOver(gameSession.getBlack().getName(), GameResult.DISCONNECTED);
 			} else {
 				webSocketService.sendGameOver(gameSession.getWhite().getName(), GameResult.DISCONNECTED);
 			}
+
+			gameService.saveGame(gameSession);
 		}
 	}
 }
