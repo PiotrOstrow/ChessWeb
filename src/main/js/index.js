@@ -3,6 +3,10 @@ import ReactDOM from 'react-dom';
 import LoginForm from "./components/LoginForm";
 import {createTheme, ThemeProvider} from "@mui/material/styles";
 import GameComponent from "./GameComponent";
+import {MemoryRouter, Route, Routes} from "react-router-dom";
+import {CssBaseline} from "@mui/material";
+import NavBar from "./components/NavBar";
+import Api from "./api/Api";
 
 const theme = createTheme({
     palette: {
@@ -12,13 +16,44 @@ const theme = createTheme({
 
 function App() {
     const [loggedIn, setLoggedIn] = useState(false);
+    const [gameApi, setGameApi] = useState(null);
 
-    return loggedIn ? <GameComponent/> : <LoginForm onLoggedIn={() => setLoggedIn(true)}/>;
+    const onLoggedIn = () => {
+        setGameApi(Api.gameApi());
+        setLoggedIn(true);
+    }
+
+    if (!loggedIn) {
+        return <LoginForm onLoggedIn={onLoggedIn}/>;
+    } else {
+        return (
+            <div>
+                <NavBar/>
+                <div>
+                    <Routes>
+                        <Route path="/" element={<GameComponent gameApi={gameApi}/>}/>
+                        <Route path="/profile" element={<ProfilePage/>}/>
+                    </Routes>
+                </div>
+            </div>
+        );
+    }
+}
+
+function ProfilePage() {
+    return (
+        <div>
+            profile page
+        </div>
+    );
 }
 
 ReactDOM.render(
-    <ThemeProvider theme={theme}>
-        <App/>
-    </ThemeProvider>,
+    <MemoryRouter>
+        <ThemeProvider theme={theme}>
+            <App/>
+            <CssBaseline/>
+        </ThemeProvider>
+    </MemoryRouter>,
     document.getElementById('root')
 );

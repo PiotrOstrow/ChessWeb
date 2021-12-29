@@ -1,6 +1,6 @@
 import Api from "../api/Api";
 import React, {useEffect, useState} from "react";
-import {Box, Button, CssBaseline, FormHelperText, Grid, Link, TextField, Typography} from "@mui/material";
+import {Box, Button, FormHelperText, Grid, Link, TextField, Typography} from "@mui/material";
 
 function LoginForm(props) {
     const [username, setUsername] = useState('');
@@ -44,8 +44,8 @@ function LoginForm(props) {
             flexDirection: 'column',
             alignItems: 'center',
         }}>
-            <CssBaseline/>
-            <Typography component="h1" variant="h5" sx={{mt: 1}}>
+
+        <Typography component="h1" variant="h5" sx={{mt: 1}}>
                 {loggingIn ? 'Sign in' : 'Sign up'}
             </Typography>
 

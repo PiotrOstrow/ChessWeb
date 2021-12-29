@@ -1,56 +1,57 @@
 import React, {useEffect, useRef, useState} from "react";
-import Game from "./chess/Game";
-import ChessPosition from "./chess/ChessPosition";
 import Api from "./api/Api";
 import Board from "./components/board/Board";
 import ChessBoardModal from "./components/ChessBoardModal";
 import SidePanel from "./components/SidePanel";
 
-function GameComponent() {
-    const [gameApi, setGameApi] = useState(null);
-    const [game, setGame] = useState(new Game());
-    const [chessPosition, setChessPosition] = useState(ChessPosition.default());
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [isInQue, setIsInQue] = useState(false);
-    const [lastGameResult, setLastGameResult] = useState(null);
-    const [color, setColor] = useState('WHITE');
-    const [legalMoves, setLegalMoves] = useState(new Map());
-    const [moveHistory, setMoveHistory] = useState([]);
-    const [opponentName, setOpponentName] = useState(null);
-    const [maxTime, setMaxTime] = useState(180 * 1000);
-    const [whiteTime, setWhiteTime] = useState(180 * 1000);
-    const [blackTime, setBlackTime] = useState(180 * 1000);
+function GameComponent(props) {
+    const gameApi = props.gameApi;
+
+    const [chessPosition, setChessPosition] = useState(gameApi.getChessPosition());
+    const [isPlaying, setIsPlaying] = useState(gameApi.isPlaying());
+    const [isInQue, setIsInQue] = useState(gameApi.isInQueue());
+    const [lastGameResult, setLastGameResult] = useState(gameApi.getLastGameResult());
+    const [color, setColor] = useState(gameApi.getColor());
+    const [legalMoves, setLegalMoves] = useState(gameApi.getLegalMoves());
+    const [moveHistory, setMoveHistory] = useState(gameApi.getMoveHistory());
+    const [opponentName, setOpponentName] = useState(gameApi.getOpponentsName());
+    const [maxTime, setMaxTime] = useState(gameApi.getMaxTime());
+    const [whiteTime, setWhiteTime] = useState(gameApi.getWhiteTime());
+    const [blackTime, setBlackTime] = useState(gameApi.getBlackTime());
 
     useEffect(() => {
-        const gameApi = Api.gameApi();
         gameApi.onRecvMove = data => onRecvMove(data);
         gameApi.onRecvStart = data => {
             setIsPlaying(true);
             setIsInQue(false)
             setColor(data.color);
-            setChessPosition(ChessPosition.default());
+            setChessPosition(gameApi.getChessPosition());
             setOpponentName(data.opponent);
             setMaxTime(data.time * 1000);
             setWhiteTime(data.time * 1000);
             setBlackTime(data.time * 1000);
             setMoveHistory([]);
-            game.reset();
         };
         gameApi.onRecvGameOver = data => onGameOver(data);
-        setGameApi(gameApi);
+
+        return () => {
+            gameApi.onRecvMove = () => {
+            };
+            gameApi.onRecvStart = () => {
+            };
+            gameApi.onRecvGameOver = () => {
+            };
+        }
     }, []);
 
     useEffect(() => {
-        setLegalMoves(game.getLegalMoves());
+        setLegalMoves(gameApi.getLegalMoves());
     }, [chessPosition]);
 
 
     useInterval(() => {
-        if (moveHistory.length % 2 === 0) {
-            setWhiteTime(Math.max(0, whiteTime - 100));
-        } else {
-            setBlackTime(Math.max(0, blackTime - 100));
-        }
+        setWhiteTime(Math.max(0, gameApi.getWhiteTime()));
+        setBlackTime(Math.max(0, gameApi.getBlackTime()));
     }, isPlaying ? 100 : null);
 
     const onGameOver = data => {
@@ -60,26 +61,17 @@ function GameComponent() {
     }
 
     const onRecvMove = data => {
-        // if last move was our own, don't update the game state
-        const lastMove = moveHistory[moveHistory.length - 1];
-        if (lastMove == null || lastMove.color.toUpperCase() !== color.charAt(0)) {
-            move(data.move.from, data.move.to);
-        }
-
+        setChessPosition(gameApi.getChessPosition());
+        setMoveHistory(gameApi.getMoveHistory());
         setWhiteTime(data.whiteTime);
         setBlackTime(data.blackTime);
     }
 
-    const move = (from, to) => {
-        game.move(from, to);
-        setChessPosition(game.getChessPosition());
-        setMoveHistory(game.getMoveHistory());
-    }
-
     const onOwnMove = (from, to) => {
-        if (game.getActiveColor() === color) {
-            move(from, to);
+        if (gameApi.getActiveColor() === color) {
             gameApi.move(from, to);
+            setChessPosition(gameApi.getChessPosition());
+            setMoveHistory(gameApi.getMoveHistory());
         }
     }
 
@@ -90,9 +82,9 @@ function GameComponent() {
 
     const showMove = i => {
         if (i === moveHistory.length - 1) {
-            setChessPosition(game.getChessPosition());
+            setChessPosition(gameApi.getChessPosition());
         } else {
-            setChessPosition(game.getPreviousPosition(i + 1));
+            setChessPosition(gameApi.getPreviousPosition(i + 1));
         }
     }
 
