@@ -39,6 +39,7 @@ function NavBar() {
 
     const handleCloseNavMenu = (path) => {
         navigate(path);
+        setAnchorElUser(null);
     };
 
     return (

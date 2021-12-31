@@ -122,7 +122,7 @@ class GameApi {
     }
 
     getWhiteTime() {
-        if (this.getActiveColor() !== 'WHITE') {
+        if (!this.isPlaying() || this.getActiveColor() !== 'WHITE') {
             return this.whiteTime;
         }
 
@@ -134,7 +134,7 @@ class GameApi {
     }
 
     getBlackTime() {
-        if (this.getActiveColor() !== 'BLACK') {
+        if (!this.isPlaying() || this.getActiveColor() !== 'BLACK') {
             return this.blackTime;
         }
 
