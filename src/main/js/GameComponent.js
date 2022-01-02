@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import Api from "./api/Api";
 import Board from "./components/board/Board";
-import ChessBoardModal from "./components/ChessBoardModal";
+import GameModal from "./components/GameModal";
 import SidePanel from "./components/SidePanel";
 
 function GameComponent(props) {
@@ -96,12 +96,12 @@ function GameComponent(props) {
                        onMove={(from, to) => onOwnMove(from, to)}
                        flipped={color === 'BLACK'}
                        legalMoves={legalMoves}>
-                    <ChessBoardModal isPlaying={isPlaying}
-                                     isInQueue={isInQue}
-                                     lastGameResult={lastGameResult}
-                                     onPressPlay={onPressPlay}
-                                     onPressReplay={() => setLastGameResult(null)}
-                                     flipped={color === 'BLACK'}
+                    <GameModal isPlaying={isPlaying}
+                               isInQueue={isInQue}
+                               lastGameResult={lastGameResult}
+                               onPressPlay={onPressPlay}
+                               onPressReplay={() => setLastGameResult(null)}
+                               flipped={color === 'BLACK'}
                     />
                 </Board>
                 {(isPlaying || opponentName != null) && <SidePanel

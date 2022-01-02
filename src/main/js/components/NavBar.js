@@ -21,7 +21,8 @@ function NavBar() {
 
     const pages = [
         {name: 'Play', path: '/'},
-        {name: 'Profile', path: '/profile'}];
+        {name: 'Profile', path: '/profile'},
+        {name: 'Puzzles', path: '/puzzles'}];
 
     const settings = [
         {name: 'Profile', path: '/profile'},

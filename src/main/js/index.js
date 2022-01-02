@@ -7,6 +7,7 @@ import {MemoryRouter, Route, Routes} from "react-router-dom";
 import {CssBaseline} from "@mui/material";
 import NavBar from "./components/NavBar";
 import Api from "./api/Api";
+import PuzzlePage from "./PuzzlePage";
 
 const theme = createTheme({
     palette: {
@@ -33,6 +34,7 @@ function App() {
                     <Routes>
                         <Route path="/" element={<GameComponent gameApi={gameApi}/>}/>
                         <Route path="/profile" element={<ProfilePage/>}/>
+                        <Route path="/puzzles" element={<PuzzlePage/>}/>
                     </Routes>
                 </div>
             </div>

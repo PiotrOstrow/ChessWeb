@@ -2,7 +2,7 @@ import React from 'react';
 import Modal from "./Modal";
 import {Button, CircularProgress, Typography} from "@mui/material";
 
-function ChessBoardModal(props) {
+function GameModal(props) {
     if (props.isPlaying) {
         return null;
     }
@@ -46,4 +46,4 @@ function ChessBoardModal(props) {
     }
 }
 
-export default ChessBoardModal;
+export default GameModal;

@@ -54,6 +54,10 @@ class Game {
         return this.chess.turn() === 'w' ? 'WHITE' : 'BLACK';
     }
 
+    getNonActiveColor() {
+        return this.chess.turn() === 'w' ? 'BLACK' : 'WHITE';
+    }
+
     move(from, to) {
         if (this.isMoveLegal(from, to)) {
             this.chess.move(from + to, {sloppy: true});
@@ -85,6 +89,10 @@ class Game {
 
     getMoveHistory() {
         return this.chess.history({verbose: true});
+    }
+
+    setFen(fen) {
+        this.chess = new Chess(fen);
     }
 }
 
