@@ -12,6 +12,7 @@ public class MapperConfig {
 		// TODO: more mapping tests
 		ModelMapper modelMapper = new ModelMapper();
 		modelMapper.addConverter(new GameConverter());
+		modelMapper.addConverter(new PuzzleConverter());
 
 		return modelMapper;
 	}
