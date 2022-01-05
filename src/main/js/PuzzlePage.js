@@ -10,9 +10,10 @@ function PuzzlePage() {
     const [game, setGame] = useState(new Game());
     const [color, setColor] = useState('WHITE');
     const [legalMoves, setLegalMoves] = useState(new Map());
-    const [win, setWin] = useState(false);
-    const [loss, setLoss] = useState(false);
+    const [win, setWin] = useState(null);
     const [puzzle, setPuzzle] = useState(null);
+    const [rating, setRating] = useState(0);
+    const [ratingDelta, setRatingDelta] = useState(0);
 
     useEffect(() => {
         Api.get('/puzzles/random').then(e => setPuzzle(e.data));
@@ -22,9 +23,7 @@ function PuzzlePage() {
         if (puzzle != null) {
             const firstMove = puzzle.moves[0];
             game.setFen(puzzle.fen);
-
-            setWin(false);
-            setLoss(false);
+            setWin(null);
             setColor(game.getNonActiveColor());
             setLegalMoves(game.getLegalMoves());
             setChessPosition(game.getChessPosition());
@@ -33,19 +32,25 @@ function PuzzlePage() {
         }
     }, [puzzle]);
 
-    const nextPuzzle = () => {
-        Api.get('/puzzles/random').then(e => setPuzzle(e.data));
-
-    }
-    const restartPuzzle = () => {
-        setPuzzle({...puzzle});
-
-    }
+    const nextPuzzle = () => Api.get('/puzzles/random').then(e => setPuzzle(e.data))
 
     const move = (from, to) => {
         game.move(from, to);
         setChessPosition(game.getChessPosition());
         setLegalMoves(game.getLegalMoves());
+    }
+
+    const submitSolution = () => {
+        Api.post('/puzzles/solve', {
+            id: puzzle.id,
+            time: 0,
+            moves: game.getMoveHistory().map(e => e.from + e.to + (e.promotion != null ? e.promotion : ''))
+        }).then(e => {
+            const response = e.data;
+            setRating(response.rating);
+            setRatingDelta(response.delta);
+            setWin(response.correct);
+        });
     }
 
     const ownMove = (from, to) => {
@@ -65,13 +70,13 @@ function PuzzlePage() {
 
             if (correctMove === actualMove) {
                 if (game.getMoveHistory().length === puzzle.moves.length) {
-                    setWin(true);
+                    submitSolution();
                 } else {
                     const nextMove = puzzle.moves[game.getMoveHistory().length];
                     setTimeout(() => move(nextMove.substr(0, 2), nextMove.substr(2, 2)), 500);
                 }
             } else {
-                setLoss(true);
+                submitSolution();
             }
         }
     }
@@ -84,8 +89,12 @@ function PuzzlePage() {
                    onMove={(from, to) => ownMove(from, to)}
                    flipped={color === 'BLACK'}
                    legalMoves={legalMoves}>
-                <PuzzleModal win={win} loss={loss} onClick={() => win ? nextPuzzle() : restartPuzzle()}
-                             flipped={color === 'BLACK'}/>
+                {win !== null && <PuzzleModal win={win}
+                                              rating={rating}
+                                              ratingDelta={ratingDelta}
+                                              onClick={() => nextPuzzle()}
+                                              flipped={color === 'BLACK'}/>
+                }
             </Board>
         </div>
     );

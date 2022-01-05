@@ -1,8 +1,9 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import Api from "./api/Api";
 import Board from "./components/board/Board";
 import GameModal from "./components/GameModal";
 import SidePanel from "./components/SidePanel";
+import useInterval from "./hooks/useInterval";
 
 function GameComponent(props) {
     const gameApi = props.gameApi;
@@ -118,21 +119,6 @@ function GameComponent(props) {
 
         </div>
     );
-}
-
-function useInterval(callback, interval) {
-    const savedCallback = useRef();
-
-    useEffect(() => {
-        savedCallback.current = callback;
-    }, [callback]);
-
-    useEffect(() => {
-        if (interval !== null) {
-            let id = setInterval(() => savedCallback.current(), interval);
-            return () => clearInterval(id);
-        }
-    }, [interval]);
 }
 
 export default GameComponent;

@@ -18,6 +18,17 @@ public class PuzzleEntity {
 	@ManyToMany(fetch = FetchType.EAGER)
 	private Set<PuzzleThemeEntity> themes = new HashSet<>();
 
+	public PuzzleEntity() {
+	}
+
+	public PuzzleEntity(long id, String fen, String moves, int rating, Set<PuzzleThemeEntity> themes) {
+		this.id = id;
+		this.fen = fen;
+		this.moves = moves;
+		this.rating = rating;
+		this.themes = themes;
+	}
+
 	public long getId() {
 		return id;
 	}

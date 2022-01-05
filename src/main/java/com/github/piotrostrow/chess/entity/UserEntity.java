@@ -32,12 +32,19 @@ public class UserEntity {
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	private Set<GamePlayedEntity> gamesPlayed = new HashSet<>();
 
+	private int puzzleRating = 700;
+
 	public UserEntity() {
 
 	}
 
 	public UserEntity(String username) {
 		this.username = username;
+	}
+
+	public UserEntity(String username, String email) {
+		this.username = username;
+		this.email = email;
 	}
 
 	public Long getId() {
@@ -91,5 +98,13 @@ public class UserEntity {
 
 	public void setRoles(Set<RoleEntity> roles) {
 		this.roles = roles;
+	}
+
+	public int getPuzzleRating() {
+		return puzzleRating;
+	}
+
+	public void setPuzzleRating(int puzzleRating) {
+		this.puzzleRating = puzzleRating;
 	}
 }

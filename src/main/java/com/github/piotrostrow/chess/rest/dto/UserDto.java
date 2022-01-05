@@ -13,6 +13,8 @@ public class UserDto {
 
 	private String email;
 
+	private int puzzleRating;
+
 	public UserDto() {
 
 	}
@@ -52,5 +54,13 @@ public class UserDto {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public int getPuzzleRating() {
+		return puzzleRating;
+	}
+
+	public void setPuzzleRating(int puzzleRating) {
+		this.puzzleRating = puzzleRating;
 	}
 }

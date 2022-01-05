@@ -39,8 +39,8 @@ public class UserService {
 	public UserDto createUser(UserDto userDto) {
 		validate(userDto);
 
-		UserEntity userEntity = modelMapper.map(userDto, UserEntity.class);
-		userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
+		UserEntity userEntity = new UserEntity(userDto.getUsername(), userDto.getEmail());
+		userEntity.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
 		if (isFirstUser()) {
 			userEntity.setRoles(toSet(roleService.getAllRoles()));

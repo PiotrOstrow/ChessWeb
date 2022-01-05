@@ -38,6 +38,13 @@ const Api = {
             }
         });
     },
+    post(url, data = {}) {
+        return axios.post(url, data, {
+            headers: {
+                authorization: 'Bearer ' + jwtToken
+            }
+        });
+    },
     gameApi(onConnect) {
         return new GameApi(jwtToken, onConnect);
     },

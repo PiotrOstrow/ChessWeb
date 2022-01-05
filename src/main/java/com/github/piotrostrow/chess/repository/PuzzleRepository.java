@@ -7,9 +7,19 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface PuzzleRepository extends CrudRepository<PuzzleEntity, Long> {
 
-	@Query("select p from PuzzleEntity p")
-	Page<PuzzleEntity> findAllPaged(Pageable pageable);
+	@Query("select p from PuzzleEntity p where p.rating >= :min and p.rating <= :max")
+	Page<PuzzleEntity> findAllPagedRatingBetween(Pageable pageable, int min, int max);
+
+	long countAllByRatingBetween(int min, int max);
+
+	@Query("select min(p.rating) from PuzzleEntity p")
+	Optional<Integer> getMinRating();
+
+	@Query("select max(p.rating) from PuzzleEntity p")
+	Optional<Integer> getMaxRating();
 }

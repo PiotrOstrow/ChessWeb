@@ -1,17 +1,27 @@
 package com.github.piotrostrow.chess.rest.serivce;
 
+import com.github.piotrostrow.chess.domain.chess.PuzzleRatingCalculator;
 import com.github.piotrostrow.chess.entity.PuzzleEntity;
 import com.github.piotrostrow.chess.entity.PuzzleThemeEntity;
+import com.github.piotrostrow.chess.entity.UserEntity;
 import com.github.piotrostrow.chess.repository.PuzzleRepository;
 import com.github.piotrostrow.chess.repository.PuzzleThemeRepository;
+import com.github.piotrostrow.chess.repository.UserRepository;
 import com.github.piotrostrow.chess.rest.dto.PuzzleDto;
+import com.github.piotrostrow.chess.rest.dto.PuzzleSolutionDto;
+import com.github.piotrostrow.chess.rest.dto.PuzzleSolutionResponse;
+import com.github.piotrostrow.chess.rest.exception.ApiException;
 import com.github.piotrostrow.chess.util.Util;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import java.security.Principal;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,16 +29,27 @@ import java.util.stream.Collectors;
 @Component
 public class PuzzleService {
 
+	static final int RANDOM_PUZZLE_RATING_RANGE = 200;
+
 	private final PuzzleRepository puzzleRepository;
 	private final PuzzleThemeRepository puzzleThemeRepository;
+	private final UserRepository userRepository;
+
 	private final ModelMapper modelMapper;
+	private final PuzzleRatingCalculator puzzleRatingCalculator;
 
 	private final Random random = new Random();
 
-	public PuzzleService(PuzzleRepository puzzleRepository, PuzzleThemeRepository puzzleThemeRepository, ModelMapper modelMapper) {
+	public PuzzleService(PuzzleRepository puzzleRepository,
+						 PuzzleThemeRepository puzzleThemeRepository,
+						 UserRepository userRepository,
+						 ModelMapper modelMapper,
+						 PuzzleRatingCalculator puzzleRatingCalculator) {
 		this.puzzleRepository = puzzleRepository;
 		this.puzzleThemeRepository = puzzleThemeRepository;
+		this.userRepository = userRepository;
 		this.modelMapper = modelMapper;
+		this.puzzleRatingCalculator = puzzleRatingCalculator;
 	}
 
 	public void createPuzzles(List<PuzzleDto> puzzles) {
@@ -69,11 +90,58 @@ public class PuzzleService {
 				.collect(Collectors.toList());
 	}
 
-	public PuzzleDto getRandomPuzzle() {
-		long count = puzzleRepository.count();
+	public PuzzleDto getRandomPuzzle(Principal principal) {
+		int playerRating = userRepository.findByUsername(principal.getName()).map(UserEntity::getPuzzleRating).orElseThrow();
 
-		Page<PuzzleEntity> rating = puzzleRepository.findAllPaged(PageRequest.of(random.nextInt((int) count), 1));
+		PuzzleEntity puzzleEntity = getRandomPuzzle(playerRating);
 
-		return modelMapper.map(rating.stream().findFirst().orElseThrow(), PuzzleDto.class);
+		return modelMapper.map(puzzleEntity, PuzzleDto.class);
+	}
+
+	private PuzzleEntity getRandomPuzzle(int playerRating) {
+		try {
+			int minRating = playerRating - RANDOM_PUZZLE_RATING_RANGE;
+			int maxRating = playerRating + RANDOM_PUZZLE_RATING_RANGE;
+
+			int minPuzzleRating = puzzleRepository.getMinRating().orElseThrow();
+			int maxPuzzleRating = puzzleRepository.getMaxRating().orElseThrow();
+
+			if (minRating < minPuzzleRating) {
+				minRating = minPuzzleRating;
+				maxRating = minPuzzleRating + RANDOM_PUZZLE_RATING_RANGE * 2;
+			} else if (maxRating > maxPuzzleRating) {
+				maxRating = maxPuzzleRating;
+				minRating = maxPuzzleRating - RANDOM_PUZZLE_RATING_RANGE * 2;
+			}
+
+			long countWithinRange = puzzleRepository.countAllByRatingBetween(minRating, maxRating);
+
+			Pageable pageable = PageRequest.of(random.nextInt((int) countWithinRange), 1);
+			Page<PuzzleEntity> page = puzzleRepository.findAllPagedRatingBetween(pageable, minRating, maxRating);
+
+			return page.stream().findFirst().orElseThrow();
+		} catch (NoSuchElementException e) {
+			throw new ApiException(HttpStatus.NOT_FOUND, "No puzzles found");
+		}
+	}
+
+	public PuzzleSolutionResponse submitSolution(PuzzleSolutionDto puzzleSolutionDto, Principal principal) {
+		PuzzleEntity puzzleEntity = puzzleRepository.findById(puzzleSolutionDto.getId())
+				.orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Puzzle does not exist"));
+
+		UserEntity userEntity = userRepository.findByUsername(principal.getName()).orElseThrow();
+
+		boolean isCorrectSolution = isCorrectSolution(puzzleSolutionDto, puzzleEntity);
+		int delta = puzzleRatingCalculator.calculateDelta(userEntity.getPuzzleRating(), puzzleEntity.getRating(), isCorrectSolution);
+
+		userEntity.setPuzzleRating(userEntity.getPuzzleRating() + delta);
+		userRepository.save(userEntity);
+
+		return new PuzzleSolutionResponse(isCorrectSolution, userEntity.getPuzzleRating(), delta);
+	}
+
+	private boolean isCorrectSolution(PuzzleSolutionDto puzzleSolutionDto, PuzzleEntity puzzleEntity) {
+		String moves = String.join(" ", puzzleSolutionDto.getMoves());
+		return puzzleEntity.getMoves().equals(moves);
 	}
 }
