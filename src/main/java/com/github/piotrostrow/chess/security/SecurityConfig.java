@@ -77,7 +77,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 				.antMatchers("/puzzles/random/").authenticated()
 				.antMatchers("/puzzles/solve/").authenticated()
-				.antMatchers("/puzzles/**").hasAuthority(ADMIN.toString())
+				.antMatchers("/puzzles/{\\d}/").hasAuthority(ADMIN.toString())
+				.antMatchers("/puzzles/").hasAuthority(ADMIN.toString())
 
 				.anyRequest().authenticated();
 	}
