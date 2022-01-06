@@ -10,13 +10,12 @@ import com.github.piotrostrow.chess.repository.UserRepository;
 import com.github.piotrostrow.chess.rest.dto.PuzzleDto;
 import com.github.piotrostrow.chess.rest.dto.PuzzleSolutionDto;
 import com.github.piotrostrow.chess.rest.dto.PuzzleSolutionResponse;
-import com.github.piotrostrow.chess.rest.exception.ApiException;
+import com.github.piotrostrow.chess.rest.exception.NotFoundException;
 import com.github.piotrostrow.chess.util.Util;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.security.Principal;
@@ -52,11 +51,16 @@ public class PuzzleService {
 		this.puzzleRatingCalculator = puzzleRatingCalculator;
 	}
 
+	public PuzzleDto getPuzzleById(Long id) {
+		PuzzleEntity puzzleEntity = puzzleRepository.findById(id).orElseThrow(() -> new NotFoundException("puzzle does not exist"));
+		return modelMapper.map(puzzleEntity, PuzzleDto.class);
+	}
+
 	public void createPuzzles(List<PuzzleDto> puzzles) {
 		puzzles.forEach(this::createPuzzle);
 	}
 
-	public void createPuzzle(PuzzleDto puzzleDto) {
+	public PuzzleDto createPuzzle(PuzzleDto puzzleDto) {
 		PuzzleEntity puzzleEntity = new PuzzleEntity();
 		puzzleEntity.setFen(puzzleDto.getFen());
 		puzzleEntity.setRating(puzzleDto.getRating());
@@ -68,6 +72,8 @@ public class PuzzleService {
 		puzzleEntity.setThemes(themes);
 
 		puzzleRepository.save(puzzleEntity);
+
+		return modelMapper.map(puzzleEntity, PuzzleDto.class);
 	}
 
 	private PuzzleThemeEntity getOrCreateTheme(String name) {
@@ -88,6 +94,11 @@ public class PuzzleService {
 		return Util.stream(puzzleRepository.findAll())
 				.map(e -> modelMapper.map(e, PuzzleDto.class))
 				.collect(Collectors.toList());
+	}
+
+	public void deletePuzzle(Long id) {
+		PuzzleEntity puzzleEntity = puzzleRepository.findById(id).orElseThrow(() -> new NotFoundException("puzzle does not exist"));
+		puzzleRepository.delete(puzzleEntity);
 	}
 
 	public PuzzleDto getRandomPuzzle(Principal principal) {
@@ -121,13 +132,13 @@ public class PuzzleService {
 
 			return page.stream().findFirst().orElseThrow();
 		} catch (NoSuchElementException e) {
-			throw new ApiException(HttpStatus.NOT_FOUND, "No puzzles found");
+			throw new NotFoundException("No puzzles found");
 		}
 	}
 
 	public PuzzleSolutionResponse submitSolution(PuzzleSolutionDto puzzleSolutionDto, Principal principal) {
 		PuzzleEntity puzzleEntity = puzzleRepository.findById(puzzleSolutionDto.getId())
-				.orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Puzzle does not exist"));
+				.orElseThrow(() -> new NotFoundException("Puzzle does not exist"));
 
 		UserEntity userEntity = userRepository.findByUsername(principal.getName()).orElseThrow();
 

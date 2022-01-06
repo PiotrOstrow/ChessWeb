@@ -3,6 +3,7 @@ package com.github.piotrostrow.chess.rest.dto;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 public class PuzzleDto {
 
@@ -62,5 +63,18 @@ public class PuzzleDto {
 
 	public void setThemes(Collection<String> themes) {
 		this.themes = themes;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		PuzzleDto puzzleDto = (PuzzleDto) o;
+		return id == puzzleDto.id && rating == puzzleDto.rating && Objects.equals(fen, puzzleDto.fen) && Objects.equals(moves, puzzleDto.moves) && Objects.equals(themes, puzzleDto.themes);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, fen, rating, moves, themes);
 	}
 }

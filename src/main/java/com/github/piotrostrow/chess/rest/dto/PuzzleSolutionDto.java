@@ -10,6 +10,16 @@ public class PuzzleSolutionDto {
 
 	private List<String> moves;
 
+	public PuzzleSolutionDto() {
+
+	}
+
+	public PuzzleSolutionDto(long id, int time, List<String> moves) {
+		this.id = id;
+		this.time = time;
+		this.moves = moves;
+	}
+
 	public long getId() {
 		return id;
 	}

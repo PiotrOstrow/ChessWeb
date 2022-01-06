@@ -1,11 +1,13 @@
 package com.github.piotrostrow.chess.rest.controller;
 
+import com.github.piotrostrow.chess.rest.dto.PuzzleDto;
 import com.github.piotrostrow.chess.rest.dto.PuzzleSolutionDto;
 import com.github.piotrostrow.chess.rest.dto.PuzzleSolutionResponse;
 import com.github.piotrostrow.chess.rest.serivce.PuzzleService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.security.Principal;
 import java.util.Map;
 
@@ -22,6 +24,23 @@ public class PuzzleController {
 	@GetMapping
 	public ResponseEntity<Object> get() {
 		return ResponseEntity.ok(Map.of("puzzles", puzzleService.getAllPuzzles()));
+	}
+
+	@GetMapping("{id}")
+	public ResponseEntity<Object> getPuzzle(@PathVariable("id") Long id) {
+		return ResponseEntity.ok(puzzleService.getPuzzleById(id));
+	}
+
+	@PostMapping
+	public ResponseEntity<Object> createPuzzle(@RequestBody PuzzleDto puzzleDto) {
+		PuzzleDto createdPuzzle = puzzleService.createPuzzle(puzzleDto);
+		return ResponseEntity.created(URI.create("" + createdPuzzle.getId())).body(createdPuzzle);
+	}
+
+	@DeleteMapping("{id}")
+	public ResponseEntity<Object> deletePuzzle(@PathVariable("id") Long id) {
+		puzzleService.deletePuzzle(id);
+		return ResponseEntity.noContent().build();
 	}
 
 	@GetMapping("random")

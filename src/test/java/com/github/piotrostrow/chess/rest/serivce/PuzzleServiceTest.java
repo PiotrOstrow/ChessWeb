@@ -2,15 +2,19 @@ package com.github.piotrostrow.chess.rest.serivce;
 
 import com.github.piotrostrow.chess.domain.chess.PuzzleRatingCalculator;
 import com.github.piotrostrow.chess.entity.PuzzleEntity;
+import com.github.piotrostrow.chess.entity.PuzzleThemeEntity;
 import com.github.piotrostrow.chess.entity.UserEntity;
 import com.github.piotrostrow.chess.repository.PuzzleRepository;
 import com.github.piotrostrow.chess.repository.PuzzleThemeRepository;
 import com.github.piotrostrow.chess.repository.UserRepository;
+import com.github.piotrostrow.chess.rest.dto.PuzzleDto;
 import com.github.piotrostrow.chess.rest.dto.PuzzleSolutionDto;
 import com.github.piotrostrow.chess.rest.dto.PuzzleSolutionResponse;
 import com.github.piotrostrow.chess.rest.exception.ApiException;
+import com.github.piotrostrow.chess.rest.exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -64,12 +68,120 @@ class PuzzleServiceTest {
 	}
 
 	@Test
-	void testGetRandomPuzzleNoPuzzleExistThrowsApiException() {
+	void testCreatePuzzleThemeDoesNotExistShouldCreateNewTheme() {
+		String theme = "Theme1";
+		PuzzleDto puzzleDto = new PuzzleDto("fen", List.of("e2e3"), 1000, List.of(theme));
+
+		when(puzzleThemeRepository.findByName(theme)).thenReturn(Optional.empty());
+
+		puzzleService.createPuzzle(puzzleDto);
+
+		verify(puzzleThemeRepository, times(1)).save(any());
+		verify(puzzleRepository, times(1)).save(any());
+	}
+
+	@Test
+	void testCreatePuzzleThemeExistsShouldNotCreateNewTheme() {
+		String theme = "Theme1";
+		PuzzleDto puzzleDto = new PuzzleDto("fen", List.of("e2e3"), 1000, List.of(theme));
+
+		when(puzzleThemeRepository.findByName(theme)).thenReturn(Optional.of(new PuzzleThemeEntity(theme)));
+
+		puzzleService.createPuzzle(puzzleDto);
+
+		verify(puzzleThemeRepository, never()).save(any());
+		verify(puzzleRepository, times(1)).save(any());
+	}
+
+	@Test
+	void testCreatePuzzleSomeThemesExistsShouldCreateNonExistingThemes() {
+		String existingTheme = "Theme1";
+		String nonExistingTheme = "Theme2";
+		PuzzleDto puzzleDto = new PuzzleDto("fen", List.of("e2e3"), 1000, List.of(existingTheme, nonExistingTheme));
+
+		when(puzzleThemeRepository.findByName(nonExistingTheme)).thenReturn(Optional.empty());
+		when(puzzleThemeRepository.findByName(existingTheme)).thenReturn(Optional.of(new PuzzleThemeEntity(existingTheme)));
+
+		puzzleService.createPuzzle(puzzleDto);
+
+		ArgumentCaptor<PuzzleThemeEntity> savedCaptor = ArgumentCaptor.forClass(PuzzleThemeEntity.class);
+
+		verify(puzzleThemeRepository, times(1)).save(savedCaptor.capture());
+		verify(puzzleThemeRepository, times(2)).findByName(any());
+		verify(puzzleRepository, times(1)).save(any());
+
+		assertThat(savedCaptor.getValue()).extracting(PuzzleThemeEntity::getName).isEqualTo(nonExistingTheme);
+	}
+
+	@Test
+	void testCreatePuzzlesSharedThemeDoesNotExistShouldOnlyCreateOnce() {
+		String theme = "Theme1";
+		List<PuzzleDto> puzzles = List.of(
+				new PuzzleDto("fen1", List.of("e2e3"), 1000, List.of(theme)),
+				new PuzzleDto("fen1", List.of("e2e3"), 1000, List.of(theme))
+		);
+
+		when(puzzleThemeRepository.findByName(theme))
+				.thenReturn(Optional.empty())
+				.thenReturn(Optional.of(new PuzzleThemeEntity(theme)));
+
+		puzzleService.createPuzzles(puzzles);
+
+		verify(puzzleThemeRepository, times(1)).save(any());
+	}
+
+	@Test
+	void testGetPuzzleByIdPuzzleDoesNotExistShouldThrowNotFoundException() {
+		when(puzzleRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+		assertThatThrownBy(() -> puzzleService.getPuzzleById(1L)).isInstanceOf(NotFoundException.class);
+	}
+
+	@Test
+	void testGetPuzzleByIdReturnsMappedDto() {
+		PuzzleEntity puzzleEntity = puzzleEntities.get(0);
+		when(puzzleRepository.findById(1L)).thenReturn(Optional.of(puzzleEntity));
+
+		PuzzleDto actual = puzzleService.getPuzzleById(1L);
+
+		assertThat(actual).isEqualTo(modelMapper.map(puzzleEntity, PuzzleDto.class));
+	}
+
+	@Test
+	void testGetAllPuzzles() {
+		when(puzzleRepository.findAll()).thenReturn(puzzleEntities);
+
+		List<PuzzleDto> allPuzzles = puzzleService.getAllPuzzles();
+
+		List<PuzzleDto> expected = puzzleEntities.stream().map(e -> modelMapper.map(e, PuzzleDto.class)).collect(Collectors.toList());
+
+		assertThat(allPuzzles).isEqualTo(expected);
+	}
+
+	@Test
+	void testDeletePuzzle() {
+		PuzzleEntity puzzleEntity = puzzleEntities.get(0);
+		when(puzzleRepository.findById(1L)).thenReturn(Optional.of(puzzleEntity));
+
+		puzzleService.deletePuzzle(1L);
+
+		verify(puzzleRepository, times(1)).delete(puzzleEntity);
+	}
+
+	@Test
+	void testDeletePuzzleDoesNotExistShouldThrowNotFoundException() {
+		when(puzzleRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+		assertThatThrownBy(() -> puzzleService.deletePuzzle(1L)).isInstanceOf(NotFoundException.class);
+	}
+
+	@Test
+	void testGetRandomPuzzleNoPuzzleExistThrowsNotFoundException() {
 		when(puzzleRepository.countAllByRatingBetween(anyInt(), anyInt())).thenReturn(0L);
 		when(puzzleRepository.getMinRating()).thenReturn(Optional.empty());
 		when(puzzleRepository.getMaxRating()).thenReturn(Optional.empty());
 
-		assertThatThrownBy(() -> puzzleService.getRandomPuzzle(principal)).isInstanceOf(ApiException.class);
+		assertThatThrownBy(() -> puzzleService.getRandomPuzzle(principal)).isInstanceOf(NotFoundException.class);
 	}
 
 	@Test

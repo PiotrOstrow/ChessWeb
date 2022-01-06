@@ -69,9 +69,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 				.authorizeRequests()
 				.antMatchers(HttpMethod.POST, "/users/").permitAll()
-				.antMatchers(HttpMethod.POST, "/auth/login/").permitAll()
-				.antMatchers("/websocket/**").permitAll() // auth at sub-protocol due to WebSocket API limitations
 				.antMatchers(HttpMethod.GET, "/users/").hasAuthority(ADMIN.toString())
+
+				.antMatchers(HttpMethod.POST, "/auth/login/").permitAll()
+
+				.antMatchers("/websocket/**").permitAll() // auth at sub-protocol due to JS WebSocket API limitations
+
+				.antMatchers("/puzzles/random/").authenticated()
+				.antMatchers("/puzzles/solve/").authenticated()
+				.antMatchers("/puzzles/**").hasAuthority(ADMIN.toString())
+
 				.anyRequest().authenticated();
 	}
 
