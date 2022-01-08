@@ -1,5 +1,6 @@
 package com.github.piotrostrow.chess.mapper;
 
+import com.github.piotrostrow.chess.entity.PuzzleDetailsEntity;
 import com.github.piotrostrow.chess.entity.PuzzleEntity;
 import com.github.piotrostrow.chess.entity.PuzzleThemeEntity;
 import com.github.piotrostrow.chess.rest.dto.PuzzleDto;
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,14 +21,14 @@ class PuzzleConverterTest {
 		modelMapper.addConverter(new PuzzleConverter());
 
 		List<String> moves = List.of("e2e4", "e7e6", "d2d3");
-		List<String> themes = List.of("Theme1", "Theme3", "theme9");
+		Set<String> themes = Set.of("Theme1", "Theme3", "theme9");
 
-		PuzzleEntity puzzleEntity = new PuzzleEntity();
-		puzzleEntity.setFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-		puzzleEntity.setRating(1000);
-		puzzleEntity.setId(123);
-		puzzleEntity.setMoves(String.join(" ", moves));
-		puzzleEntity.setThemes(themes.stream().map(PuzzleThemeEntity::new).collect(Collectors.toSet()));
+		Set<PuzzleThemeEntity> themeEntities = themes.stream()
+				.map(PuzzleThemeEntity::new)
+				.collect(Collectors.toSet());
+
+		PuzzleDetailsEntity puzzleDetailsEntity = new PuzzleDetailsEntity("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", String.join(" ", moves));
+		PuzzleEntity puzzleEntity = new PuzzleEntity(123, puzzleDetailsEntity, themeEntities, 1000);
 
 		PuzzleDto actual = modelMapper.map(puzzleEntity, PuzzleDto.class);
 

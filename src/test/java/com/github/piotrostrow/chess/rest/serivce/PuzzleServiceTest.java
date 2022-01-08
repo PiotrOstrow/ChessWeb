@@ -1,6 +1,7 @@
 package com.github.piotrostrow.chess.rest.serivce;
 
 import com.github.piotrostrow.chess.domain.chess.PuzzleRatingCalculator;
+import com.github.piotrostrow.chess.entity.PuzzleDetailsEntity;
 import com.github.piotrostrow.chess.entity.PuzzleEntity;
 import com.github.piotrostrow.chess.entity.PuzzleThemeEntity;
 import com.github.piotrostrow.chess.entity.UserEntity;
@@ -49,7 +50,7 @@ class PuzzleServiceTest {
 	private final PuzzleRatingCalculator puzzleRatingCalculator = new PuzzleRatingCalculator();
 
 	private final List<PuzzleEntity> puzzleEntities = IntStream.range(6, 20)
-			.mapToObj(e -> new PuzzleEntity(e, "fen" + e, "e2e3", e * 100, Collections.emptySet()))
+			.mapToObj(e -> new PuzzleEntity(e, new PuzzleDetailsEntity("fen" + e, "e2e3"), Collections.emptySet(), e * 100))
 			.collect(Collectors.toList());
 
 	private final Principal principal = new UsernamePasswordAuthenticationToken("username231", "");
@@ -248,7 +249,7 @@ class PuzzleServiceTest {
 	@Test
 	void testSubmitSolutionIncorrectSolution() {
 		PuzzleEntity puzzleEntity = new PuzzleEntity();
-		puzzleEntity.setMoves("e2e3 e7e6");
+		puzzleEntity.getPuzzleDetails().setMoves("e2e3 e7e6");
 		puzzleEntity.setRating(1250);
 
 		PuzzleSolutionDto solution = new PuzzleSolutionDto();
@@ -272,7 +273,7 @@ class PuzzleServiceTest {
 	@Test
 	void testSubmitSolutionCorrectSolution() {
 		PuzzleEntity puzzleEntity = new PuzzleEntity();
-		puzzleEntity.setMoves("e2e3 e7e6");
+		puzzleEntity.getPuzzleDetails().setMoves("e2e3 e7e6");
 		puzzleEntity.setRating(1250);
 
 		PuzzleSolutionDto solution = new PuzzleSolutionDto();

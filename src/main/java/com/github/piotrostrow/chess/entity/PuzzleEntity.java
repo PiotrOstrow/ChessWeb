@@ -1,6 +1,7 @@
 package com.github.piotrostrow.chess.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,20 +12,27 @@ public class PuzzleEntity {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 
-	private String fen;
-	private String moves;
-	private int rating;
+	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@NotNull
+	private PuzzleDetailsEntity puzzleDetails = new PuzzleDetailsEntity();
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	private Set<PuzzleThemeEntity> themes = new HashSet<>();
 
+	private int rating;
+
 	public PuzzleEntity() {
 	}
 
-	public PuzzleEntity(long id, String fen, String moves, int rating, Set<PuzzleThemeEntity> themes) {
+	public PuzzleEntity(PuzzleDetailsEntity puzzleDetails, Set<PuzzleThemeEntity> themes, int rating) {
+		this.puzzleDetails = puzzleDetails;
+		this.themes = themes;
+		this.rating = rating;
+	}
+
+	public PuzzleEntity(long id, PuzzleDetailsEntity puzzleDetails, Set<PuzzleThemeEntity> themes, int rating) {
 		this.id = id;
-		this.fen = fen;
-		this.moves = moves;
+		this.puzzleDetails = puzzleDetails;
 		this.rating = rating;
 		this.themes = themes;
 	}
@@ -35,22 +43,6 @@ public class PuzzleEntity {
 
 	public void setId(long id) {
 		this.id = id;
-	}
-
-	public String getFen() {
-		return fen;
-	}
-
-	public void setFen(String fen) {
-		this.fen = fen;
-	}
-
-	public String getMoves() {
-		return moves;
-	}
-
-	public void setMoves(String moves) {
-		this.moves = moves;
 	}
 
 	public int getRating() {
@@ -65,7 +57,23 @@ public class PuzzleEntity {
 		return themes;
 	}
 
+	public String getFen() {
+		return puzzleDetails.getFen();
+	}
+
+	public String getMoves() {
+		return puzzleDetails.getMoves();
+	}
+
 	public void setThemes(Set<PuzzleThemeEntity> themes) {
 		this.themes = themes;
+	}
+
+	public PuzzleDetailsEntity getPuzzleDetails() {
+		return puzzleDetails;
+	}
+
+	public void setPuzzleDetails(PuzzleDetailsEntity puzzleDetails) {
+		this.puzzleDetails = puzzleDetails;
 	}
 }

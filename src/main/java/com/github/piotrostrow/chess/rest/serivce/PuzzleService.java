@@ -1,6 +1,7 @@
 package com.github.piotrostrow.chess.rest.serivce;
 
 import com.github.piotrostrow.chess.domain.chess.PuzzleRatingCalculator;
+import com.github.piotrostrow.chess.entity.PuzzleDetailsEntity;
 import com.github.piotrostrow.chess.entity.PuzzleEntity;
 import com.github.piotrostrow.chess.entity.PuzzleThemeEntity;
 import com.github.piotrostrow.chess.entity.UserEntity;
@@ -61,15 +62,13 @@ public class PuzzleService {
 	}
 
 	public PuzzleDto createPuzzle(PuzzleDto puzzleDto) {
-		PuzzleEntity puzzleEntity = new PuzzleEntity();
-		puzzleEntity.setFen(puzzleDto.getFen());
-		puzzleEntity.setRating(puzzleDto.getRating());
-		puzzleEntity.setMoves(String.join(" ", puzzleDto.getMoves()));
-
+		PuzzleDetailsEntity puzzleDetailsEntity = new PuzzleDetailsEntity(puzzleDto.getFen(), String.join(" ", puzzleDto.getMoves()));
 		Set<PuzzleThemeEntity> themes = puzzleDto.getThemes().stream()
 				.map(this::getOrCreateTheme)
 				.collect(Collectors.toSet());
-		puzzleEntity.setThemes(themes);
+
+		PuzzleEntity puzzleEntity = new PuzzleEntity(puzzleDetailsEntity, themes, puzzleDto.getRating());
+		puzzleDetailsEntity.setPuzzleEntity(puzzleEntity);
 
 		puzzleRepository.save(puzzleEntity);
 
