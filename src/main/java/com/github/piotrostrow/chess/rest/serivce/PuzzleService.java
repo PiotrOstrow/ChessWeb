@@ -1,6 +1,7 @@
 package com.github.piotrostrow.chess.rest.serivce;
 
 import com.github.piotrostrow.chess.domain.chess.PuzzleRatingCalculator;
+import com.github.piotrostrow.chess.domain.chess.PuzzleSolutionValidator;
 import com.github.piotrostrow.chess.entity.PuzzleDetailsEntity;
 import com.github.piotrostrow.chess.entity.PuzzleEntity;
 import com.github.piotrostrow.chess.entity.PuzzleThemeEntity;
@@ -11,6 +12,7 @@ import com.github.piotrostrow.chess.repository.UserRepository;
 import com.github.piotrostrow.chess.rest.dto.PuzzleDto;
 import com.github.piotrostrow.chess.rest.dto.PuzzleSolutionDto;
 import com.github.piotrostrow.chess.rest.dto.PuzzleSolutionResponse;
+import com.github.piotrostrow.chess.rest.exception.BadRequestException;
 import com.github.piotrostrow.chess.rest.exception.NotFoundException;
 import com.github.piotrostrow.chess.util.Util;
 import org.modelmapper.ModelMapper;
@@ -36,20 +38,17 @@ public class PuzzleService {
 	private final UserRepository userRepository;
 
 	private final ModelMapper modelMapper;
-	private final PuzzleRatingCalculator puzzleRatingCalculator;
 
 	private final Random random = new Random();
 
 	public PuzzleService(PuzzleRepository puzzleRepository,
 						 PuzzleThemeRepository puzzleThemeRepository,
 						 UserRepository userRepository,
-						 ModelMapper modelMapper,
-						 PuzzleRatingCalculator puzzleRatingCalculator) {
+						 ModelMapper modelMapper) {
 		this.puzzleRepository = puzzleRepository;
 		this.puzzleThemeRepository = puzzleThemeRepository;
 		this.userRepository = userRepository;
 		this.modelMapper = modelMapper;
-		this.puzzleRatingCalculator = puzzleRatingCalculator;
 	}
 
 	public PuzzleDto getPuzzleById(Long id) {
@@ -136,13 +135,15 @@ public class PuzzleService {
 	}
 
 	public PuzzleSolutionResponse submitSolution(PuzzleSolutionDto puzzleSolutionDto, Principal principal) {
+		validateInputMoves(puzzleSolutionDto.getMoves());
+
 		PuzzleEntity puzzleEntity = puzzleRepository.findById(puzzleSolutionDto.getId())
 				.orElseThrow(() -> new NotFoundException("Puzzle does not exist"));
 
 		UserEntity userEntity = userRepository.findByUsername(principal.getName()).orElseThrow();
 
-		boolean isCorrectSolution = isCorrectSolution(puzzleSolutionDto, puzzleEntity);
-		int delta = puzzleRatingCalculator.calculateDelta(userEntity.getPuzzleRating(), puzzleEntity.getRating(), isCorrectSolution);
+		boolean isCorrectSolution = PuzzleSolutionValidator.isCorrectSolution(puzzleEntity, puzzleSolutionDto.getMoves());
+		int delta = PuzzleRatingCalculator.calculateDelta(userEntity.getPuzzleRating(), puzzleEntity.getRating(), isCorrectSolution);
 
 		userEntity.setPuzzleRating(userEntity.getPuzzleRating() + delta);
 		userRepository.save(userEntity);
@@ -150,8 +151,9 @@ public class PuzzleService {
 		return new PuzzleSolutionResponse(isCorrectSolution, userEntity.getPuzzleRating(), delta);
 	}
 
-	private boolean isCorrectSolution(PuzzleSolutionDto puzzleSolutionDto, PuzzleEntity puzzleEntity) {
-		String moves = String.join(" ", puzzleSolutionDto.getMoves());
-		return puzzleEntity.getMoves().equals(moves);
+	private void validateInputMoves(List<String> moves) {
+		if (moves.stream().anyMatch(e -> !e.matches("([a-h][1-8]){2}[qnbr]?"))) {
+			throw new BadRequestException("Invalid input - moves must be in UCI format");
+		}
 	}
 }

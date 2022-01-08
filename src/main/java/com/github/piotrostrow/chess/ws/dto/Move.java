@@ -11,15 +11,18 @@ public class Move {
 	private final Position from;
 	private final Position to;
 
-	public Move(Position from, Position to) {
-		this.from = from;
-		this.to = to;
+	public Move(String uci) {
+		this(uci.substring(0, 2), uci.substring(2, 4));
 	}
 
 	@JsonCreator
 	public Move(String from, String to) {
-		this.from = new Position(from);
-		this.to = new Position(to);
+		this(new Position(from), new Position(to));
+	}
+
+	public Move(Position from, Position to) {
+		this.from = from;
+		this.to = to;
 	}
 
 	public Position getFrom() {

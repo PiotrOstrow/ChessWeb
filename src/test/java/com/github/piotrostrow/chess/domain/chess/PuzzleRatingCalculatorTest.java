@@ -7,14 +7,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class PuzzleRatingCalculatorTest {
 
-	private final PuzzleRatingCalculator puzzleRatingCalculator = new PuzzleRatingCalculator();
-
 	@Test
 	void testEqualRatingPuzzleSolvedShouldReturnHalfKValue() {
 		int playerRating = 1200;
 		int puzzleRating = 1200;
 
-		int delta = puzzleRatingCalculator.calculateDelta(playerRating, puzzleRating, true);
+		int delta = PuzzleRatingCalculator.calculateDelta(playerRating, puzzleRating, true);
 
 		assertThat(delta).isEqualTo((int) Math.round(PuzzleRatingCalculator.K / 2));
 	}
@@ -24,7 +22,7 @@ class PuzzleRatingCalculatorTest {
 		int playerRating = 1200;
 		int puzzleRating = 1200;
 
-		int delta = puzzleRatingCalculator.calculateDelta(playerRating, puzzleRating, false);
+		int delta = PuzzleRatingCalculator.calculateDelta(playerRating, puzzleRating, false);
 
 		assertThat(delta).isEqualTo((int) -Math.round(PuzzleRatingCalculator.K / 2));
 	}
@@ -34,7 +32,7 @@ class PuzzleRatingCalculatorTest {
 		int playerRating = 1200;
 		int puzzleRating = 1100;
 
-		int delta = puzzleRatingCalculator.calculateDelta(playerRating, puzzleRating, true);
+		int delta = PuzzleRatingCalculator.calculateDelta(playerRating, puzzleRating, true);
 
 		assertThat(delta).isLessThan((int) Math.round(PuzzleRatingCalculator.K / 2));
 	}
@@ -44,7 +42,7 @@ class PuzzleRatingCalculatorTest {
 		int playerRating = 1200;
 		int puzzleRating = 1100;
 
-		int delta = puzzleRatingCalculator.calculateDelta(playerRating, puzzleRating, false);
+		int delta = PuzzleRatingCalculator.calculateDelta(playerRating, puzzleRating, false);
 
 		assertThat(delta).isLessThan((int) -Math.round(PuzzleRatingCalculator.K / 2));
 	}
@@ -54,7 +52,7 @@ class PuzzleRatingCalculatorTest {
 		int playerRating = 1200;
 		int puzzleRating = 1300;
 
-		int delta = puzzleRatingCalculator.calculateDelta(playerRating, puzzleRating, true);
+		int delta = PuzzleRatingCalculator.calculateDelta(playerRating, puzzleRating, true);
 
 		assertThat(delta).isGreaterThan((int) Math.round(PuzzleRatingCalculator.K / 2));
 	}
@@ -64,7 +62,7 @@ class PuzzleRatingCalculatorTest {
 		int playerRating = 1200;
 		int puzzleRating = 1300;
 
-		int delta = puzzleRatingCalculator.calculateDelta(playerRating, puzzleRating, false);
+		int delta = PuzzleRatingCalculator.calculateDelta(playerRating, puzzleRating, false);
 
 		assertThat(delta).isGreaterThan((int) -Math.round(PuzzleRatingCalculator.K / 2));
 	}
@@ -74,7 +72,7 @@ class PuzzleRatingCalculatorTest {
 		int playerRating = 1200;
 		int puzzleRating = 600;
 
-		int delta = puzzleRatingCalculator.calculateDelta(playerRating, puzzleRating, true);
+		int delta = PuzzleRatingCalculator.calculateDelta(playerRating, puzzleRating, true);
 
 		assertThat(delta).isCloseTo(0, Offset.offset(1));
 	}
@@ -84,7 +82,7 @@ class PuzzleRatingCalculatorTest {
 		int playerRating = 1200;
 		int puzzleRating = 2000;
 
-		int delta = puzzleRatingCalculator.calculateDelta(playerRating, puzzleRating, true);
+		int delta = PuzzleRatingCalculator.calculateDelta(playerRating, puzzleRating, true);
 
 		assertThat(delta).isCloseTo((int) PuzzleRatingCalculator.K, Offset.offset(1));
 	}

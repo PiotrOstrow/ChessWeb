@@ -1,6 +1,6 @@
 package com.github.piotrostrow.chess.rest.serivce;
 
-import com.github.piotrostrow.chess.domain.chess.PuzzleRatingCalculator;
+import com.github.piotrostrow.chess.domain.chess.Fen;
 import com.github.piotrostrow.chess.entity.PuzzleDetailsEntity;
 import com.github.piotrostrow.chess.entity.PuzzleEntity;
 import com.github.piotrostrow.chess.entity.PuzzleThemeEntity;
@@ -12,6 +12,7 @@ import com.github.piotrostrow.chess.rest.dto.PuzzleDto;
 import com.github.piotrostrow.chess.rest.dto.PuzzleSolutionDto;
 import com.github.piotrostrow.chess.rest.dto.PuzzleSolutionResponse;
 import com.github.piotrostrow.chess.rest.exception.ApiException;
+import com.github.piotrostrow.chess.rest.exception.BadRequestException;
 import com.github.piotrostrow.chess.rest.exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,8 +37,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
-// TODO: testSubmitSolutionAlternativeLastMoveEndsInAMate
 // TODO: testSubmitSolutionPromoteMove
+// TODO: testGetRandomPuzzleUserDoesNotExistShouldThrowUnauthorizedException - same for wherever else principal is used
 class PuzzleServiceTest {
 
 	private PuzzleService puzzleService;
@@ -47,7 +48,6 @@ class PuzzleServiceTest {
 	private final UserRepository userRepository = mock(UserRepository.class);
 
 	private final ModelMapper modelMapper = new ModelMapper();
-	private final PuzzleRatingCalculator puzzleRatingCalculator = new PuzzleRatingCalculator();
 
 	private final List<PuzzleEntity> puzzleEntities = IntStream.range(6, 20)
 			.mapToObj(e -> new PuzzleEntity(e, new PuzzleDetailsEntity("fen" + e, "e2e3"), Collections.emptySet(), e * 100))
@@ -65,7 +65,7 @@ class PuzzleServiceTest {
 		when(puzzleRepository.getMinRating()).thenReturn(puzzleEntities.stream().map(PuzzleEntity::getRating).min(Comparator.naturalOrder()));
 		when(puzzleRepository.getMaxRating()).thenReturn(puzzleEntities.stream().map(PuzzleEntity::getRating).max(Comparator.naturalOrder()));
 
-		puzzleService = new PuzzleService(puzzleRepository, puzzleThemeRepository, userRepository, modelMapper, puzzleRatingCalculator);
+		puzzleService = new PuzzleService(puzzleRepository, puzzleThemeRepository, userRepository, modelMapper);
 	}
 
 	@Test
@@ -239,7 +239,7 @@ class PuzzleServiceTest {
 	void testSubmitSolutionPuzzleDoesNotExistShouldThrowApiException() {
 		when(puzzleRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-		PuzzleSolutionDto solution = new PuzzleSolutionDto();
+		PuzzleSolutionDto solution = new PuzzleSolutionDto(1, 0, List.of("e2e3"));
 		Principal principal = new UsernamePasswordAuthenticationToken("", "");
 
 		assertThatThrownBy(() -> puzzleService.submitSolution(solution, principal)).isInstanceOf(ApiException.class)
@@ -247,14 +247,11 @@ class PuzzleServiceTest {
 	}
 
 	@Test
-	void testSubmitSolutionIncorrectSolution() {
-		PuzzleEntity puzzleEntity = new PuzzleEntity();
-		puzzleEntity.getPuzzleDetails().setMoves("e2e3 e7e6");
-		puzzleEntity.setRating(1250);
+	void testSubmitSolutionCorrectSolution() {
+		PuzzleDetailsEntity puzzleDetails = new PuzzleDetailsEntity(Fen.DEFAULT_STARTING_POSITION.asString(), "e2e3 e7e6");
+		PuzzleEntity puzzleEntity = new PuzzleEntity(puzzleDetails, Collections.emptySet(), 1250);
 
-		PuzzleSolutionDto solution = new PuzzleSolutionDto();
-		solution.setId(puzzleEntity.getId());
-		solution.setMoves(List.of(puzzleEntity.getMoves().split(" ")));
+		PuzzleSolutionDto solution = new PuzzleSolutionDto(puzzleEntity.getId(), 0, List.of(puzzleEntity.getMoves().split(" ")));
 
 		int initialPlayerRating = userEntity.getPuzzleRating();
 
@@ -271,14 +268,11 @@ class PuzzleServiceTest {
 	}
 
 	@Test
-	void testSubmitSolutionCorrectSolution() {
-		PuzzleEntity puzzleEntity = new PuzzleEntity();
-		puzzleEntity.getPuzzleDetails().setMoves("e2e3 e7e6");
-		puzzleEntity.setRating(1250);
+	void testSubmitSolutionIncorrectSolution() {
+		PuzzleDetailsEntity puzzleDetails = new PuzzleDetailsEntity(Fen.DEFAULT_STARTING_POSITION.asString(), "e2e3 e7e6");
+		PuzzleEntity puzzleEntity = new PuzzleEntity(puzzleDetails, Collections.emptySet(), 1250);
 
-		PuzzleSolutionDto solution = new PuzzleSolutionDto();
-		solution.setId(puzzleEntity.getId());
-		solution.setMoves(List.of("e2e3", "e7e5"));
+		PuzzleSolutionDto solution = new PuzzleSolutionDto(puzzleEntity.getId(), 0, List.of("e2e3", "e7e5"));
 
 		int initialPlayerRating = userEntity.getPuzzleRating();
 
@@ -292,5 +286,40 @@ class PuzzleServiceTest {
 		assertThat(userEntity.getPuzzleRating()).isEqualTo(initialPlayerRating + puzzleSolutionResponse.getDelta());
 
 		verify(userRepository, times(1)).save(userEntity);
+	}
+
+	@Test
+	void testSubmitSolutionAlternativeLastMoveEndsInAMateShouldReturnCorrect() {
+		PuzzleDetailsEntity puzzleDetails = new PuzzleDetailsEntity("3Q4/6kp/6p1/3P1p2/6K1/6P1/5P2/7q w - - 0 36", "g4f4 h1e4 f4g5 h7h6");
+		PuzzleEntity puzzleEntity = new PuzzleEntity(1, puzzleDetails, Collections.emptySet(), 1300);
+
+		when(puzzleRepository.findById(puzzleEntity.getId())).thenReturn(Optional.of(puzzleEntity));
+
+		PuzzleSolutionDto puzzleSolutionDto = new PuzzleSolutionDto(puzzleEntity.getId(), 0, List.of("g4f4", "h1e4", "f4g5", "e4g4"));
+
+		PuzzleSolutionResponse actual = puzzleService.submitSolution(puzzleSolutionDto, principal);
+
+		assertThat(actual.isCorrect()).isTrue();
+	}
+
+	@Test
+	void testSubmitSolutionOpponentsMovesIncorrectEndsInCheckmateShouldReturnIncorrect() {
+		PuzzleDetailsEntity puzzleDetails = new PuzzleDetailsEntity("3Q4/6kp/6p1/3P1p2/6K1/6P1/5P2/7q w - - 0 36", "g4f4 h1e4 f4g5 h7h6");
+		PuzzleEntity puzzleEntity = new PuzzleEntity(1, puzzleDetails, Collections.emptySet(), 1300);
+
+		when(puzzleRepository.findById(puzzleEntity.getId())).thenReturn(Optional.of(puzzleEntity));
+
+		PuzzleSolutionDto puzzleSolutionDto = new PuzzleSolutionDto(puzzleEntity.getId(), 0, List.of("g4g5", "h1h6"));
+
+		PuzzleSolutionResponse actual = puzzleService.submitSolution(puzzleSolutionDto, principal);
+
+		assertThat(actual.isCorrect()).isFalse();
+	}
+
+	@Test
+	void testSubmitSolutionBadInputShouldThrowBadRequestException() {
+		PuzzleSolutionDto puzzleSolutionDto = new PuzzleSolutionDto(1, 0, List.of("e9e7"));
+
+		assertThatThrownBy(() -> puzzleService.submitSolution(puzzleSolutionDto, principal)).isInstanceOf(BadRequestException.class);
 	}
 }

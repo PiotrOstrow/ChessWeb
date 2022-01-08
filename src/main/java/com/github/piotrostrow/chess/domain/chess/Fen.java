@@ -20,12 +20,15 @@ public class Fen {
 
 	public static final Fen DEFAULT_STARTING_POSITION = new Fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 
+	private final String fenString;
+
 	private List<Piece> pieces;
 	private Color activeColor;
 	private Set<CastlingMove> castlingAvailability;
 	private Position enPassantTarget;
 
 	public Fen(String fenString) {
+		this.fenString = fenString;
 		parseFen(fenString);
 	}
 
@@ -134,5 +137,9 @@ public class Fen {
 
 	public Optional<Position> getEnPassantTarget() {
 		return Optional.ofNullable(enPassantTarget);
+	}
+
+	public String asString() {
+		return fenString;
 	}
 }
