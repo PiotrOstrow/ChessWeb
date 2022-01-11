@@ -120,7 +120,7 @@ class PuzzleControllerIntegrationTest {
 		userService.createUser(new UserDto("user123", "password", "user@email.com"));
 		userService.createUser(new UserDto("user321", "password", "user@email.com"));
 
-		int initialRating = userService.getUserByUsername("user321").map(UserDto::getPuzzleRating).orElseThrow();
+		int initialRating = userService.getUserByUsername("user321").getPuzzleRating();
 		PuzzleDto puzzle = puzzleService.createPuzzle(new PuzzleDto("fen", List.of("e2e3"), 1000, List.of("Theme1")));
 		PuzzleSolutionDto puzzleSolutionDto = new PuzzleSolutionDto(puzzle.getId(), 0, puzzle.getMoves());
 
@@ -132,7 +132,7 @@ class PuzzleControllerIntegrationTest {
 				).andExpect(status().isOk())
 				.andExpect(jsonPath("$.delta").value(greaterThan(0)));
 
-		Integer newRating = userService.getUserByUsername("user321").map(UserDto::getPuzzleRating).orElseThrow();
+		Integer newRating = userService.getUserByUsername("user321").getPuzzleRating();
 
 		assertThat(newRating).isGreaterThan(initialRating);
 	}

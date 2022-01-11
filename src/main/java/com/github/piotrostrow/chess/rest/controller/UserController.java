@@ -30,8 +30,12 @@ public class UserController {
 
 	@GetMapping("{username}")
 	public ResponseEntity<UserDto> getUser(@PathVariable String username) {
-		return userService.getUserByUsername(username)
-				.map(ResponseEntity::ok)
-				.orElseGet(() -> ResponseEntity.notFound().build());
+		return ResponseEntity.ok(userService.getUserByUsername(username));
+	}
+
+	@DeleteMapping("{username}")
+	public ResponseEntity<Object> deleteUser(@PathVariable String username) {
+		userService.deleteUser(username);
+		return ResponseEntity.noContent().build();
 	}
 }

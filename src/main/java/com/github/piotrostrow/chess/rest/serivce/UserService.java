@@ -5,6 +5,7 @@ import com.github.piotrostrow.chess.repository.UserRepository;
 import com.github.piotrostrow.chess.rest.dto.UserDto;
 import com.github.piotrostrow.chess.rest.exception.BadRequestException;
 import com.github.piotrostrow.chess.rest.exception.ConflictException;
+import com.github.piotrostrow.chess.rest.exception.NotFoundException;
 import com.github.piotrostrow.chess.security.Role;
 import com.github.piotrostrow.chess.util.Util;
 import org.modelmapper.ModelMapper;
@@ -12,7 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -71,7 +71,15 @@ public class UserService {
 				.collect(Collectors.toList());
 	}
 
-	public Optional<UserDto> getUserByUsername(String username) {
-		return userRepository.findByUsername(username).map(entity -> modelMapper.map(entity, UserDto.class));
+	public UserDto getUserByUsername(String username) {
+		return userRepository.findByUsername(username)
+				.map(entity -> modelMapper.map(entity, UserDto.class))
+				.orElseThrow(() -> new NotFoundException("User by name \"" + username + "\" not found"));
+	}
+
+	public void deleteUser(String username) {
+		UserEntity userEntity = userRepository.findByUsername(username)
+				.orElseThrow(() -> new NotFoundException("User by name \"" + username + "\" not found"));
+		userRepository.delete(userEntity);
 	}
 }

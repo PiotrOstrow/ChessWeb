@@ -6,7 +6,9 @@ import com.github.piotrostrow.chess.repository.UserRepository;
 import com.github.piotrostrow.chess.rest.dto.UserDto;
 import com.github.piotrostrow.chess.rest.exception.BadRequestException;
 import com.github.piotrostrow.chess.rest.exception.ConflictException;
+import com.github.piotrostrow.chess.rest.exception.NotFoundException;
 import com.github.piotrostrow.chess.security.Role;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -36,12 +38,18 @@ class UserServiceTest {
 	@Autowired
 	private RoleService roleService;
 
+	private final UserRepository userRepository = mock(UserRepository.class);
+
+	private UserService userService;
+
+
+	@BeforeEach
+	void setUp() {
+		userService = new UserService(userRepository, passwordEncoder, modelMapper, roleService);
+	}
+
 	@Test
 	void testCreateUserNoPasswordThrowsException() {
-		UserRepository userRepository = mock(UserRepository.class);
-
-		UserService userService = new UserService(userRepository, passwordEncoder, modelMapper, roleService);
-
 		UserDto userDto = new UserDto();
 		assertThatThrownBy(() -> userService.createUser(userDto))
 				.isInstanceOf(BadRequestException.class)
@@ -50,10 +58,6 @@ class UserServiceTest {
 
 	@Test
 	void testCreateUserPasswordTooShortThrowsException() {
-		UserRepository userRepository = mock(UserRepository.class);
-
-		UserService userService = new UserService(userRepository, passwordEncoder, modelMapper, roleService);
-
 		UserDto userDto = new UserDto("username", "s");
 		assertThatThrownBy(() -> userService.createUser(userDto))
 				.isInstanceOf(BadRequestException.class)
@@ -62,10 +66,7 @@ class UserServiceTest {
 
 	@Test
 	void testCreateFirstUserIsAdmin() {
-		UserRepository userRepository = mock(UserRepository.class);
 		when(userRepository.save(any())).thenAnswer(e -> e.getArgument(0));
-
-		UserService userService = new UserService(userRepository, passwordEncoder, modelMapper, roleService);
 
 		UserDto userDto = new UserDto("username", "password123");
 		userService.createUser(userDto);
@@ -77,11 +78,8 @@ class UserServiceTest {
 
 	@Test
 	void testCreateSuccessiveUsersAreNotAdmins() {
-		UserRepository userRepository = mock(UserRepository.class);
 		when(userRepository.save(any())).thenAnswer(e -> e.getArgument(0));
 		when(userRepository.count()).thenReturn(1L);
-
-		UserService userService = new UserService(userRepository, passwordEncoder, modelMapper, roleService);
 
 		UserDto userDto = new UserDto("username", "password123");
 		userService.createUser(userDto);
@@ -93,16 +91,43 @@ class UserServiceTest {
 
 	@Test
 	void testCreateUserAlreadyExists() {
-		UserRepository userRepository = mock(UserRepository.class);
 		when(userRepository.save(any())).thenAnswer(e -> e.getArgument(0));
 		when(userRepository.findByUsername(any())).thenReturn(Optional.of(new UserEntity()));
-
-		UserService userService = new UserService(userRepository, passwordEncoder, modelMapper, roleService);
 
 		UserDto userDto = new UserDto("username", "password123");
 
 		assertThatThrownBy(() -> userService.createUser(userDto))
 				.isInstanceOf(ConflictException.class)
 				.hasMessageContaining("Choose different username");
+	}
+
+	@Test
+	void testGetUserByUsernameShouldReturnUserDto() {
+		UserEntity user = new UserEntity("User123", "user@email.com");
+		when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
+
+		UserDto userDto = userService.getUserByUsername(user.getUsername());
+
+		assertThat(userDto).isEqualTo(modelMapper.map(user, UserDto.class));
+	}
+
+	@Test
+	void testGetUserByUsernameDoesNotExistShouldThrowNotFoundException() {
+		assertThatThrownBy(() -> userService.getUserByUsername("user123")).isInstanceOf(NotFoundException.class);
+	}
+
+	@Test
+	void testDeleteUserShouldRemoveFromRepository() {
+		UserEntity user = new UserEntity("User123", "user@email.com");
+		when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
+
+		userService.deleteUser(user.getUsername());
+
+		verify(userRepository, times(1)).delete(user);
+	}
+
+	@Test
+	void testDeleteNonExistingUserShouldThrowNotFoundException() {
+		assertThatThrownBy(() -> userService.deleteUser("user123")).isInstanceOf(NotFoundException.class);
 	}
 }

@@ -2,6 +2,8 @@ package com.github.piotrostrow.chess.rest.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Objects;
+
 public class UserDto {
 
 	private Long id;
@@ -68,5 +70,18 @@ public class UserDto {
 
 	public void setPuzzleRating(int puzzleRating) {
 		this.puzzleRating = puzzleRating;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		UserDto userDto = (UserDto) o;
+		return puzzleRating == userDto.puzzleRating && Objects.equals(id, userDto.id) && Objects.equals(username, userDto.username) && Objects.equals(password, userDto.password) && Objects.equals(email, userDto.email);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, username, password, email, puzzleRating);
 	}
 }
