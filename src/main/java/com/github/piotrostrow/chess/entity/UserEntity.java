@@ -29,7 +29,7 @@ public class UserEntity {
 	@ManyToMany(fetch = FetchType.EAGER)
 	private Set<RoleEntity> roles;
 
-	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Set<GamePlayedEntity> gamesPlayed = new HashSet<>();
 
 	private int puzzleRating = 700;

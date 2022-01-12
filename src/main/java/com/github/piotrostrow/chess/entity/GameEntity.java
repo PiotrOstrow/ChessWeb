@@ -15,7 +15,7 @@ public class GameEntity {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	@OneToMany(mappedBy = "game", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Set<GamePlayedEntity> gamesPlayed = new HashSet<>();
 
 	@Column(length = 4096)

@@ -17,7 +17,7 @@ public class GamePlayedEntity {
 	private UserEntity user;
 
 	@NotNull
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL)
 	private GameEntity game;
 
 	@NotNull

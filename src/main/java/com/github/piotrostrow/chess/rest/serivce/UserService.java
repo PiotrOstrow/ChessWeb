@@ -1,5 +1,6 @@
 package com.github.piotrostrow.chess.rest.serivce;
 
+import com.github.piotrostrow.chess.entity.GamePlayedEntity;
 import com.github.piotrostrow.chess.entity.UserEntity;
 import com.github.piotrostrow.chess.repository.UserRepository;
 import com.github.piotrostrow.chess.rest.dto.UserDto;
@@ -80,6 +81,16 @@ public class UserService {
 	public void deleteUser(String username) {
 		UserEntity userEntity = userRepository.findByUsername(username)
 				.orElseThrow(() -> new NotFoundException("User by name \"" + username + "\" not found"));
+
+		userEntity.getGamesPlayed().stream()
+				.map(GamePlayedEntity::getGame)
+				.flatMap(e -> e.getGamesPlayed().stream())
+				.filter(e -> !e.getUser().getId().equals(userEntity.getId()))
+				.forEach(e -> {
+					e.getUser().getGamesPlayed().remove(e);
+					userRepository.save(e.getUser());
+				});
+
 		userRepository.delete(userEntity);
 	}
 }

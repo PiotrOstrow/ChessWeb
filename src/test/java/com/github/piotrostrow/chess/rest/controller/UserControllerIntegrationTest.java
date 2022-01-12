@@ -1,13 +1,20 @@
 package com.github.piotrostrow.chess.rest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.piotrostrow.chess.domain.chess.Color;
+import com.github.piotrostrow.chess.domain.chess.Game;
+import com.github.piotrostrow.chess.domain.chess.GameResult;
 import com.github.piotrostrow.chess.repository.UserRepository;
 import com.github.piotrostrow.chess.rest.dto.UserDto;
+import com.github.piotrostrow.chess.rest.serivce.GameService;
 import com.github.piotrostrow.chess.rest.serivce.UserService;
 import com.github.piotrostrow.chess.security.JwtTokenUtil;
 import com.github.piotrostrow.chess.security.Role;
 import com.github.piotrostrow.chess.security.UserDetailsImpl;
+import com.github.piotrostrow.chess.ws.game.GameSession;
+import com.github.piotrostrow.chess.ws.game.Player;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,10 +29,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -51,6 +61,9 @@ class UserControllerIntegrationTest {
 
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private GameService gameService;
 
 	@Test
 	void testCreateUser() throws Exception {
@@ -193,6 +206,35 @@ class UserControllerIntegrationTest {
 				delete("/users/user123/")
 						.header(AUTHORIZATION, "Bearer " + tokenWithAdminAuthority())
 		).andExpect(status().isNotFound());
+	}
+
+	@Test
+	@DirtiesContext
+	void testDeleteUserWithGamesPlayedGamesShouldBeRemoved() throws Exception {
+		List<UserDto> users = Stream.of(
+				new UserDto("user123", "password", "user123@email.com"),
+				new UserDto("user321", "password", "user321@email.com")
+		).map(userService::createUser).collect(Collectors.toList());
+
+		GameSession gameSession = Mockito.mock(GameSession.class);
+		when(gameSession.getGame()).thenReturn(new Game());
+		when(gameSession.getGameResult()).thenReturn(GameResult.ONGOING);
+		when(gameSession.getWhite()).thenReturn(new Player("user123", Color.WHITE, 10));
+		when(gameSession.getBlack()).thenReturn(new Player("user321", Color.BLACK, 10));
+		when(gameSession.getWinner()).thenReturn(Optional.empty());
+
+		gameService.saveGame(gameSession);
+
+		assertThat(gameService.getGames()).hasSize(1);
+
+		mockMvc.perform(
+				delete("/users/{username}/", users.get(0).getUsername())
+						.header(AUTHORIZATION, "Bearer " + tokenWithAdminAuthority())
+		).andExpect(status().isNoContent());
+
+		assertThat(userService.getAllUsers()).hasSize(1).contains(users.get(1));
+		assertThat(gameService.getGames()).isEmpty();
+		assertThat(gameService.getGamesForUser(users.get(1).getUsername())).isEmpty();
 	}
 
 	private String tokenWithUserAuthorities() {
