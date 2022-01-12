@@ -9,6 +9,7 @@ import com.github.piotrostrow.chess.repository.GamePlayedRepository;
 import com.github.piotrostrow.chess.repository.GameRepository;
 import com.github.piotrostrow.chess.repository.UserRepository;
 import com.github.piotrostrow.chess.rest.dto.GameDto;
+import com.github.piotrostrow.chess.rest.exception.NotFoundException;
 import com.github.piotrostrow.chess.util.Util;
 import com.github.piotrostrow.chess.ws.game.GameSession;
 import org.modelmapper.ModelMapper;
@@ -42,7 +43,13 @@ public class GameService {
 	}
 
 	public List<GameDto> getGamesForUser(String username) {
-		return List.of();
+		if (userRepository.findByUsername(username).isEmpty()) {
+			throw new NotFoundException("User " + username + " not found");
+		}
+
+		return gameRepository.findAllByGamesPlayed_User_Username(username).stream()
+				.map(e -> modelMapper.map(e, GameDto.class))
+				.collect(Collectors.toList());
 	}
 
 	public void saveGame(GameSession gameSession) {
@@ -69,5 +76,4 @@ public class GameService {
 		black.addGamePlayed(blackGamePlayedEntity);
 		gamePlayedRepository.save(blackGamePlayedEntity);
 	}
-
 }

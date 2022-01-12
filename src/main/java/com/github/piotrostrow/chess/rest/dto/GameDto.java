@@ -6,6 +6,7 @@ import com.github.piotrostrow.chess.domain.chess.Color;
 import com.github.piotrostrow.chess.domain.chess.GameResult;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
@@ -69,5 +70,18 @@ public class GameDto {
 
 	public void setWinner(Color winner) {
 		this.winner = winner;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		GameDto gameDto = (GameDto) o;
+		return Objects.equals(pgn, gameDto.pgn) && Objects.equals(white, gameDto.white) && Objects.equals(black, gameDto.black) && gameResult == gameDto.gameResult && winner == gameDto.winner && Objects.equals(timestamp, gameDto.timestamp);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(pgn, white, black, gameResult, winner, timestamp);
 	}
 }

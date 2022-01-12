@@ -23,6 +23,16 @@ public class GamePlayedEntity {
 	@NotNull
 	private Color color;
 
+	public GamePlayedEntity() {
+	}
+
+	public GamePlayedEntity(Long id, UserEntity user, GameEntity game, Color color) {
+		this.id = id;
+		this.user = user;
+		this.game = game;
+		this.color = color;
+	}
+
 	public Long getId() {
 		return id;
 	}

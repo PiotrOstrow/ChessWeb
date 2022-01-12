@@ -28,6 +28,18 @@ public class GameEntity {
 	@Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
 	private Timestamp timestamp;
 
+	public GameEntity() {
+	}
+
+	public GameEntity(Long id, Set<GamePlayedEntity> gamesPlayed, String pgn, GameResult gameResult, Color winner, Timestamp timestamp) {
+		this.id = id;
+		this.gamesPlayed = gamesPlayed;
+		this.pgn = pgn;
+		this.gameResult = gameResult;
+		this.winner = winner;
+		this.timestamp = timestamp;
+	}
+
 	public Long getId() {
 		return id;
 	}
