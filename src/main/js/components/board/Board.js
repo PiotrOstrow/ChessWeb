@@ -22,6 +22,7 @@ function Board(props) {
             highlightLegalMove={props.legalMoves.has(draggingFrom) && props.legalMoves.get(draggingFrom).has(position)}
             onMouseEnter={pos => setHighlight(pos)}
             onMouseLeave={() => setHighlight(null)}
+            lastMove={props.lastMove}
         />)
 
     const pieces = Array.from(props.chessPosition.pieces.entries())

@@ -25,6 +25,10 @@
     position: relative;
 }
 
+.last-move-highlight {
+    box-shadow: inset 0 0 min(3vh, 3vw) #256ef7;
+}
+
 .highlight {
     box-shadow: inset 0 0 min(2vh, 2vw) #F7EA25;
 }

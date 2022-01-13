@@ -15,6 +15,7 @@ function GameComponent(props) {
     const [color, setColor] = useState(gameApi.getColor());
     const [legalMoves, setLegalMoves] = useState(gameApi.getLegalMoves());
     const [moveHistory, setMoveHistory] = useState(gameApi.getMoveHistory());
+    const [lastMove, setLastMove] = useState(gameApi.getLastMove());
     const [opponentName, setOpponentName] = useState(gameApi.getOpponentsName());
     const [maxTime, setMaxTime] = useState(gameApi.getMaxTime());
     const [whiteTime, setWhiteTime] = useState(gameApi.getWhiteTime());
@@ -64,6 +65,7 @@ function GameComponent(props) {
     const onRecvMove = data => {
         setChessPosition(gameApi.getChessPosition());
         setMoveHistory(gameApi.getMoveHistory());
+        setLastMove(gameApi.getLastMove());
         setWhiteTime(data.whiteTime);
         setBlackTime(data.blackTime);
     }
@@ -73,6 +75,7 @@ function GameComponent(props) {
             gameApi.move(from, to);
             setChessPosition(gameApi.getChessPosition());
             setMoveHistory(gameApi.getMoveHistory());
+            setLastMove(gameApi.getLastMove());
         }
     }
 
@@ -84,8 +87,10 @@ function GameComponent(props) {
     const showMove = i => {
         if (i === moveHistory.length - 1) {
             setChessPosition(gameApi.getChessPosition());
+            setLastMove(gameApi.getLastMove());
         } else {
             setChessPosition(gameApi.getPreviousPosition(i + 1));
+            setLastMove(moveHistory[i]);
         }
     }
 
@@ -96,7 +101,9 @@ function GameComponent(props) {
                        onStartMove={() => showMove(moveHistory.length - 1)}
                        onMove={(from, to) => onOwnMove(from, to)}
                        flipped={color === 'BLACK'}
-                       legalMoves={legalMoves}>
+                       legalMoves={legalMoves}
+                       lastMove={lastMove}
+                >
                     <GameModal isPlaying={isPlaying}
                                isInQueue={isInQue}
                                lastGameResult={lastGameResult}

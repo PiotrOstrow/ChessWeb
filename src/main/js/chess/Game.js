@@ -94,6 +94,14 @@ class Game {
     setFen(fen) {
         this.chess = new Chess(fen);
     }
+
+    getLastMove() {
+        const moveHistory = this.getMoveHistory();
+        if (moveHistory.length === 0) {
+            return null;
+        }
+        return moveHistory[moveHistory.length - 1];
+    }
 }
 
 export default Game;

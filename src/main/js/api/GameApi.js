@@ -113,6 +113,10 @@ class GameApi {
         return this.game.getMoveHistory();
     }
 
+    getLastMove() {
+        return this.game.getLastMove();
+    }
+
     getOpponentsName() {
         return this.opponentsName;
     }

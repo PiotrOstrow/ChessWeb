@@ -88,7 +88,8 @@ function PuzzlePage() {
                    }}
                    onMove={(from, to) => ownMove(from, to)}
                    flipped={color === 'BLACK'}
-                   legalMoves={legalMoves}>
+                   legalMoves={legalMoves}
+                   lastMove={game.getLastMove()}>
                 {win !== null && <PuzzleModal win={win}
                                               rating={rating}
                                               ratingDelta={ratingDelta}
