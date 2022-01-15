@@ -11,11 +11,9 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,13 +45,13 @@ public class PuzzleInitializer implements ApplicationRunner {
 		}
 	}
 
-	private List<String[]> getData() throws URISyntaxException, IOException, CsvException {
-		URL resource = PuzzleInitializer.class.getClassLoader().getResource("puzzles.csv");
+	private List<String[]> getData() throws IOException, CsvException {
+		InputStream resource = PuzzleInitializer.class.getClassLoader().getResourceAsStream("puzzles.csv");
 		if (resource == null) {
 			throw new IllegalStateException("Could not load puzzles.csv");
 		}
 
-		try (CSVReader csvReader = new CSVReader(new FileReader(new File(resource.toURI())))) {
+		try (CSVReader csvReader = new CSVReader(new InputStreamReader(resource))) {
 			return csvReader.readAll();
 		}
 	}
