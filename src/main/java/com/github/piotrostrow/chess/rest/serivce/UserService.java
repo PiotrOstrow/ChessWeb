@@ -2,6 +2,8 @@ package com.github.piotrostrow.chess.rest.serivce;
 
 import com.github.piotrostrow.chess.entity.GamePlayedEntity;
 import com.github.piotrostrow.chess.entity.UserEntity;
+import com.github.piotrostrow.chess.jms.message.NewUserMessage;
+import com.github.piotrostrow.chess.jms.service.JmsService;
 import com.github.piotrostrow.chess.repository.UserRepository;
 import com.github.piotrostrow.chess.rest.dto.UserDto;
 import com.github.piotrostrow.chess.rest.exception.BadRequestException;
@@ -29,12 +31,14 @@ public class UserService {
 	private final PasswordEncoder passwordEncoder;
 	private final ModelMapper modelMapper;
 	private final RoleService roleService;
+	private final JmsService jmsService;
 
-	public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper, RoleService roleService) {
+	public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper, RoleService roleService, JmsService jmsService) {
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.modelMapper = modelMapper;
 		this.roleService = roleService;
+		this.jmsService = jmsService;
 	}
 
 	public UserDto createUser(UserDto userDto) {
@@ -48,6 +52,8 @@ public class UserService {
 		} else {
 			userEntity.setRoles(Set.of(roleService.getRole(Role.USER)));
 		}
+
+		jmsService.sendMessage(new NewUserMessage(userEntity.getUsername(), userEntity.getEmail()));
 
 		return modelMapper.map(userRepository.save(userEntity), UserDto.class);
 	}

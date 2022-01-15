@@ -2,6 +2,7 @@ package com.github.piotrostrow.chess.rest.serivce;
 
 import com.github.piotrostrow.chess.entity.RoleEntity;
 import com.github.piotrostrow.chess.entity.UserEntity;
+import com.github.piotrostrow.chess.jms.service.JmsService;
 import com.github.piotrostrow.chess.repository.UserRepository;
 import com.github.piotrostrow.chess.rest.dto.UserDto;
 import com.github.piotrostrow.chess.rest.exception.BadRequestException;
@@ -39,13 +40,13 @@ class UserServiceTest {
 	private RoleService roleService;
 
 	private final UserRepository userRepository = mock(UserRepository.class);
+	private final JmsService jmsService = mock(JmsService.class);
 
 	private UserService userService;
 
-
 	@BeforeEach
 	void setUp() {
-		userService = new UserService(userRepository, passwordEncoder, modelMapper, roleService);
+		userService = new UserService(userRepository, passwordEncoder, modelMapper, roleService, jmsService);
 	}
 
 	@Test
