@@ -4,8 +4,6 @@
 mvn spring-boot:run
 ```
 
-***
-
 # Endpoints
 
 ## Auth
@@ -20,8 +18,6 @@ mvn spring-boot:run
   "password": "password123"
 }
 ```
-
-***
 
 ## Users
 
@@ -49,8 +45,6 @@ mvn spring-boot:run
 
 `DELETE /users/{username}/`
 
-***
-
 ## Games
 
 #### Get all games played
@@ -60,8 +54,6 @@ mvn spring-boot:run
 #### Get all games played of a specific player
 
 `GET /games/{username}/`
-
-***
 
 ## Puzzles
 
