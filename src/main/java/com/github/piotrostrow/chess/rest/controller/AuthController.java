@@ -3,8 +3,6 @@ package com.github.piotrostrow.chess.rest.controller;
 import com.github.piotrostrow.chess.rest.dto.AuthRequest;
 import com.github.piotrostrow.chess.rest.dto.AuthResponse;
 import com.github.piotrostrow.chess.security.jwt.JwtUtil;
-import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,26 +21,23 @@ public class AuthController {
 
 	private final AuthenticationManager authenticationManager;
 	private final JwtUtil jwtUtil;
-	private final ModelMapper modelMapper;
 
 	// TODO: service
-	public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, ModelMapper modelMapper) {
+	public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
 		this.authenticationManager = authenticationManager;
 		this.jwtUtil = jwtUtil;
-		this.modelMapper = modelMapper;
 	}
 
 	@PostMapping("login")
 	public ResponseEntity<AuthResponse> login(@RequestBody @Valid AuthRequest request) {
-		Authentication authenticate = authenticationManager.authenticate(
+		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
 		);
 
-		UserDetails userDetails = (UserDetails) authenticate.getPrincipal();
-		AuthResponse authResponse = modelMapper.map(userDetails, AuthResponse.class);
+		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+		String accessToken = jwtUtil.generateAccessToken(userDetails);
+		AuthResponse authResponse = new AuthResponse(userDetails.getUsername(), userDetails.getAuthorities(), accessToken);
 
-		return ResponseEntity.ok()
-				.header(HttpHeaders.AUTHORIZATION, jwtUtil.generateAccessToken(userDetails))
-				.body(authResponse);
+		return ResponseEntity.ok(authResponse);
 	}
 }

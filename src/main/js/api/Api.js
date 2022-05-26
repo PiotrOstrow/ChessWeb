@@ -1,7 +1,7 @@
 import axios from 'axios';
 import GameApi from "./GameApi";
 
-let jwtToken = null;
+let accessToken = null;
 let user = {
     username: null,
     roles: []
@@ -9,7 +9,7 @@ let user = {
 
 const authInstance = axios.create();
 authInstance.interceptors.response.use(response => {
-    jwtToken = response.headers.authorization;
+    accessToken = response.data.accessToken;
 
     user.username = response.data.username;
     user.roles = response.data.roles;
@@ -34,19 +34,19 @@ const Api = {
     get(url) {
         return axios.get(url, {
             headers: {
-                authorization: 'Bearer ' + jwtToken
+                authorization: 'Bearer ' + accessToken
             }
         });
     },
     post(url, data = {}) {
         return axios.post(url, data, {
             headers: {
-                authorization: 'Bearer ' + jwtToken
+                authorization: 'Bearer ' + accessToken
             }
         });
     },
     gameApi(onConnect) {
-        return new GameApi(jwtToken, onConnect);
+        return new GameApi(accessToken, onConnect);
     },
     getUsername() {
         return user.username;

@@ -3,7 +3,8 @@ import {Stomp} from "@stomp/stompjs";
 import Game from "../chess/Game";
 
 class GameApi {
-    constructor(jwtToken, onConnect = () => {}) {
+    constructor(accessToken, onConnect = () => {
+    }) {
         this.stompClient = Stomp.over(new SockJS('/websocket'));
 
         this.inQueue = false;
@@ -26,7 +27,7 @@ class GameApi {
         this.onRecvGameOver = () => {
         };
 
-        this.stompClient.connect({auth: jwtToken}, frame => {
+        this.stompClient.connect({auth: accessToken}, frame => {
             onConnect();
             this.stompClient.subscribe('/user/topic/game-start', message => {
                 const data = JSON.parse(message.body);

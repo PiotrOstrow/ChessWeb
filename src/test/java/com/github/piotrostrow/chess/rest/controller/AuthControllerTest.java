@@ -10,7 +10,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,6 +19,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -54,7 +55,7 @@ class AuthControllerTest {
 	@Test
 	void testLoginFailureThrowsException() {
 		when(authenticationManager.authenticate(any())).thenThrow(BadCredentialsException.class);
-		AuthController authController = new AuthController(authenticationManager, jwtUtil, modelMapper);
+		AuthController authController = new AuthController(authenticationManager, jwtUtil);
 
 		AuthRequest authRequest = new AuthRequest(LOGIN, PASSWORD);
 		assertThatThrownBy(() -> authController.login(authRequest))
@@ -64,12 +65,11 @@ class AuthControllerTest {
 	@Test
 	void testLoginSuccess() {
 		when(authenticationManager.authenticate(any())).thenReturn(authentication);
-		AuthController authController = new AuthController(authenticationManager, jwtUtil, modelMapper);
+		AuthController authController = new AuthController(authenticationManager, jwtUtil);
 
 		ResponseEntity<AuthResponse> responseEntity = authController.login(new AuthRequest(LOGIN, PASSWORD));
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(responseEntity.getHeaders()).containsKey(HttpHeaders.AUTHORIZATION);
-		assertThat(responseEntity.getHeaders().get(HttpHeaders.AUTHORIZATION)).hasSize(1).first().isEqualTo(TOKEN);
+		assertThat(responseEntity.getBody()).isEqualTo(new AuthResponse(LOGIN, Collections.emptyList(), TOKEN));
 	}
 }
