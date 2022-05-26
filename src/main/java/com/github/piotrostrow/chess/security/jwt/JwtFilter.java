@@ -1,4 +1,4 @@
-package com.github.piotrostrow.chess.security;
+package com.github.piotrostrow.chess.security.jwt;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,19 +15,19 @@ import java.util.Optional;
 import static org.thymeleaf.util.StringUtils.isEmpty;
 
 @Component
-public class JwtTokenFilter extends OncePerRequestFilter {
+public class JwtFilter extends OncePerRequestFilter {
 
-	private final JwtTokenUtil jwtTokenUtil;
+	private final JwtUtil jwtUtil;
 
-	public JwtTokenFilter(JwtTokenUtil jwtTokenUtil) {
-		this.jwtTokenUtil = jwtTokenUtil;
+	public JwtFilter(JwtUtil jwtUtil) {
+		this.jwtUtil = jwtUtil;
 	}
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
 		Optional<String> token = getToken(request);
 
-		token.flatMap(jwtTokenUtil::getAuthentication)
+		token.flatMap(jwtUtil::getAuthentication)
 				.ifPresent(authentication -> SecurityContextHolder.getContext().setAuthentication(authentication));
 
 		chain.doFilter(request, response);

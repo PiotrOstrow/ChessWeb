@@ -2,7 +2,7 @@ package com.github.piotrostrow.chess.rest.controller;
 
 import com.github.piotrostrow.chess.rest.dto.AuthRequest;
 import com.github.piotrostrow.chess.rest.dto.AuthResponse;
-import com.github.piotrostrow.chess.security.JwtTokenUtil;
+import com.github.piotrostrow.chess.security.jwt.JwtUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -22,13 +22,13 @@ import javax.validation.Valid;
 public class AuthController {
 
 	private final AuthenticationManager authenticationManager;
-	private final JwtTokenUtil jwtTokenUtil;
+	private final JwtUtil jwtUtil;
 	private final ModelMapper modelMapper;
 
 	// TODO: service
-	public AuthController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, ModelMapper modelMapper) {
+	public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, ModelMapper modelMapper) {
 		this.authenticationManager = authenticationManager;
-		this.jwtTokenUtil = jwtTokenUtil;
+		this.jwtUtil = jwtUtil;
 		this.modelMapper = modelMapper;
 	}
 
@@ -42,7 +42,7 @@ public class AuthController {
 		AuthResponse authResponse = modelMapper.map(userDetails, AuthResponse.class);
 
 		return ResponseEntity.ok()
-				.header(HttpHeaders.AUTHORIZATION, jwtTokenUtil.generateAccessToken(userDetails))
+				.header(HttpHeaders.AUTHORIZATION, jwtUtil.generateAccessToken(userDetails))
 				.body(authResponse);
 	}
 }

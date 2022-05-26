@@ -8,9 +8,9 @@ import com.github.piotrostrow.chess.repository.UserRepository;
 import com.github.piotrostrow.chess.rest.dto.UserDto;
 import com.github.piotrostrow.chess.rest.serivce.GameService;
 import com.github.piotrostrow.chess.rest.serivce.UserService;
-import com.github.piotrostrow.chess.security.JwtTokenUtil;
 import com.github.piotrostrow.chess.security.Role;
 import com.github.piotrostrow.chess.security.UserDetailsImpl;
+import com.github.piotrostrow.chess.security.jwt.JwtUtil;
 import com.github.piotrostrow.chess.ws.game.GameSession;
 import com.github.piotrostrow.chess.ws.game.Player;
 import org.junit.jupiter.api.Test;
@@ -54,7 +54,7 @@ class UserControllerIntegrationTest {
 	private ObjectMapper objectMapper;
 
 	@Autowired
-	private JwtTokenUtil jwtTokenUtil;
+	private JwtUtil jwtUtil;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -238,7 +238,7 @@ class UserControllerIntegrationTest {
 	}
 
 	private String tokenWithUserAuthorities() {
-		return jwtTokenUtil.generateAccessToken(new UserDetailsImpl("user321", "", List.of(new SimpleGrantedAuthority(Role.USER.toString()))));
+		return jwtUtil.generateAccessToken(new UserDetailsImpl("user321", "", List.of(new SimpleGrantedAuthority(Role.USER.toString()))));
 	}
 
 	private String tokenWithAdminAuthority() {
@@ -247,6 +247,6 @@ class UserControllerIntegrationTest {
 				.map(SimpleGrantedAuthority::new)
 				.collect(Collectors.toList());
 
-		return jwtTokenUtil.generateAccessToken(new UserDetailsImpl("user123", "", authorities));
+		return jwtUtil.generateAccessToken(new UserDetailsImpl("user123", "", authorities));
 	}
 }

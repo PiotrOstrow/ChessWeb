@@ -2,8 +2,8 @@ package com.github.piotrostrow.chess.rest.controller;
 
 import com.github.piotrostrow.chess.rest.dto.AuthRequest;
 import com.github.piotrostrow.chess.rest.dto.AuthResponse;
-import com.github.piotrostrow.chess.security.JwtTokenUtil;
 import com.github.piotrostrow.chess.security.UserDetailsImpl;
+import com.github.piotrostrow.chess.security.jwt.JwtUtil;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -37,7 +37,7 @@ class AuthControllerTest {
 	private static final String TOKEN = "token";
 	private static final Authentication authentication = new UsernamePasswordAuthenticationToken(new UserDetailsImpl(LOGIN, PASSWORD), null);
 
-	private JwtTokenUtil jwtTokenUtil;
+	private JwtUtil jwtUtil;
 	private AuthenticationManager authenticationManager;
 
 	@Autowired
@@ -45,8 +45,8 @@ class AuthControllerTest {
 
 	@BeforeAll
 	void init() {
-		jwtTokenUtil = mock(JwtTokenUtil.class);
-		when(jwtTokenUtil.generateAccessToken(any())).thenReturn(TOKEN);
+		jwtUtil = mock(JwtUtil.class);
+		when(jwtUtil.generateAccessToken(any())).thenReturn(TOKEN);
 
 		authenticationManager = mock(AuthenticationManager.class);
 	}
@@ -54,7 +54,7 @@ class AuthControllerTest {
 	@Test
 	void testLoginFailureThrowsException() {
 		when(authenticationManager.authenticate(any())).thenThrow(BadCredentialsException.class);
-		AuthController authController = new AuthController(authenticationManager, jwtTokenUtil, modelMapper);
+		AuthController authController = new AuthController(authenticationManager, jwtUtil, modelMapper);
 
 		AuthRequest authRequest = new AuthRequest(LOGIN, PASSWORD);
 		assertThatThrownBy(() -> authController.login(authRequest))
@@ -64,7 +64,7 @@ class AuthControllerTest {
 	@Test
 	void testLoginSuccess() {
 		when(authenticationManager.authenticate(any())).thenReturn(authentication);
-		AuthController authController = new AuthController(authenticationManager, jwtTokenUtil, modelMapper);
+		AuthController authController = new AuthController(authenticationManager, jwtUtil, modelMapper);
 
 		ResponseEntity<AuthResponse> responseEntity = authController.login(new AuthRequest(LOGIN, PASSWORD));
 

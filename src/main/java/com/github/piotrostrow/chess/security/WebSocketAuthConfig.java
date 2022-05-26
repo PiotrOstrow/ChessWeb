@@ -1,5 +1,6 @@
 package com.github.piotrostrow.chess.security;
 
+import com.github.piotrostrow.chess.security.jwt.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
@@ -24,10 +25,10 @@ public class WebSocketAuthConfig implements WebSocketMessageBrokerConfigurer {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketAuthConfig.class);
 
-	private final JwtTokenUtil jwtTokenUtil;
+	private final JwtUtil jwtUtil;
 
-	public WebSocketAuthConfig(JwtTokenUtil jwtTokenUtil) {
-		this.jwtTokenUtil = jwtTokenUtil;
+	public WebSocketAuthConfig(JwtUtil jwtUtil) {
+		this.jwtUtil = jwtUtil;
 	}
 
 	@Override
@@ -39,7 +40,7 @@ public class WebSocketAuthConfig implements WebSocketMessageBrokerConfigurer {
 				if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
 					Optional.ofNullable(accessor.getNativeHeader("auth"))
 							.flatMap(e -> e.stream().findFirst())
-							.flatMap(jwtTokenUtil::getAuthentication)
+							.flatMap(jwtUtil::getAuthentication)
 							.ifPresentOrElse(accessor::setUser, () -> LOGGER.error("Auth failed for websocket session {}", accessor.getSessionId()));
 				}
 				return message;

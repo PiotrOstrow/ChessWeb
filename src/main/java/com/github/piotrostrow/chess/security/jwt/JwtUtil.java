@@ -1,11 +1,13 @@
-package com.github.piotrostrow.chess.security;
+package com.github.piotrostrow.chess.security.jwt;
 
+import com.github.piotrostrow.chess.security.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,17 +19,19 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
-public class JwtTokenUtil {
+public class JwtUtil {
 
-	// TODO refresh tokens
-	// TODO secret storage
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(JwtTokenUtil.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JwtUtil.class);
 
 	private static final String ROLE_KEY = "roles";
 	private static final String ROLE_DELIMITER = ", ";
 
-	private static final String SECRET_KEY = "secret123";
+	private final JwtConfig jwtConfig;
+
+	@Autowired
+	public JwtUtil(JwtConfig jwtConfig) {
+		this.jwtConfig = jwtConfig;
+	}
 
 	public String generateAccessToken(UserDetails user) {
 		String roles = user.getAuthorities().stream()
@@ -37,15 +41,15 @@ public class JwtTokenUtil {
 		return Jwts.builder()
 				.setSubject(user.getUsername())
 				.setIssuedAt(new Date())
-				.setExpiration(new Date(System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000))
+				.setExpiration(new Date(System.currentTimeMillis() + jwtConfig.getAccessTokenLifetime()))
 				.claim(ROLE_KEY, roles)
-				.signWith(SignatureAlgorithm.HS512, SECRET_KEY)
+				.signWith(SignatureAlgorithm.HS512, jwtConfig.getAccessTokenSecret())
 				.compact();
 	}
 
 	public Optional<Authentication> getAuthentication(String token) {
 		try {
-			Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+			Claims claims = Jwts.parser().setSigningKey(jwtConfig.getAccessTokenSecret()).parseClaimsJws(token).getBody();
 
 			List<GrantedAuthority> authorities = getGrantedAuthorities(claims);
 

@@ -7,9 +7,9 @@ import com.github.piotrostrow.chess.rest.dto.PuzzleSolutionDto;
 import com.github.piotrostrow.chess.rest.dto.UserDto;
 import com.github.piotrostrow.chess.rest.serivce.PuzzleService;
 import com.github.piotrostrow.chess.rest.serivce.UserService;
-import com.github.piotrostrow.chess.security.JwtTokenUtil;
 import com.github.piotrostrow.chess.security.Role;
 import com.github.piotrostrow.chess.security.UserDetailsImpl;
+import com.github.piotrostrow.chess.security.jwt.JwtUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -45,7 +45,7 @@ class PuzzleControllerIntegrationTest {
 	private ObjectMapper objectMapper;
 
 	@Autowired
-	private JwtTokenUtil jwtTokenUtil;
+	private JwtUtil jwtUtil;
 
 	@Autowired
 	private PuzzleRepository puzzleRepository;
@@ -233,7 +233,7 @@ class PuzzleControllerIntegrationTest {
 	}
 
 	private String tokenWithUserAuthorities() {
-		return jwtTokenUtil.generateAccessToken(new UserDetailsImpl("user321", "", List.of(new SimpleGrantedAuthority(Role.USER.toString()))));
+		return jwtUtil.generateAccessToken(new UserDetailsImpl("user321", "", List.of(new SimpleGrantedAuthority(Role.USER.toString()))));
 	}
 
 	private String tokenWithAdminAuthority() {
@@ -242,6 +242,6 @@ class PuzzleControllerIntegrationTest {
 				.map(SimpleGrantedAuthority::new)
 				.collect(Collectors.toList());
 
-		return jwtTokenUtil.generateAccessToken(new UserDetailsImpl("user123", "", authorities));
+		return jwtUtil.generateAccessToken(new UserDetailsImpl("user123", "", authorities));
 	}
 }

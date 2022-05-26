@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.security.Principal;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 @Component
 public class GameManager {
@@ -22,7 +22,7 @@ public class GameManager {
 	private final GameService gameService;
 	private final TaskScheduler taskScheduler;
 
-	private final Map<String, GameSession> gamesByUsername = new ConcurrentHashMap<>();
+	private final ConcurrentMap<String, GameSession> gamesByUsername = new ConcurrentHashMap<>();
 
 	public GameManager(WebSocketService webSocketService, GameService gameService, ThreadPoolTaskScheduler taskScheduler) {
 		this.webSocketService = webSocketService;

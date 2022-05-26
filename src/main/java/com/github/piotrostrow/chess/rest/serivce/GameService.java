@@ -56,10 +56,10 @@ public class GameService {
 		UserEntity white = userRepository.findByUsername(gameSession.getWhite().getName()).orElseThrow();
 		UserEntity black = userRepository.findByUsername(gameSession.getBlack().getName()).orElseThrow();
 
-		String pgnSerialized = PgnSerializer.serialize(gameSession.getGame());
+		String pgn = PgnSerializer.serialize(gameSession.getGame());
 
 		GameEntity gameEntity = new GameEntity();
-		gameEntity.setPgn(pgnSerialized);
+		gameEntity.setPgn(pgn);
 		gameEntity.setGameResult(gameSession.getGameResult());
 		gameEntity.setWinner(gameSession.getWinner().orElse(null));
 		gameRepository.save(gameEntity);

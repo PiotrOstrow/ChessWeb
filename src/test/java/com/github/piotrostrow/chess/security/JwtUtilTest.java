@@ -1,5 +1,7 @@
 package com.github.piotrostrow.chess.security;
 
+import com.github.piotrostrow.chess.security.jwt.JwtConfigDevImpl;
+import com.github.piotrostrow.chess.security.jwt.JwtUtil;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.jupiter.api.Test;
@@ -14,11 +16,10 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class JwtTokenUtilTest {
+class JwtUtilTest {
 
-	private static final String SECRET_KEY = "secret123";
-
-	private final JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
+	private final JwtConfigDevImpl jwtConfig = new JwtConfigDevImpl();
+	private final JwtUtil jwtUtil = new JwtUtil(jwtConfig);
 
 	@Test
 	void testGetAuthenticationWithValidToken() {
@@ -26,10 +27,10 @@ class JwtTokenUtilTest {
 				.setSubject("John")
 				.setIssuedAt(new Date())
 				.setExpiration(new Date(System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000))
-				.signWith(SignatureAlgorithm.HS512, SECRET_KEY)
+				.signWith(SignatureAlgorithm.HS512, jwtConfig.getAccessTokenSecret())
 				.compact();
 
-		Optional<Authentication> actual = jwtTokenUtil.getAuthentication(token);
+		Optional<Authentication> actual = jwtUtil.getAuthentication(token);
 
 		assertThat(actual).isPresent();
 		assertThat(actual.get().getName()).isEqualTo("John");
@@ -44,7 +45,7 @@ class JwtTokenUtilTest {
 				.signWith(SignatureAlgorithm.HS512, "secret321")
 				.compact();
 
-		Optional<Authentication> actual = jwtTokenUtil.getAuthentication(token);
+		Optional<Authentication> actual = jwtUtil.getAuthentication(token);
 
 		assertThat(actual).isEmpty();
 	}
@@ -58,7 +59,7 @@ class JwtTokenUtilTest {
 				.signWith(SignatureAlgorithm.HS512, "secret321")
 				.compact();
 
-		Optional<Authentication> actual = jwtTokenUtil.getAuthentication(token);
+		Optional<Authentication> actual = jwtUtil.getAuthentication(token);
 
 		assertThat(actual).isEmpty();
 	}
@@ -69,8 +70,8 @@ class JwtTokenUtilTest {
 		List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role.toString()));
 		UserDetails userDetails = new UserDetailsImpl("username", "password", authorities);
 
-		String token = jwtTokenUtil.generateAccessToken(userDetails);
-		Optional<Authentication> actual = jwtTokenUtil.getAuthentication(token);
+		String token = jwtUtil.generateAccessToken(userDetails);
+		Optional<Authentication> actual = jwtUtil.getAuthentication(token);
 
 		assertThat(actual).isPresent();
 		assertThat(actual.get().getAuthorities()).map(GrantedAuthority::getAuthority).contains(role.toString());

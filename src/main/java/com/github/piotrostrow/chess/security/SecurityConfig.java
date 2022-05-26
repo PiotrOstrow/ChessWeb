@@ -1,5 +1,6 @@
 package com.github.piotrostrow.chess.security;
 
+import com.github.piotrostrow.chess.security.jwt.JwtFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,12 +27,12 @@ import static com.github.piotrostrow.chess.security.Role.ADMIN;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private final UserDetailsService userDetailsService;
-	private final JwtTokenFilter jwtTokenFilter;
+	private final JwtFilter jwtFilter;
 	private final PasswordEncoder passwordEncoder;
 
-	public SecurityConfig(UserDetailsService userDetailsService, JwtTokenFilter jwtTokenFilter) {
+	public SecurityConfig(UserDetailsService userDetailsService, JwtFilter jwtFilter) {
 		this.userDetailsService = userDetailsService;
-		this.jwtTokenFilter = jwtTokenFilter;
+		this.jwtFilter = jwtFilter;
 		this.passwordEncoder = new BCryptPasswordEncoder();
 	}
 
@@ -61,7 +62,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				.and()
 
-				.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
+				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 
 				.exceptionHandling()
 				.authenticationEntryPoint((req, res, ex) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage()))
