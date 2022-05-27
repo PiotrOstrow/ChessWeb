@@ -2,6 +2,7 @@ package com.github.piotrostrow.chess.security;
 
 import com.github.piotrostrow.chess.security.jwt.JwtConfigDevImpl;
 import com.github.piotrostrow.chess.security.jwt.JwtUtil;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -75,5 +77,39 @@ class JwtUtilTest {
 
 		assertThat(actual).isPresent();
 		assertThat(actual.get().getAuthorities()).map(GrantedAuthority::getAuthority).contains(role.toString());
+	}
+
+	@Test
+	void testRefreshTokenExpired() {
+		String expiredRefreshToken = Jwts.builder()
+				.setSubject("John")
+				.setIssuedAt(new Date())
+				.setExpiration(new Date(System.currentTimeMillis() - 1000))
+				.signWith(SignatureAlgorithm.HS512, jwtConfig.getRefreshTokenSecret())
+				.compact();
+
+		Claims refreshTokenClaims = jwtUtil.getRefreshTokenClaims(expiredRefreshToken);
+
+		assertThat(refreshTokenClaims).isNull();
+	}
+
+	@Test
+	void testRefreshTokenInvalidSignature() {
+		Claims claims = jwtUtil.getRefreshTokenClaims("invalidtoken");
+		assertThat(claims).isNull();
+	}
+
+	@Test
+	void testGenerateRefreshToken() {
+		String username = "user123";
+		String tokenId = UUID.randomUUID().toString();
+
+		String refreshToken = jwtUtil.generateRefreshToken(username, tokenId);
+
+		Claims claims = jwtUtil.getRefreshTokenClaims(refreshToken);
+
+		assertThat(claims).isNotNull();
+		assertThat(claims.getSubject()).isEqualTo(username);
+		assertThat(claims.getId()).isEqualTo(tokenId);
 	}
 }

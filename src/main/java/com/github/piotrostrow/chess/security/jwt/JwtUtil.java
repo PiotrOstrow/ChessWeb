@@ -8,6 +8,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -47,16 +48,6 @@ public class JwtUtil {
 				.compact();
 	}
 
-	public String generateRefreshToken(UserDetails user, String id) {
-		return Jwts.builder()
-				.setSubject(user.getUsername())
-				.setId(id)
-				.setIssuedAt(new Date())
-				.setExpiration(new Date(System.currentTimeMillis() + jwtConfig.getRefreshTokenLifetime()))
-				.signWith(SignatureAlgorithm.HS512, jwtConfig.getRefreshTokenSecret())
-				.compact();
-	}
-
 	public Optional<Authentication> getAuthentication(String token) {
 		try {
 			Claims claims = Jwts.parser().setSigningKey(jwtConfig.getAccessTokenSecret()).parseClaimsJws(token).getBody();
@@ -79,5 +70,25 @@ public class JwtUtil {
 					.collect(Collectors.toList());
 		}
 		return Collections.emptyList();
+	}
+
+	public String generateRefreshToken(String username, String tokenId) {
+		return Jwts.builder()
+				.setSubject(username)
+				.setId(tokenId)
+				.setIssuedAt(new Date())
+				.setExpiration(new Date(System.currentTimeMillis() + jwtConfig.getRefreshTokenLifetime()))
+				.signWith(SignatureAlgorithm.HS512, jwtConfig.getRefreshTokenSecret())
+				.compact();
+	}
+
+	@Nullable
+	public Claims getRefreshTokenClaims(String token) {
+		try {
+			return Jwts.parser().setSigningKey(jwtConfig.getRefreshTokenSecret()).parseClaimsJws(token).getBody();
+		} catch (JwtException e) {
+			LOGGER.error("Error parsing JWT - {}", e.getMessage());
+			return null;
+		}
 	}
 }
