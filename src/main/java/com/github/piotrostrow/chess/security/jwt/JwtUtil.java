@@ -47,6 +47,16 @@ public class JwtUtil {
 				.compact();
 	}
 
+	public String generateRefreshToken(UserDetails user, String id) {
+		return Jwts.builder()
+				.setSubject(user.getUsername())
+				.setId(id)
+				.setIssuedAt(new Date())
+				.setExpiration(new Date(System.currentTimeMillis() + jwtConfig.getRefreshTokenLifetime()))
+				.signWith(SignatureAlgorithm.HS512, jwtConfig.getRefreshTokenSecret())
+				.compact();
+	}
+
 	public Optional<Authentication> getAuthentication(String token) {
 		try {
 			Claims claims = Jwts.parser().setSigningKey(jwtConfig.getAccessTokenSecret()).parseClaimsJws(token).getBody();

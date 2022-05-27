@@ -1,6 +1,6 @@
 package com.github.piotrostrow.chess;
 
-import com.github.piotrostrow.chess.rest.dto.PuzzleDto;
+import com.github.piotrostrow.chess.rest.dto.puzzle.PuzzleDto;
 import com.github.piotrostrow.chess.rest.serivce.PuzzleService;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;

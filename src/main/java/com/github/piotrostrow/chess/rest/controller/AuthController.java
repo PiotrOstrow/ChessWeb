@@ -1,13 +1,11 @@
 package com.github.piotrostrow.chess.rest.controller;
 
-import com.github.piotrostrow.chess.rest.dto.AuthRequest;
-import com.github.piotrostrow.chess.rest.dto.AuthResponse;
-import com.github.piotrostrow.chess.security.jwt.JwtUtil;
+import com.github.piotrostrow.chess.rest.dto.auth.AuthRequest;
+import com.github.piotrostrow.chess.rest.dto.auth.AuthResponse;
+import com.github.piotrostrow.chess.rest.dto.auth.RefreshRequest;
+import com.github.piotrostrow.chess.rest.dto.auth.RefreshResponse;
+import com.github.piotrostrow.chess.rest.serivce.AuthService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,25 +17,21 @@ import javax.validation.Valid;
 @RequestMapping("auth")
 public class AuthController {
 
-	private final AuthenticationManager authenticationManager;
-	private final JwtUtil jwtUtil;
+	private final AuthService authService;
 
-	// TODO: service
-	public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
-		this.authenticationManager = authenticationManager;
-		this.jwtUtil = jwtUtil;
+	public AuthController(AuthService authService) {
+		this.authService = authService;
 	}
 
 	@PostMapping("login")
 	public ResponseEntity<AuthResponse> login(@RequestBody @Valid AuthRequest request) {
-		Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-		);
-
-		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-		String accessToken = jwtUtil.generateAccessToken(userDetails);
-		AuthResponse authResponse = new AuthResponse(userDetails.getUsername(), userDetails.getAuthorities(), accessToken);
-
+		AuthResponse authResponse = authService.authenticate(request);
 		return ResponseEntity.ok(authResponse);
+	}
+
+	@PostMapping("refresh")
+	public ResponseEntity<Object> refresh(@RequestBody @Valid RefreshRequest request) {
+		RefreshResponse refreshResponse = authService.refreshAccessToken(request);
+		return ResponseEntity.ok(refreshResponse);
 	}
 }

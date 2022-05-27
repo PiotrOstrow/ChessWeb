@@ -2,9 +2,9 @@ package com.github.piotrostrow.chess.rest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.piotrostrow.chess.repository.PuzzleRepository;
-import com.github.piotrostrow.chess.rest.dto.PuzzleDto;
-import com.github.piotrostrow.chess.rest.dto.PuzzleSolutionDto;
 import com.github.piotrostrow.chess.rest.dto.UserDto;
+import com.github.piotrostrow.chess.rest.dto.puzzle.PuzzleDto;
+import com.github.piotrostrow.chess.rest.dto.puzzle.PuzzleSolutionDto;
 import com.github.piotrostrow.chess.rest.serivce.PuzzleService;
 import com.github.piotrostrow.chess.rest.serivce.UserService;
 import com.github.piotrostrow.chess.security.Role;

@@ -5,4 +5,8 @@ public interface JwtConfig {
 	String getAccessTokenSecret();
 
 	long getAccessTokenLifetime();
+
+	String getRefreshTokenSecret();
+
+	long getRefreshTokenLifetime();
 }

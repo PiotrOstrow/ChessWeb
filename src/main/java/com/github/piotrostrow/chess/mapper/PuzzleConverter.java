@@ -2,7 +2,7 @@ package com.github.piotrostrow.chess.mapper;
 
 import com.github.piotrostrow.chess.entity.PuzzleEntity;
 import com.github.piotrostrow.chess.entity.PuzzleThemeEntity;
-import com.github.piotrostrow.chess.rest.dto.PuzzleDto;
+import com.github.piotrostrow.chess.rest.dto.puzzle.PuzzleDto;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;
 

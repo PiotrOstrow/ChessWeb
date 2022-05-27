@@ -1,4 +1,4 @@
-package com.github.piotrostrow.chess.rest.dto;
+package com.github.piotrostrow.chess.rest.dto.puzzle;
 
 import java.util.ArrayList;
 import java.util.Collection;

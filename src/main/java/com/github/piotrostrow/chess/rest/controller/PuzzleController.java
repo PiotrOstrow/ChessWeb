@@ -1,8 +1,8 @@
 package com.github.piotrostrow.chess.rest.controller;
 
-import com.github.piotrostrow.chess.rest.dto.PuzzleDto;
-import com.github.piotrostrow.chess.rest.dto.PuzzleSolutionDto;
-import com.github.piotrostrow.chess.rest.dto.PuzzleSolutionResponse;
+import com.github.piotrostrow.chess.rest.dto.puzzle.PuzzleDto;
+import com.github.piotrostrow.chess.rest.dto.puzzle.PuzzleSolutionDto;
+import com.github.piotrostrow.chess.rest.dto.puzzle.PuzzleSolutionResponse;
 import com.github.piotrostrow.chess.rest.serivce.PuzzleService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -12,6 +12,16 @@ public class JwtConfigDevImpl implements JwtConfig {
 
 	@Override
 	public long getAccessTokenLifetime() {
-		return 7 * 24 * 60 * 60 * 1000L;
+		return 10 * 60 * 1000L;
+	}
+
+	@Override
+	public String getRefreshTokenSecret() {
+		return "secret321";
+	}
+
+	@Override
+	public long getRefreshTokenLifetime() {
+		return 90 * 24 * 60 * 60 * 1000L;
 	}
 }
