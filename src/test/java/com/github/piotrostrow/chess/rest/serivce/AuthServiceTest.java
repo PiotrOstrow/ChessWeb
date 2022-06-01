@@ -4,8 +4,8 @@ import com.github.piotrostrow.chess.entity.RefreshTokenEntity;
 import com.github.piotrostrow.chess.repository.RefreshTokenRepository;
 import com.github.piotrostrow.chess.rest.dto.auth.AuthRequest;
 import com.github.piotrostrow.chess.rest.dto.auth.AuthResponse;
-import com.github.piotrostrow.chess.rest.dto.auth.RefreshRequest;
-import com.github.piotrostrow.chess.rest.dto.auth.RefreshResponse;
+import com.github.piotrostrow.chess.rest.dto.auth.AuthResult;
+import com.github.piotrostrow.chess.rest.dto.auth.RefreshResult;
 import com.github.piotrostrow.chess.security.UserDetailsImpl;
 import com.github.piotrostrow.chess.security.jwt.JwtUtil;
 import io.jsonwebtoken.impl.DefaultClaims;
@@ -72,9 +72,9 @@ class AuthServiceTest {
 	void testAuthenticateSuccess() {
 		when(authenticationManager.authenticate(any())).thenReturn(authentication);
 
-		AuthResponse authResponse = authService.authenticate(new AuthRequest(LOGIN, PASSWORD));
+		AuthResult authResult = authService.authenticate(new AuthRequest(LOGIN, PASSWORD));
 
-		assertThat(authResponse).isEqualTo(new AuthResponse(LOGIN, Collections.emptyList(), ACCESS_TOKEN, REFRESH_TOKEN));
+		assertThat(authResult).isEqualTo(new AuthResult(new AuthResponse(LOGIN, Collections.emptyList(), ACCESS_TOKEN), REFRESH_TOKEN));
 		verify(refreshTokenRepository, times(1)).save(ArgumentMatchers.refEq(new RefreshTokenEntity(LOGIN)));
 	}
 
@@ -95,17 +95,16 @@ class AuthServiceTest {
 		when(jwtUtil.generateAccessToken(any())).thenReturn(newAccessToken);
 		when(jwtUtil.generateRefreshToken(LOGIN, REFRESH_TOKEN_UUID.toString())).thenReturn(newRefreshToken);
 
-		RefreshResponse refreshResponse = authService.refreshAccessToken(new RefreshRequest(REFRESH_TOKEN));
+		RefreshResult refreshResult = authService.refreshAccessToken(REFRESH_TOKEN);
 
-		assertThat(refreshResponse).isEqualTo(new RefreshResponse(newAccessToken, newRefreshToken));
+		assertThat(refreshResult).isEqualTo(new RefreshResult(newAccessToken, newRefreshToken));
 	}
 
 	@Test
 	void testRefreshTokenInvalidToken() {
 		when(jwtUtil.getRefreshTokenClaims(any())).thenReturn(null);
 
-		RefreshRequest request = new RefreshRequest(REFRESH_TOKEN);
-		assertThatThrownBy(() -> authService.refreshAccessToken(request))
+		assertThatThrownBy(() -> authService.refreshAccessToken(REFRESH_TOKEN))
 				.isInstanceOf(BadCredentialsException.class)
 				.hasMessage("Invalid refresh token");
 	}
@@ -114,8 +113,7 @@ class AuthServiceTest {
 	void testRefreshTokenInvalidated() {
 		when(refreshTokenRepository.findById(any())).thenReturn(Optional.empty());
 
-		RefreshRequest request = new RefreshRequest(REFRESH_TOKEN);
-		assertThatThrownBy(() -> authService.refreshAccessToken(request))
+		assertThatThrownBy(() -> authService.refreshAccessToken(REFRESH_TOKEN))
 				.isInstanceOf(BadCredentialsException.class)
 				.hasMessage("Refresh token has been invalidated");
 	}
@@ -124,8 +122,7 @@ class AuthServiceTest {
 	void testRefreshTokenUserNoLongerExists() {
 		when(userDetailsService.loadUserByUsername(any())).thenThrow(new UsernameNotFoundException(LOGIN + " not found"));
 
-		RefreshRequest request = new RefreshRequest(REFRESH_TOKEN);
-		assertThatThrownBy(() -> authService.refreshAccessToken(request))
+		assertThatThrownBy(() -> authService.refreshAccessToken(REFRESH_TOKEN))
 				.isInstanceOf(BadCredentialsException.class)
 				.hasMessage("User not found for the given token");
 	}

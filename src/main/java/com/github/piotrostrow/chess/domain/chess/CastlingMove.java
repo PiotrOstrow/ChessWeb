@@ -4,10 +4,10 @@ import static com.github.piotrostrow.chess.domain.chess.Color.BLACK;
 import static com.github.piotrostrow.chess.domain.chess.Color.WHITE;
 
 public enum CastlingMove {
-	WHITE_KING_SIDE('K', WHITE, Position.WHITE_ROOK_KING_SIDE),
-	WHITE_QUEEN_SIDE('Q', WHITE, Position.WHITE_ROOK_QUEEN_SIDE),
-	BLACK_KING_SIDE('k', BLACK, Position.BLACK_ROOK_KING_SIDE),
-	BLACK_QUEEN_SIDE('q', BLACK, Position.BLACK_ROOK_QUEEN_SIDE);
+	WHITE_KING_SIDE('K', WHITE, new Position("h1")),
+	WHITE_QUEEN_SIDE('Q', WHITE, new Position("a1")),
+	BLACK_KING_SIDE('k', BLACK, new Position("h8")),
+	BLACK_QUEEN_SIDE('q', BLACK, new Position("a8"));
 
 	private final char value;
 	private final Color color;

@@ -5,19 +5,13 @@ import java.util.Objects;
 public class RefreshResponse {
 
 	private final String accessToken;
-	private final String refreshToken;
 
-	public RefreshResponse(String accessToken, String refreshToken) {
+	public RefreshResponse(String accessToken) {
 		this.accessToken = accessToken;
-		this.refreshToken = refreshToken;
 	}
 
 	public String getAccessToken() {
 		return accessToken;
-	}
-
-	public String getRefreshToken() {
-		return refreshToken;
 	}
 
 	@Override
@@ -25,19 +19,18 @@ public class RefreshResponse {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		RefreshResponse that = (RefreshResponse) o;
-		return Objects.equals(accessToken, that.accessToken) && Objects.equals(refreshToken, that.refreshToken);
+		return Objects.equals(accessToken, that.accessToken);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(accessToken, refreshToken);
+		return Objects.hash(accessToken);
 	}
 
 	@Override
 	public String toString() {
 		return "RefreshResponse{" +
 				"accessToken='" + accessToken + '\'' +
-				", refreshToken='" + refreshToken + '\'' +
 				'}';
 	}
 }

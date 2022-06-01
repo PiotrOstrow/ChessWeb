@@ -16,13 +16,11 @@ public class AuthResponse {
 	private final String username;
 	private final List<String> roles;
 	private final String accessToken;
-	private final String refreshToken;
 
-	public AuthResponse(String username, Collection<? extends GrantedAuthority> authorities, String accessToken, String refreshToken) {
+	public AuthResponse(String username, Collection<? extends GrantedAuthority> authorities, String accessToken) {
 		this.username = username;
 		this.roles = authorities.stream().map(GrantedAuthority::toString).collect(Collectors.toList());
 		this.accessToken = accessToken;
-		this.refreshToken = refreshToken;
 	}
 
 	public String getUsername() {
@@ -37,21 +35,17 @@ public class AuthResponse {
 		return accessToken;
 	}
 
-	public String getRefreshToken() {
-		return refreshToken;
-	}
-
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		AuthResponse that = (AuthResponse) o;
-		return Objects.equals(username, that.username) && Objects.equals(roles, that.roles) && Objects.equals(accessToken, that.accessToken) && Objects.equals(refreshToken, that.refreshToken);
+		return Objects.equals(username, that.username) && Objects.equals(roles, that.roles) && Objects.equals(accessToken, that.accessToken);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(username, roles, accessToken, refreshToken);
+		return Objects.hash(username, roles, accessToken);
 	}
 
 	@Override
@@ -60,7 +54,6 @@ public class AuthResponse {
 				"username='" + username + '\'' +
 				", roles=" + roles +
 				", accessToken='" + accessToken + '\'' +
-				", refreshToken='" + refreshToken + '\'' +
 				'}';
 	}
 }

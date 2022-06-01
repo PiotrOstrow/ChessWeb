@@ -8,10 +8,6 @@ public class Position {
 
 	public static final Position WHITE_KING = new Position("e1");
 	public static final Position BLACK_KING = new Position("e8");
-	public static final Position WHITE_ROOK_KING_SIDE = new Position("h1");
-	public static final Position BLACK_ROOK_KING_SIDE = new Position("h8");
-	public static final Position WHITE_ROOK_QUEEN_SIDE = new Position("a1");
-	public static final Position BLACK_ROOK_QUEEN_SIDE = new Position("a8");
 
 	private final int x;
 	private final int y;
