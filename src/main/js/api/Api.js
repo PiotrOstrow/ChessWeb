@@ -17,6 +17,22 @@ authInstance.interceptors.response.use(response => {
     return response;
 })
 
+const withRefreshInterceptor = axios.create();
+withRefreshInterceptor.interceptors.response.use(response => response, async error => {
+    const status = error?.response?.status;
+    if (status === 401) {
+        const refreshResponse = await Api.refreshAccessToken();
+        accessToken = refreshResponse.data.accessToken;
+
+        error.config.headers['authorization'] = 'Bearer ' + accessToken;
+        error.config.baseURL = undefined;
+
+        return axios.request(error.config);
+    }
+
+    return Promise.reject(error);
+})
+
 const Api = {
     login(username, password) {
         return authInstance.post('/auth/login/', {
@@ -31,15 +47,18 @@ const Api = {
             'email': email
         });
     },
+    refreshAccessToken() {
+        return axios.post('/auth/refresh/', {withCredentials: true});
+    },
     get(url) {
-        return axios.get(url, {
+        return withRefreshInterceptor.get(url, {
             headers: {
                 authorization: 'Bearer ' + accessToken
             }
         });
     },
     post(url, data = {}) {
-        return axios.post(url, data, {
+        return withRefreshInterceptor.post(url, data, {
             headers: {
                 authorization: 'Bearer ' + accessToken
             }

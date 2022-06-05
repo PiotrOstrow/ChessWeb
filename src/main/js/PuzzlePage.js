@@ -16,7 +16,7 @@ function PuzzlePage() {
     const [ratingDelta, setRatingDelta] = useState(0);
 
     useEffect(() => {
-        Api.get('/puzzles/random').then(e => setPuzzle(e.data));
+        Api.get('/puzzles/random/').then(e => setPuzzle(e.data));
     }, []);
 
     useEffect(() => {
