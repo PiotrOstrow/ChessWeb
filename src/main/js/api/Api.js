@@ -50,13 +50,11 @@ const Api = {
         });
     },
     async refreshAccessToken() {
-        const result = await axios.post('/auth/refresh/', {withCredentials: true})
-            .then(response => {
-                let payload = jwt_decode(response.data.accessToken);
-                user.username = payload.sub;
-                user.roles = payload.roles.split(', ');
-                accessToken = response.data.accessToken;
-            });
+        const result = await axios.post('/auth/refresh/', {withCredentials: true});
+        let payload = jwt_decode(result.data.accessToken);
+        user.username = payload.sub;
+        user.roles = payload.roles.split(', ');
+        accessToken = result.data.accessToken;
         return result.status === 200;
     },
     get(url) {
@@ -78,6 +76,9 @@ const Api = {
     },
     getUsername() {
         return user.username;
+    },
+    logout() {
+        axios.post('/auth/logout/', {withCredentials: true});
     }
 }
 

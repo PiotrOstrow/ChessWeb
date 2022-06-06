@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 
 // https://mui.com/components/app-bar/
-function NavBar() {
+function NavBar(props) {
     const [anchorElUser, setAnchorElUser] = React.useState(null);
     const navigate = useNavigate();
 
@@ -38,8 +38,10 @@ function NavBar() {
         setAnchorElUser(null);
     };
 
-    const handleCloseNavMenu = (path) => {
-        navigate(path);
+    const handleCloseNavMenu = (setting) => {
+        if (setting.name === 'Logout')
+            props.onLoggedOut();
+        navigate(setting.path);
         setAnchorElUser(null);
     };
 
@@ -84,7 +86,7 @@ function NavBar() {
                             onClose={handleCloseUserMenu}
                         >
                             {settings.map((setting) => (
-                                <MenuItem key={setting.name} onClick={() => handleCloseNavMenu(setting.path)}>
+                                <MenuItem key={setting.name} onClick={() => handleCloseNavMenu(setting)}>
                                     <Typography textAlign="center">{setting.name}</Typography>
                                 </MenuItem>
                             ))}

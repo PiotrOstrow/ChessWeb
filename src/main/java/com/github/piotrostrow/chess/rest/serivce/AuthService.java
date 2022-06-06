@@ -85,4 +85,10 @@ public class AuthService {
 
 		return claims;
 	}
+
+	public void invalidateRefreshToken(String refreshToken) {
+		Claims refreshTokenClaims = getRefreshTokenClaims(refreshToken);
+
+		refreshTokenRepository.deleteById(UUID.fromString(refreshTokenClaims.getId()));
+	}
 }

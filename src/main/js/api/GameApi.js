@@ -153,6 +153,10 @@ class GameApi {
     getLastGameResult() {
         return this.lastGameResult;
     }
+
+    disconnect() {
+        this.stompClient.disconnect();
+    }
 }
 
 export default GameApi;

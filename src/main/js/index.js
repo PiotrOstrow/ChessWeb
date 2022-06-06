@@ -20,10 +20,11 @@ function App() {
     const [gameApi, setGameApi] = useState(null);
 
     useEffect(() => {
-        if (Api.refreshAccessToken()) {
-            setGameApi(Api.gameApi());
-            setLoggedIn(true);
-        }
+        Api.refreshAccessToken()
+            .then(result => {
+                if (result)
+                    onLoggedIn();
+            });
     }, []);
 
     const onLoggedIn = () => {
@@ -31,12 +32,19 @@ function App() {
         setLoggedIn(true);
     }
 
+    const onLoggedOut = () => {
+        Api.logout();
+        gameApi.disconnect();
+        setGameApi(null);
+        setLoggedIn(false);
+    }
+
     if (!loggedIn) {
         return <LoginForm onLoggedIn={onLoggedIn}/>;
     } else {
         return (
             <div>
-                <NavBar/>
+                <NavBar onLoggedOut={onLoggedOut}/>
                 <div>
                     <Routes>
                         <Route path="/" element={<GameComponent gameApi={gameApi}/>}/>

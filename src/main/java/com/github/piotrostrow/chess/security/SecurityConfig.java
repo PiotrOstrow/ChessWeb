@@ -76,6 +76,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 				.antMatchers(HttpMethod.POST, "/auth/login/").permitAll()
 				.antMatchers(HttpMethod.POST, "/auth/refresh/").permitAll()
+				.antMatchers(HttpMethod.POST, "/auth/logout/").permitAll()
 
 				.antMatchers("/websocket/**").permitAll() // auth at sub-protocol due to JS WebSocket API limitations
 

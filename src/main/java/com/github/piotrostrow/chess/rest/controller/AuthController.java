@@ -52,4 +52,14 @@ public class AuthController {
 
 		return ResponseEntity.ok(new RefreshResponse(refreshResult.getNewAccessToken()));
 	}
+
+	@PostMapping("logout")
+	public ResponseEntity<Object> logout(HttpServletRequest request) {
+		Cookie cookie = WebUtils.getCookie(request, REFRESH_TOKEN_COOKIE);
+		if (cookie == null)
+			throw new BadCredentialsException("No refresh token present");
+
+		authService.invalidateRefreshToken(cookie.getValue());
+		return ResponseEntity.noContent().build();
+	}
 }
