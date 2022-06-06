@@ -1,5 +1,6 @@
 import axios from 'axios';
 import GameApi from "./GameApi";
+import jwt_decode from 'jwt-decode';
 
 let accessToken = null;
 let user = {
@@ -21,13 +22,14 @@ const withRefreshInterceptor = axios.create();
 withRefreshInterceptor.interceptors.response.use(response => response, async error => {
     const status = error?.response?.status;
     if (status === 401) {
-        const refreshResponse = await Api.refreshAccessToken();
-        accessToken = refreshResponse.data.accessToken;
+        const refreshResult = await Api.refreshAccessToken();
 
-        error.config.headers['authorization'] = 'Bearer ' + accessToken;
-        error.config.baseURL = undefined;
+        if (refreshResult) {
+            error.config.headers['authorization'] = 'Bearer ' + accessToken;
+            error.config.baseURL = undefined;
 
-        return axios.request(error.config);
+            return axios.request(error.config);
+        }
     }
 
     return Promise.reject(error);
@@ -47,8 +49,15 @@ const Api = {
             'email': email
         });
     },
-    refreshAccessToken() {
-        return axios.post('/auth/refresh/', {withCredentials: true});
+    async refreshAccessToken() {
+        const result = await axios.post('/auth/refresh/', {withCredentials: true})
+            .then(response => {
+                let payload = jwt_decode(response.data.accessToken);
+                user.username = payload.sub;
+                user.roles = payload.roles.split(', ');
+                accessToken = response.data.accessToken;
+            });
+        return result.status === 200;
     },
     get(url) {
         return withRefreshInterceptor.get(url, {

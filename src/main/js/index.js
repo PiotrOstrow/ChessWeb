@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import ReactDOM from 'react-dom';
 import LoginForm from "./components/LoginForm";
 import {createTheme, ThemeProvider} from "@mui/material/styles";
@@ -18,6 +18,13 @@ const theme = createTheme({
 function App() {
     const [loggedIn, setLoggedIn] = useState(false);
     const [gameApi, setGameApi] = useState(null);
+
+    useEffect(() => {
+        if (Api.refreshAccessToken()) {
+            setGameApi(Api.gameApi());
+            setLoggedIn(true);
+        }
+    }, []);
 
     const onLoggedIn = () => {
         setGameApi(Api.gameApi());
