@@ -61,7 +61,7 @@ function NavBar(props) {
                         {pages.map((page) => (
                             <Button
                                 key={page.name}
-                                onClick={() => handleCloseNavMenu(page.path)}
+                                onClick={() => handleCloseNavMenu(page)}
                                 sx={{my: 2, color: 'white', display: 'block'}}
                             >
                                 {page.name}
